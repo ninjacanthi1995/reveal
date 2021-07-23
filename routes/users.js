@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.post('/signin', async (req, res) => {
+  res.json({result: true})
+})
+
 module.exports = router;
