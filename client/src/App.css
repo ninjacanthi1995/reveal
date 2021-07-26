@@ -11,7 +11,7 @@ h4 {
       align-items: center;
       justify-content: center;
       height:100vh;
-      /* background-image: url('/images/flat01.png'); */
+      /* background-image: url('/images/backgroundColorReveal.png');  */
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
@@ -21,7 +21,7 @@ h4 {
   
   .Login-input{
     margin: 15px;
-    width: 500px;
+    width: 450px;
   }
   
   .Sign {
@@ -48,7 +48,7 @@ h4 {
   
   .Banner {
     height: 80px;
-    /* background-image: url('/images/flat01.png'); */
+    /* background-image: url('/images/backgroundColorReveal');  */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
