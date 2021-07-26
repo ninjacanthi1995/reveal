@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { readString } from 'react-papaparse';
 import { Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
@@ -8,6 +8,8 @@ import { useDispatch } from 'react-redux';
 
 const ImportStudentScreen = () => {
 
+  const [fileIsUploaded, setFileIsUploaded] = useState(false);
+
   const dispatch = useDispatch();
 
   const props = {
@@ -15,31 +17,40 @@ const ImportStudentScreen = () => {
     showUploadList: false,
     beforeUpload: file => {
         const reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = async(e) => {
           const list = readString(e.target.result);
-          dispatch({
+          await dispatch({
             type: 'setStudentList',
             list: list
           })
         };
         reader.readAsText(file); // SUPPRIMABLE ??
 
-        <Redirect to='/import-config' /> 
+        setTimeout(() => {
+          setFileIsUploaded(true);
+        }, 1000);
+        
+        //console.log('UPLOADED');
 
         // Prevent upload
         return false;
     },
-
   };
 
-  // FAIRE LA REDIRECTION A LA FIN DU TELECHARGEMENT
+  let redirect = null;
+  if (fileIsUploaded){
+    redirect = <Redirect to='/import-config' />;
+  }
 
   return (
-    <Upload {...props}>
-        <Button 
-          icon={<UploadOutlined />}
-        >Télécharger</Button>
-    </Upload>
+    <div>
+      {redirect}
+      <Upload {...props}>
+          <Button 
+            icon={<UploadOutlined />}
+          >Télécharger</Button>
+      </Upload>
+    </div>
   )
 }
 
