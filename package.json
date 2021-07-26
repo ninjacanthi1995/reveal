@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "test": "node_modules/.bin/jest"
+    "test": "jest"
   },
   "dependencies": {
     "@shelf/jest-mongodb": "^2.0.1",
@@ -16,6 +16,7 @@
     "express": "~4.16.1",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
+    "pdfkit": "^0.12.1",
     "uid2": "0.0.3"
   },
   "devDependencies": {
