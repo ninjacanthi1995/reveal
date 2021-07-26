@@ -5,7 +5,7 @@ import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import studentList from './reducers/studentList.reducer';
 
-import Home from './component/Home';
+import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
 import TemplateCreator from './component/TemplateCreator';
@@ -19,7 +19,7 @@ function App() {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={ScreenHome} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
