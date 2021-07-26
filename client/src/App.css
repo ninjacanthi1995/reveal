@@ -62,3 +62,17 @@ h4 {
   
   }
   
+a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  text-decoration: none;
+  color: #0F6157;
+  /* border-bottom: 1px solid #0F6157; */
+}
+a > img {
+  margin-right: 5px;
+}
+a:hover{
+  text-decoration: underline;
+}
