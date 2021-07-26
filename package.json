@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "test": "sudo jest"
+    "test": "jest"
   },
   "dependencies": {
     "@shelf/jest-mongodb": "^2.0.1",
