@@ -13,11 +13,11 @@ import {
 } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
-const rootSubmenuKeys = ['addElement', 'addVariable', 'sub1', 'sub2'];
+const rootSubmenuKeys = ['addElement', 'addVariable'];
 
 const ToolBox = () => {
   const [collapsed, setCollapsed] = useState(false)
-  const [openKeys, setOpenKeys] = useState(['sub1']);
+  const [openKeys, setOpenKeys] = useState([]);
   const onOpenChange = keys => {
     const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
