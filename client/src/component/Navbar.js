@@ -24,7 +24,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "calc(100vw - 60px)",
+    width: "100vw",
     padding: 30,
     backgroundColor: "white",
     borderBottom: `1px solid ${colors.gray}`
