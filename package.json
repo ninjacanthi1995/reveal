@@ -23,6 +23,7 @@
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
     "pdfkit": "^0.12.1",
+    "react-rnd": "^10.3.4",
     "uid2": "0.0.3"
   },
   "devDependencies": {
