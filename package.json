@@ -8,7 +8,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "@shelf/jest-mongodb": "^2.0.1",
+    "antd": "^4.16.8",
     "bcrypt": "^5.0.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -16,6 +22,7 @@
     "express": "~4.16.1",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
+    "pdfkit": "^0.12.1",
     "uid2": "0.0.3"
   },
   "devDependencies": {
