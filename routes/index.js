@@ -38,9 +38,18 @@ router.post("/create-diploma", async (req, res) => {
   }
 });
 
-router.post('/envoyer-diploma', async (req, res) => {
+router.post("/envoyer-diploma", async (req, res) => {
   const template = await templateModel.findOne({ name: req.body.templateName });
-  
+  const student = await studentModel.findById({ id: req.body.studentId });
+  const diploma = await diplomaModel.findOne({ name: req.body.diplomaName });
+  const doc = new PDFDocument();
+  doc.pipe(fs.createWriteStream("output.pdf"));
+  doc.text(
+    student.firstName,
+    template.firstNameField.positionX,
+    template.firstNameField.positionY
+  );
+  doc.end();
 });
 
 module.exports = router;
