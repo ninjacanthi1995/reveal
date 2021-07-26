@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Link, Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
+import Navbar from './Navbar';
 
 const ImportStudentScreen = () => {
 
@@ -17,6 +18,7 @@ const ImportStudentScreen = () => {
     showUploadList: false,
     beforeUpload: file => {
         const reader = new FileReader();
+        reader.readAsText(file);
         reader.onload = async(e) => {
           const list = readString(e.target.result);
           await dispatch({
@@ -24,7 +26,6 @@ const ImportStudentScreen = () => {
             list: list
           })
         };
-        reader.readAsText(file); // SUPPRIMABLE ??
 
         setTimeout(() => {
           setFileIsUploaded(true);
@@ -44,6 +45,7 @@ const ImportStudentScreen = () => {
 
   return (
     <div>
+      <Navbar></Navbar>
       {redirect}
       <Upload {...props}>
           <Button 
