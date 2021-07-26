@@ -31,7 +31,7 @@ if (user){
   result = true
 
 }else{
-  error.push('email ou password incorrect ')
+  error.push('email or password incorrect ')
 }
 }
 
