@@ -8,8 +8,6 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-//fred: require de la BD depuis MODELS
-require('./models/db')
 
 var app = express();
 
