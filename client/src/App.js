@@ -4,6 +4,7 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import studentList from './reducers/studentList.reducer';
+import templateElements from './reducers/templateElements.reducer';
 
 import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
@@ -12,7 +13,7 @@ import TemplateCreator from './component/TemplateCreator';
 import CreateDiplomas from './component/CreateDiplomas';
 
 
-const store = createStore(combineReducers({studentList}));
+const store = createStore(combineReducers({studentList, templateElements}));
 
 function App() {
   return (
