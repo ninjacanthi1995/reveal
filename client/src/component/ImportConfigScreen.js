@@ -13,7 +13,6 @@ import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
 
-//const studentDataToMatch = ['nom', 'prénom', 'date de naissance', 'email'];
 const studentDataToMatch = ['firstname_field', 'lastname_field', 'bitrh_date_field', 'email']
 
 const ImportConfigScreen = () => {
@@ -44,7 +43,7 @@ const ImportConfigScreen = () => {
   // A la séléction du template du diplome: on mémorise le choix dans un état, on récupère les fields attendu par ce template et on le stocke dans un etat
   const onBatchChange = (value) => {
     setSelectedBatch(value);
-    const templateFromDB = exempleTemplatesFromDB[0]       // A RECUP DANS LA DB QUAND ELLE SE SERA IMPLEMENTE
+    const templateFromDB = exempleTemplatesFromDB[0]       // A RECUP DANS LA DB QUAND ELLE SE SERA IMPLEMENTE OU recup dans School si déjà importée
     //setTemplate(templateFromDB);
     const tempHumanNames = {'email': 'email'};
     studentDataToMatch.slice(0, -1).forEach(field => {
@@ -157,7 +156,7 @@ const ImportConfigScreen = () => {
   )
 }
 
-// RESTE A HANDLE LE BOUTON VALIDé > Mettre en forme les données (fusion des matchings) + envoi à la DB
+// RESTE A HANDLE LE BOUTON VALIDé >  envoi à la DB
 // PRESENTATION SOUS FORME DE TABLEAU PLUS CLAIRE??
 
 export default ImportConfigScreen;

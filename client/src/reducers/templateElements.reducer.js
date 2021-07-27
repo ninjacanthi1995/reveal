@@ -24,6 +24,7 @@ const templateReducer = (templateElements = [], action) => {
     return [...templateElements, {
       type: action.elementType,
       element
+
     }];
   }else if(action.type === 'updateElement'){
     const newList = [...templateElements]
