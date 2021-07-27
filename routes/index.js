@@ -147,4 +147,12 @@ router.get("/send-diploma", async (req, res) => {
   res.json({ result: true });
 });
 
+
+
+router.get('/batch', async (req, res) => {
+  const school_batches = await batchModel.find({id_School: req.query.school_id});
+  
+})
+
+
 module.exports = router;
