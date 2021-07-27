@@ -1,27 +1,39 @@
 @import '~antd/dist/antd.css';
 
+
+h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+   color: #2c9bf0;
+   margin: 10px;
+   
+
+}
+
+.Login-page{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height:100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  }
+
+
 h4 {
     color: white;
     font-weight: bold
   }
   
-  .Login-page{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      height:100vh;
-      /* background-image: url('/images/backgroundColorReveal.png');  */
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      
   
-      }
-  
+
   .Login-input{
     margin: 15px;
     width: 450px;
+   
   }
   
   .Sign {
@@ -32,8 +44,9 @@ h4 {
       padding-bottom: 15px;
       border-radius: 0%;
       border-color: white;
-      background-color: white;
-      margin: 40px;
+      background-color: rgba(63,169,255,0.5);
+      padding-top: 30px;
+      margin:30px;
   }
   
   .Sign .Login-input{
@@ -48,7 +61,6 @@ h4 {
   
   .Banner {
     height: 80px;
-    /* background-image: url('/images/backgroundColorReveal');  */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;

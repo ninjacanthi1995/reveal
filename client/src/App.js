@@ -11,6 +11,7 @@ import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
 import TemplateCreator from './component/TemplateCreator';
 import CreateDiplomas from './component/CreateDiplomas';
+import NotFoundPAge from './NotFoundPage';
 
 
 const store = createStore(combineReducers({studentList, templateElements}));
@@ -25,6 +26,7 @@ function App() {
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
           <Route path="/creer-mon-template" component={TemplateCreator}  />
+          <Route component={NotFoundPAge} />
         </Switch>
       </Router>
     </Provider>
