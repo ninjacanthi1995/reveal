@@ -3,13 +3,15 @@ var router = express.Router();
 const diplomaModel = require("../models/diplomas");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-
+const pdfModel = require("../models/pdfs");
+const dropboxV2Api = require("dropbox-v2-api");
 var cloudinary = require("cloudinary").v2;
+
 cloudinary.config({
-  cloud_name: "la-capsule-chau",
-  api_key: "215156496698694",
-  api_secret: "a_eGuCdkfLlPZsizH_XWeYsVwwg",
-});
+  cloud_name: 'la-capsule-chau',
+  api_key: '215156496698694',
+  api_secret: 'a_eGuCdkfLlPZsizH_XWeYsVwwg' 
+ });
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -23,7 +25,6 @@ router.post("/create-diploma", async (req, res) => {
     promo: req.body.promo,
     schoolId: req.body.schoolId,
   });
-  console.log(searchDiploma);
   if (searchDiploma) {
     res.json({ result: false, msg: "Diplome est deja existant" });
   } else {
@@ -140,11 +141,20 @@ router.get("/send-diploma", async (req, res) => {
     template.mentionField.positionY
   );
   doc.end();
-  cloudinary.image("pnrfure5snh5zse3tffa.pdf")
-  cloudinary.uploader.upload("output.pdf", { resource_type: 'image' }, function (error, result) {
-    console.log(result, error);
-  });
+  await cloudinary.uploader.upload("output.pdf", function(error, result) {console.log(result, error); });
+
   res.json({ result: true });
 });
+
+
+
+router.get('/batch', async (req, res) => {
+  const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
+  if (school_batches.length === 0){
+    return res.json({success: false, message:'no template or no school for this school id'})
+  }
+  return res.json({success: true, batches: school_batches})
+})
+
 
 module.exports = router;
