@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { readString } from 'react-papaparse';
 import { Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
 import Navbar from './Navbar';
