@@ -102,7 +102,7 @@ const Text = ({element, type, index}) => {
           <Option value={32}>32</Option>
         </Select>
       </Menu.Item>
-      <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index: index})}>
+      <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index})}>
         <DeleteOutlined  style={{color: "red" }} />
       </Menu.Item>
     </Menu>
