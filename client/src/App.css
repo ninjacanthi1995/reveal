@@ -87,3 +87,17 @@ a > img {
 a:hover{
   text-decoration: underline;
 }
+
+#toolbox-menu{
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#toolbox-menu::-webkit-scrollbar{
+  display: none;
+}
+.circle{
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
+}

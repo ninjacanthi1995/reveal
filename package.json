@@ -13,6 +13,7 @@
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
+    "@google-cloud/storage": "^5.11.0",
     "@shelf/jest-mongodb": "^2.0.1",
     "antd": "^4.16.8",
     "bcrypt": "^5.0.1",
@@ -20,10 +21,17 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
+    "dropbox-v2-api": "^2.4.44",
     "express": "~4.16.1",
+    "firebase": "^8.8.0",
+    "googleapis": "^39.2.0",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
+<<<<<<< HEAD
     "nodemon": "^2.0.12",
+=======
+    "pdf-lib": "^1.6.0",
+>>>>>>> 4467e118142358952d925db937dde6f123e12c32
     "pdfkit": "^0.12.1",
     "react-rnd": "^10.3.4",
     "uid2": "0.0.3"
