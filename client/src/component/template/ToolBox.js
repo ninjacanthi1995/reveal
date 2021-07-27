@@ -11,13 +11,15 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons';
+import { useDispatch } from 'react-redux';
 
 const { SubMenu } = Menu;
-const rootSubmenuKeys = ['addElement', 'addVariable', 'sub1', 'sub2'];
+const rootSubmenuKeys = ['addElement', 'addVariable'];
 
 const ToolBox = () => {
+  const dispatch = useDispatch()
   const [collapsed, setCollapsed] = useState(false)
-  const [openKeys, setOpenKeys] = useState(['sub1']);
+  const [openKeys, setOpenKeys] = useState([]);
   const onOpenChange = keys => {
     const latestOpenKey = keys.find(key => openKeys.indexOf(key) === -1);
     if (rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
@@ -42,7 +44,7 @@ const ToolBox = () => {
           onOpenChange={onOpenChange}
         >
           <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
-            <Menu.Item key="text" icon={<FontSizeOutlined />}>Texte</Menu.Item>
+            <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
             <Menu.Item key="image" icon={<PictureOutlined />}>Image</Menu.Item>
             <Menu.Item key="bgImage" icon={<FileImageOutlined />}>Image de fond</Menu.Item>
           </SubMenu>
@@ -69,6 +71,7 @@ const styles = {
   toolBox:{
     position: "fixed",
     width: 256,
-    maxHeight: "calc(100vh - 190px)"
+    maxHeight: "calc(100vh - 190px)",
+    zIndex: 1
   }
 }
