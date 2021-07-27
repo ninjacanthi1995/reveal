@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { Input, Select } from "antd";
+import Navbar from './Navbar';
+
+const { Option } = Select;
 
 export default function CreateDiplomas() {
   const [name, setName] = useState("");
@@ -9,7 +13,7 @@ export default function CreateDiplomas() {
 
   useEffect(() => {
     fetch("/send-diploma");
-  }, [])
+  }, []);
 
   const handleSubmit = async () => {
     await fetch("/create-diploma", {
@@ -21,9 +25,15 @@ export default function CreateDiplomas() {
 
   return (
     <div>
-      <h1>Creez vos diplomes</h1>
+      <Navbar></Navbar>
+      <h1>Créez vos diplômes</h1>
       <form onSubmit={handleSubmit}>
-        <label>
+        <Input
+          placeholder="Name"
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+        />
+        {/* <label>
           Name:
           <input
             type="text"
@@ -31,7 +41,7 @@ export default function CreateDiplomas() {
             onChange={(e) => setName(e.target.value)}
             value={name}
           />
-        </label>
+        </label> */}
         <label>
           Year:
           <input
@@ -59,6 +69,12 @@ export default function CreateDiplomas() {
             value={promo}
           />
         </label>
+        <Input.Group compact>
+          <Select style={{ width: "30%" }} defaultValue="Home">
+            <Option value="Home">Home</Option>
+            <Option value="Company">Company</Option>
+          </Select>
+        </Input.Group>
         <input type="submit" value="Submit" />
       </form>
     </div>
