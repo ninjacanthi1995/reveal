@@ -7,7 +7,13 @@ const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
   const elementList = templateElements.map((element, index) => {
     if(element.type === "text"){
-      return <Text />
+      return <Text 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index} />
+    }else{
+      return null
     }
   })
 
