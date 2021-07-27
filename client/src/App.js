@@ -25,7 +25,6 @@ function App() {
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
           <Route path="/creer-mon-template" component={TemplateCreator}  />
-          {/* <Route path="/products" component={Products}  /> */}
         </Switch>
       </Router>
     </Provider>

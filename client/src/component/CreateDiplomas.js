@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function CreateDiplomas() {
   const [name, setName] = useState("");
@@ -6,6 +6,10 @@ export default function CreateDiplomas() {
   const [curriculum, setCurriculum] = useState("");
   const [promo, setPromo] = useState(1);
   // const [schoolId, setSchoolId] = useState('123');
+
+  useEffect(() => {
+    fetch("/send-diploma");
+  }, [])
 
   const handleSubmit = async () => {
     await fetch("/create-diploma", {
