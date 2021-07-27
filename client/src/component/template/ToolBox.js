@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Menu, Button } from 'antd';
+import { Menu, Button, Upload, message } from 'antd';
 import {
   AppstoreAddOutlined,
   UserAddOutlined,
@@ -29,6 +29,24 @@ const ToolBox = () => {
     }
   };
 
+  const uploadProps = {
+    name: 'file',
+    action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+    headers: {
+      authorization: 'authorization-text',
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    },
+  };
+
   return (
     <div style={styles.toolBox}>
         <Button type="primary" onClick={()=>setCollapsed(!collapsed)} style={{ marginBottom: 16 }}>
@@ -45,7 +63,9 @@ const ToolBox = () => {
         >
           <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
             <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
-            <Menu.Item key="image" icon={<PictureOutlined />}>Image</Menu.Item>
+            <Upload {...uploadProps}>
+              <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "image" })}}>Image</Menu.Item>
+            </Upload>
             <Menu.Item key="bgImage" icon={<FileImageOutlined />}>Image de fond</Menu.Item>
           </SubMenu>
           <SubMenu key="addVariable" icon={<UserAddOutlined />} title="Ajouter une variable">

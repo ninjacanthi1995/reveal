@@ -1,8 +1,8 @@
 const templateReducer = (templateElements = [], action) => {
   if (action.type === 'addElements'){
-    return [...templateElements, {
-      type: action.elementType,
-      element:{
+    let element = {}
+    if(action.elementType === "text"){
+      element = {
         size: {width: 200, height: "unset"},
         position: {x:0, y:0},
         value: "",
@@ -14,6 +14,17 @@ const templateReducer = (templateElements = [], action) => {
           fontSize: 14
         }
       }
+    }else if(action.elementType === "image"){
+      element = {
+        size: {width: 200, height: 200},
+        position: {x:0, y:0}
+      }
+    }
+
+    return [...templateElements, {
+      type: action.elementType,
+      element
+
     }];
   }else if(action.type === 'updateElement'){
     const newList = [...templateElements]
