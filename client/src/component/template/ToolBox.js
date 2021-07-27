@@ -35,7 +35,7 @@ const ToolBox = () => {
           {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)}
         </Button>
         <Menu
-          style={{overflowY: "scroll"}}
+          id="toolbox-menu"
           defaultSelectedKeys={['1']}
           mode="inline"
           theme="dark"
@@ -70,7 +70,6 @@ export default ToolBox;
 const styles = {
   toolBox:{
     position: "fixed",
-    width: 256,
     maxHeight: "calc(100vh - 190px)",
     zIndex: 1
   }
