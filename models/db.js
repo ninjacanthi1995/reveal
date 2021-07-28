@@ -6,7 +6,7 @@ const options = {
  useUnifiedTopology : true
 }
 
-mongoose.connect(process.env.MONGO_URL, // changer ce lien
+mongoose.connect(process.env.MONGO_URL,
    options,        
    function(err) {
 			err ? console.log(err) : console.log('Connection réussie !');
