@@ -4,8 +4,6 @@ import { useDispatch } from 'react-redux';
 import { Menu, Dropdown } from 'antd';
 import { DeleteOutlined, DragOutlined } from '@ant-design/icons';
 
-// const src = "/reveal.png"
-
 
 const Text = ({element, type, index}) => {
   const dispatch = useDispatch()
@@ -30,13 +28,9 @@ const Text = ({element, type, index}) => {
   }
 
   const styles = {
-    image:{
-      height: size.height,
-      width: size.width,
-      backgroundImage: `url(${imagePreview})`,
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      backgroundSize: "contain"
+    rnd:{
+      zIndex: 1, 
+      border: visible && '1px dashed gray'
     },
     menu:{
       display: "flex",
@@ -79,7 +73,7 @@ const Text = ({element, type, index}) => {
       onResizeStop={(e, direction, ref, delta, newPosition) => {
         updateElement({ width: ref.style.width, height: ref.style.height }, newPosition) 
       }}
-      style={visible && {border:'1px dashed gray'}}
+      style={styles.rnd}
     >
       <Dropdown 
         overlay={menu} 

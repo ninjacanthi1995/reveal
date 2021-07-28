@@ -27,12 +27,16 @@ const Text = ({element, type, index}) => {
     fontSize: fontSize,
     height: fontSize*2
   }
-
+  
   const [visible, setVisible] = useState(false);
   const handleVisibleChange = flag => {
     setVisible(flag)
   };
-
+  const rndStyle = {
+    zIndex: 1, 
+    border: visible && '1px dashed gray'
+  }
+  
   const updateElement = (size, position, value, bold, italic, underline, color, fontSize) => {
     dispatch({
       type: 'updateElement',
@@ -111,10 +115,11 @@ const Text = ({element, type, index}) => {
   return (
     <Rnd
       bounds="parent"
+      dragHandleClassName='dragIcon'
       size={size}
       position={position}
       onDragStop={(e, newPosition) => {
-        setVisible(false)
+        if(newPosition.x !== position.x || newPosition.y !== position.y) setVisible(false)
         updateElement(size, { x: newPosition.x, y: newPosition.y }, value, bold, italic, underline, color, fontSize) 
       }}
       onResizeStop={(e, direction, ref, delta, newPosition) => {
@@ -122,7 +127,7 @@ const Text = ({element, type, index}) => {
         const childHeight = parseInt(refChild.style.height, 10)
         updateElement({ width: ref.style.width, height: childHeight + 2 }, newPosition, value, bold, italic, underline, color, fontSize) 
       }}
-      style={visible && {border:'1px dashed gray'}}
+      style={rndStyle}
     >
       <Dropdown 
         overlay={menu} 
@@ -132,6 +137,7 @@ const Text = ({element, type, index}) => {
         visible={visible}
       >
         <TextArea 
+          className="dragIcon"
           placeholder="Enter your text" 
           autoSize
           id={`${type}${index}`}

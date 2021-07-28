@@ -30,14 +30,14 @@ const ToolBox = () => {
     }
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e, type) => {
     e.preventDefault();
     let reader = new FileReader();
     let file = e.target.files[0];
     if(file){
       if(!file.type.includes("image")) message.error(`Nous n'acceptons pas ${file.name} car il n'est pas un .jpg ou .png 😔`);
       reader.onloadend = () => {
-        dispatch({ type: 'addElements', elementType: "image", imagePreview: reader.result })
+        dispatch({ type: 'addElements', elementType: type, imagePreview: reader.result })
       }
       reader.readAsDataURL(file)
     }
@@ -59,13 +59,14 @@ const ToolBox = () => {
         >
           <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
             <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
-            <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {
-              document.getElementById('fileUpload').click()
-            }}>
+            <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
               Image
-              <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e)} />
+              <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
             </Menu.Item>
-            <Menu.Item key="bgImage" icon={<FileImageOutlined />}>Image de fond</Menu.Item>
+            <Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
+              Image de fond
+              <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
+            </Menu.Item>
           </SubMenu>
           <SubMenu key="addVariable" icon={<UserAddOutlined />} title="Ajouter une variable">
             <SubMenu key="student" icon={<UserOutlined />} title="Étudiant">
@@ -90,6 +91,6 @@ const styles = {
   toolBox:{
     position: "fixed",
     maxHeight: "calc(100vh - 190px)",
-    zIndex: 1
+    zIndex: 2
   }
 }

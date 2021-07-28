@@ -20,7 +20,31 @@ const templateReducer = (templateElements = [], action) => {
         position: {x:0, y:0},
         imagePreview: action.imagePreview
       }
+    }else if(action.elementType === "imageBackground"){
+      element = {
+        size: {width: "100%", height: "100%"},
+        position: {x:0, y:0},
+        imagePreview: action.imagePreview,
+        style:{
+          bgPosition: "center",
+          bgSize: "contain"
+        }
+      }
     }
+    
+    // Remplace le background si un BG est présent
+    if(action.elementType === "imageBackground"){
+      const backIndex = templateElements.findIndex(e => e.type === "imageBackground")
+      if(backIndex >= 0){
+        const newList = [...templateElements]
+        newList.splice(backIndex, 1, {
+          type: action.elementType,
+          element
+        })
+        return newList
+      }
+    }
+
 
     return [...templateElements, {
       type: action.elementType,
