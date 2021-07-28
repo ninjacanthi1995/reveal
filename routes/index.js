@@ -154,9 +154,9 @@ router.get('/batch', async (req, res) => {
   // A MODIFIER QUAND DB EN FORME
   //const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
   const school_batches = [
-    {year: 2020, curriculum: 'Bac Technologique', _id:'0001', id_School:'00101', template_name: 'Bac tec'},
-    {year: 2021, curriculum: 'BTS mécanique', _id:'0003', id_School:'00103', template_name: 'BTS méca'},
-    {year: 2019, curriculum: 'BEP comptabilité', _id:'0006', id_School:'00101', template_name: 'BEP compta'}
+    {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
+    {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
+    {year: 2019, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
   ]
   //console.log('BATCHES FROM DB: ', school_batches);
   if (school_batches.length === 0){
@@ -243,22 +243,43 @@ router.get('/template', async (req, res) => {
 
 
 router.post('/post-csv-import', async (req, res) => {
+  ///// 1 - save diploma in the student document
   const dataStudent = req.body;
   //console.log('DATA: ', dataStudent);
-  let student = await studentModel.findOne({email: dataStudent.email});
-  console.log('STUDENT 1: ', student);
+  let student = await studentModel.findOne({
+    email: dataStudent.email
+  });
+  //console.log('STUDENT 1: ', student);
   if (!student) {
     student = new studentModel({ ...dataStudent })
   }
+  // AJOUT CONTROLE DIPLOME DEJA PRESENT CHEZ LE STUDENT ??
   student.diplomas.push(dataStudent.diplom_student[0])
-  console.log('STUDENT 2: ', student);
+  //console.log('STUDENT 2: ', student);
   const studentSaved = await student.save();
-
-  if (studentSaved){
-    res.json({success: true});
-  } else {
-    res.json({success: false, message: `data of student with email ${dataStudent.email} are not saved.`})
+  
+  if (!studentSaved._id){
+    return res.json({success: false, message: `data of student with email ${dataStudent.email} are not saved.`})
   }
+  
+  ///// 2 - add student._id in the batch document
+  let batch = await diplomaModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
+  if (!batch) {
+    //batch = new diplomaModel({year: 2021, curriculum: 'BTS mécanique', schoolId:'6101c0b6208679b2ab7f0884', templateName: 'BTS méca', studentsId: []})
+    return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
+  }
+  //console.log('BATCH: ', batch);
+  if (!batch.studentsId.includes(studentSaved._id)){
+    batch.studentsId.push(studentSaved._id);
+  }
+  const batchSaved = await batch.save();
+
+  if (!batchSaved._id){
+    return res.json({success: false, message: `Enabled to save student id (${studentSaved._id}) in the document of batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
+  }
+  //console.log(`student ${studentSaved.lastname} saved in Batch`)
+  res.json({success: true});
+
 })
 
 module.exports = router;

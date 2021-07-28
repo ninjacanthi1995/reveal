@@ -9,6 +9,7 @@ import templateElements from './reducers/templateElements.reducer';
 import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
+import DiplomaListScreen from './component/DiplomaListScreen';
 import TemplateCreator from './component/TemplateCreator';
 import CreateDiplomas from './component/CreateDiplomas';
 
@@ -23,6 +24,7 @@ function App() {
           <Route exact path="/" component={ScreenHome} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
+          <Route path="/diploma-list" component={DiplomaListScreen}  />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
           <Route path="/creer-mon-template" component={TemplateCreator}  />
         </Switch>
