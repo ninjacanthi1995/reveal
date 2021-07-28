@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-//fred : ajout du require users  dans une const nommee UserModel pour call la db 
+//fred : ajout du require users  dans une const nommee UserModel pour call la db
 const UserModel = require('../models/users');
 
 /* GET users listing. */
@@ -10,32 +10,32 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/sign-in', async (req, res) => {
+console.log(req.body);
+  var result = false
+  var user = null
+  var error = []
 
-  const result = false
-  const user = null
-  const error = []
-
-  if(req.body.emailFromFront === ''
-  || req.body.passwordFromFront === ''
-  ){
-    error.push('champs vides')
+  if(req.body.emailFromFront === ''&& req.body.passwordFromFront === ''){
+    error.push('les champs sont  vides')
   }
 
 if (error.length == 0){
-  const user = await UserModel.findOne({
+    user = await UserModel.findOne({
     email: req.body.emailFromFront,
     password: req.body.passwordFromFront
   })
 
 if (user){
+  
   result = true
 
 }else{
-  error.push('email or password incorrect ')
+  error.push('email ou mot de passe incorrect ')
 }
 }
 
 res.json({result, user, error})
 })
+
 
 module.exports = router;

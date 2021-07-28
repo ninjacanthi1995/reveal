@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import './App.css';
 import {Input,Button} from 'antd';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
+
+
+
 
 
 function ScreenHome() {
@@ -13,56 +16,66 @@ const [signInPassword,setSignInPassword] = useState('')
 
 
 const [listErrorsSignin, setErrorsSignin] = useState([])
- 
+
 
 
 var handleSubmitSignin = async () => {
- 
+
     const data = await fetch('/users/sign-in', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: `emailFromFront=${signInEmail}&passwordFromFront=${signInPassword}`
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: `emailFromFront=${signInEmail}&passwordFromFront=${signInPassword}`
 })
 
     const body = await data.json()
-
+console.log(body);
     if(body.result === true){
     setUserExists(true)
+    window.localStorage.setItem('school_id',body.user.school_id)
     }  else {
         setErrorsSignin(body.error)
     }
-  }
+    }
 
-  if(userExists){
-    return <Redirect to='/' />
-  }
+    if(userExists){
+    return <Redirect to='/create-diplomas'/>
+    }
 
-  listErrorsSignin.map((error,i) => {
-    return(<p>{error}</p>)
-  })
+    
 
-  
+
 
     return (
-    <div className= "Login-page" >
+
+
+    <div>
+
+            <div className = "header"  >
+                <Link to="/"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
+                <Link to="/NewUserRequest" style={{height:80, margin:10, marginRight:30}}>Demander mon accès</Link>
+            </div> 
+
+
+            <div className= "Login-page" style={{backgroundImage: "url('/backgroundColorReveal.png')" , opacity: "75%"}}>
 
             {/* SIGN-IN */}
 
             <div className="Sign" >
 
-                    <Input onchange= {(e) => setSignInEmail(e.target.value)} className="Login-input" placeholder="votre adresse email" />
+                    <Input onChange= {(e) => setSignInEmail(e.target.value)} className="Login-input" placeholder="votre adresse email"  />
 
-                    <Input.Password onchange={(e) => setSignInPassword(e.target.value)} className="Login-input" placeholder="password" />
-
-
-            <Button onClick={() => handleSubmitSignin() }  style={{width:'90px'}} type="primary">Login</Button>
-            
+                    <Input.Password onChange={(e) => setSignInPassword(e.target.value)} className="Login-input" placeholder="password"  />
+                    {listErrorsSignin.map((error,i) => {
+                    return(<p>{error}</p>)
+    })}
+                    <Button className= 'Button-connect' onClick={() => handleSubmitSignin() } style={{width:'90px' }} type="primary">Login</Button>
             </div>
 
-
+</div>
 
         </div>
     );
     }
+
 
     export default ScreenHome;
