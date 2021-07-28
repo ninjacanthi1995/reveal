@@ -2,20 +2,40 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import Text from './Text'
+import Image from './Image'
+import BackgroundImage from './BackgroundImage'
 
 const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
   const elementList = templateElements.map((element, index) => {
     if(element.type === "text"){
-      return <Text />
+      return <Text 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index} />
+    }else if(element.type === "image"){
+      return <Image 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index}
+      />
+    }else if(element.type === "imageBackground"){
+      return <BackgroundImage 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index}
+      />
+    }else{
+      return null
     }
   })
 
   return (
     <div style={styles.displayer}>
       {templateElements.length !== 0 && elementList}
-      {/* <Text /> */}
-      
     </div>
   );
 }

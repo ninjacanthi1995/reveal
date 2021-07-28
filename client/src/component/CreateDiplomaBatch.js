@@ -5,7 +5,7 @@ import { Typography } from "antd";
 
 const { Title } = Typography;
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Content } = Layout;
 
 const { Option } = Select;
 
@@ -17,25 +17,24 @@ export default function CreateDiplomaBatch() {
   const [templateName, setTemplateName] = useState("");
   // const [schoolId, setSchoolId] = useState('123');
 
-  // useEffect(() => {
-  //   fetch("/create-diploma-student")
-  //     .then((response) => response.json())
-  //     .then((data) => window.open(data.path, '_blank'));
-  // }, []);
-
   const onFinish = async () => {
     await fetch("/create-diploma-batch", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `name=${name}&year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
     });
+    setName("");
+    setYear(2021);
+    setCurriculum("");
+    setPromo(1);
+    setTemplateName("");
   };
 
   return (
     <Layout style={{ height: "100vh" }}>
       <Navbar></Navbar>
       <Content style={styles.content}>
-        <Title>Créez vos diplômes</Title>
+        <Title>Créez vos batchs</Title>
         <Form onFinish={onFinish} style={{ width: "50%" }}>
           <Form.Item
             rules={[
@@ -122,7 +121,7 @@ export default function CreateDiplomaBatch() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={styles.input} onClick={onFinish}>
+            <Button type="primary" htmlType="submit" style={styles.input}>
               Submit
             </Button>
           </Form.Item>

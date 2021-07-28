@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import { Menu, Button } from 'antd';
+// import { Menu, Button, Upload, message } from 'antd';
+import { Menu, Button, message} from 'antd';
 import {
   AppstoreAddOutlined,
   UserAddOutlined,
@@ -29,13 +30,26 @@ const ToolBox = () => {
     }
   };
 
+  const handleImageChange = (e, type) => {
+    e.preventDefault();
+    let reader = new FileReader();
+    let file = e.target.files[0];
+    if(file){
+      if(!file.type.includes("image")) message.error(`Nous n'acceptons pas ${file.name} car il n'est pas un .jpg ou .png 😔`);
+      reader.onloadend = () => {
+        dispatch({ type: 'addElements', elementType: type, imagePreview: reader.result })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
     <div style={styles.toolBox}>
         <Button type="primary" onClick={()=>setCollapsed(!collapsed)} style={{ marginBottom: 16 }}>
           {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)}
         </Button>
         <Menu
-          style={{overflowY: "scroll"}}
+          id="toolbox-menu"
           defaultSelectedKeys={['1']}
           mode="inline"
           theme="dark"
@@ -45,8 +59,14 @@ const ToolBox = () => {
         >
           <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
             <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
-            <Menu.Item key="image" icon={<PictureOutlined />}>Image</Menu.Item>
-            <Menu.Item key="bgImage" icon={<FileImageOutlined />}>Image de fond</Menu.Item>
+            <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
+              Image
+              <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
+            </Menu.Item>
+            <Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
+              Image de fond
+              <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
+            </Menu.Item>
           </SubMenu>
           <SubMenu key="addVariable" icon={<UserAddOutlined />} title="Ajouter une variable">
             <SubMenu key="student" icon={<UserOutlined />} title="Étudiant">
@@ -70,8 +90,7 @@ export default ToolBox;
 const styles = {
   toolBox:{
     position: "fixed",
-    width: 256,
     maxHeight: "calc(100vh - 190px)",
-    zIndex: 1
+    zIndex: 2
   }
 }

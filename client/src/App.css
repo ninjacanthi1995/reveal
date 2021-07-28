@@ -1,27 +1,56 @@
 @import '~antd/dist/antd.css';
 
+
+h1 {
+  display: flex;
+  align-items:center ;
+  justify-content: center;
+   color: #2c9bf0;
+   margin: 10px;
+   
+
+}
+
+.header{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content:space-between ;
+}
+
+.Login-page{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height:85vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  }
+
+.Subscribe-page{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height:100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 h4 {
     color: white;
     font-weight: bold
   }
   
-  .Login-page{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
-      height:100vh;
-      /* background-image: url('/images/backgroundColorReveal.png');  */
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      
   
-      }
-  
+
   .Login-input{
     margin: 15px;
     width: 450px;
+   
   }
   
   .Sign {
@@ -29,17 +58,23 @@ h4 {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding-bottom: 15px;
-      border-radius: 0%;
+      padding-bottom: 30px;
+      border-radius:5%;
       border-color: white;
-      background-color: white;
-      margin: 40px;
+      background-color: #003A5A;
+      padding-top: 30px;
+      margin:30px;
   }
   
   .Sign .Login-input{
     width: 250px;
   }
   
+.Button-connect{
+  background-color: #45E4CF;
+  
+}
+
   .HomeThemes{
     margin-left: 50px;
     margin-right: 50px;
@@ -48,7 +83,6 @@ h4 {
   
   .Banner {
     height: 80px;
-    /* background-image: url('/images/backgroundColorReveal');  */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -74,4 +108,18 @@ a > img {
 }
 a:hover{
   text-decoration: underline;
+}
+
+#toolbox-menu{
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#toolbox-menu::-webkit-scrollbar{
+  display: none;
+}
+.circle{
+  border-radius: 20px;
+  width: 20px;
+  height: 20px;
 }
