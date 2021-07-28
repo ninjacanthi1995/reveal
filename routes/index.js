@@ -8,10 +8,10 @@ const dropboxV2Api = require("dropbox-v2-api");
 var cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
-  cloud_name: 'la-capsule-chau',
-  api_key: '215156496698694',
-  api_secret: 'a_eGuCdkfLlPZsizH_XWeYsVwwg' 
- });
+  cloud_name: "la-capsule-chau",
+  api_key: "215156496698694",
+  api_secret: "a_eGuCdkfLlPZsizH_XWeYsVwwg",
+});
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -141,7 +141,14 @@ router.get("/send-diploma", async (req, res) => {
     template.mentionField.positionY
   );
   doc.end();
-  await cloudinary.uploader.upload("output.pdf", function(error, result) {console.log(result, error); });
+
+  await cloudinary.uploader.upload(
+    "output.pdf",
+    { resource_type: "raw" },
+    function (error, result) {
+      console.log(result, error);
+    }
+  );
 
   res.json({ result: true });
 });
