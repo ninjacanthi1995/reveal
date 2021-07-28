@@ -16,15 +16,15 @@ const templateReducer = (templateElements = [], action) => {
       }
     }else if(action.elementType === "image"){
       element = {
-        size: {width: 200, height: 200},
-        position: {x:0, y:0}
+        size: {width: "unset", height: 200},
+        position: {x:0, y:0},
+        imagePreview: action.imagePreview
       }
     }
 
     return [...templateElements, {
       type: action.elementType,
       element
-
     }];
   }else if(action.type === 'updateElement'){
     const newList = [...templateElements]

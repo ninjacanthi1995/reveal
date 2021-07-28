@@ -114,6 +114,7 @@ const Text = ({element, type, index}) => {
       size={size}
       position={position}
       onDragStop={(e, newPosition) => {
+        setVisible(false)
         updateElement(size, { x: newPosition.x, y: newPosition.y }, value, bold, italic, underline, color, fontSize) 
       }}
       onResizeStop={(e, direction, ref, delta, newPosition) => {
@@ -121,7 +122,7 @@ const Text = ({element, type, index}) => {
         const childHeight = parseInt(refChild.style.height, 10)
         updateElement({ width: ref.style.width, height: childHeight + 2 }, newPosition, value, bold, italic, underline, color, fontSize) 
       }}
-      style={{border:'1px dashed gray'}}
+      style={visible && {border:'1px dashed gray'}}
     >
       <Dropdown 
         overlay={menu} 
