@@ -28,8 +28,6 @@ const Displayer = () => {
   return (
     <div style={styles.displayer}>
       {templateElements.length !== 0 && elementList}
-      {/* <Text /> */}
-      
     </div>
   );
 }
