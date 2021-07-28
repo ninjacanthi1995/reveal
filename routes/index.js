@@ -1,40 +1,34 @@
 var express = require("express");
 var router = express.Router();
-const diplomaModel = require("../models/diplomas");
+const diplomasBatchModel = require("../models/diplomasBatch");
+const diplomasStudentModel = require("../models/diplomasStudent");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-const pdfModel = require("../models/pdfs");
-const dropboxV2Api = require("dropbox-v2-api");
-var cloudinary = require("cloudinary").v2;
 
-cloudinary.config({
-  cloud_name: "la-capsule-chau",
-  api_key: "215156496698694",
-  api_secret: "a_eGuCdkfLlPZsizH_XWeYsVwwg",
-});
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.post("/create-diploma", async (req, res) => {
-  const searchDiploma = await diplomaModel.findOne({
+router.post("/create-diploma-batch", async (req, res) => {
+  const searchDiploma = await diplomasBatchModel.findOne({
     year: req.body.year,
     curriculum: req.body.curriculum,
     promo: req.body.promo,
-    schoolId: req.body.schoolId,
+    // schoolId: req.body.schoolId,
   });
   if (searchDiploma) {
     res.json({ result: false, msg: "Diplome est deja existant" });
   } else {
-    const newDiploma = new diplomaModel({
+    const newDiploma = new diplomasBatchModel({
       name: req.body.name,
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
-      schoolId: req.body.schoolId,
+      // schoolId: req.body.schoolId,
       studentsId: [],
+      templateName: req.body.templateName
     });
     const savedDiploma = await newDiploma.save();
     res.json({ result: true, msg: "Diplome cree" });
@@ -92,7 +86,7 @@ const diploma = {
   mention: "Tres bien",
 };
 
-router.get("/send-diploma", async (req, res) => {
+router.get("/create-pdf", async (req, res) => {
   // const template = await templateModel.findOne({ name: req.body.templateName });
   // const student = await studentModel.findById({ id: req.body.studentId });
   // const diploma = await diplomaModel.findOne({ name: req.body.diplomaName });
@@ -142,15 +136,35 @@ router.get("/send-diploma", async (req, res) => {
   );
   doc.end();
 
-  await cloudinary.uploader.upload(
-    "output.pdf",
-    { resource_type: "raw" },
-    function (error, result) {
-      console.log(result, error);
-    }
-  );
-
-  res.json({ result: true });
+  res.json({ result: true, path: '/output.pdf' });
 });
+
+router.post('/create-student-diploma', async (req, res) => {
+  if (req.body.status === "Info validees") {
+    const searchDiploma = await diplomasStudentModel.findOne({
+      batchDiplomaId: req.body.batchDiplomaId,
+      mention: req.body.mention
+    })  
+    if (searchDiploma) {
+      res.json({ result: false, msg: "Diploma deja existant" })
+    } else {
+      const newDiploma = new diplomasStudentModel({
+        batchDiplomaId: req.body.batchDiplomaId,
+        mention: req.body.mention,
+        status: req.body.status,
+        urlSmartContract: 'abc'
+      })
+      await newDiploma.save();
+      res.json({ result: true, msg: "Diplome cree" });
+    }
+  }
+})
+
+router.get('/get-student-diploma', async (req, res) => {
+  const searchDiploma = await diplomasStudentModel.findById(req.query.diplomaId);
+  if (searchDiploma) {
+
+  }
+})
 
 module.exports = router;
