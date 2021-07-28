@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import Text from './Text'
 import Image from './Image'
+import BackgroundImage from './BackgroundImage'
 
 const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
@@ -15,6 +16,13 @@ const Displayer = () => {
         index={index} />
     }else if(element.type === "image"){
       return <Image 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index}
+      />
+    }else if(element.type === "imageBackground"){
+      return <BackgroundImage 
         key={index}
         element={element.element}
         type={element.type} 
