@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 
 import Navbar from './Navbar';
 
-import exempleTemplatesFromDB from '../helpers/exampleDeRetourDB-templates';
-import exempleBatchsFromDB from '../helpers/exampleDeRetourDB-batches';
+//import exempleTemplatesFromDB from '../helpers/exampleDeRetourDB-templates';
+//import exempleBatchsFromDB from '../helpers/exampleDeRetourDB-batches';
 
 import Status from '../helpers/status';
 
@@ -13,15 +13,16 @@ import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
 
-const studentDataToMatch = ['firstname_field', 'lastname_field', 'bitrh_date_field', 'email']
+const studentDataToMatch = ['firstname_field', 'lastname_field', 'birth_date_field', 'email']
 
 const ImportConfigScreen = () => {
+  const [schoolId, setSchoolId] = useState('');
   const [headers, setHeaders] = useState([]);
   const [studentList, setStudentList] = useState([]);
   //const [template, setTemplate] = useState({});
   const [fieldHumanNames, setFieldHumanNames] = useState({});   // object fieldname <=> humane field name. Par ex: {firstname_field:'prénom', ....}
   const [selectOptions, setSelectOptions] = useState([]);       // list of headers that are not selected yet
-  const [matchings, setMatchings] = useState({});               // object fiedname <=> header
+  const [matchings, setMatchings] = useState({});               // object fieldname <=> header
 
   const [batchList, setBatchList] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState('');
@@ -33,60 +34,82 @@ const ImportConfigScreen = () => {
   useEffect(() => {
     //console.log('list: ', list);
     setHeaders(list.data[0]);
-    setSelectOptions(list.data[0]);
+    
     setStudentList(list.data.splice(1));
-    const batchsFromDB = exempleBatchsFromDB       // A RECUP DANS LA DB
-    setBatchList(batchsFromDB);
   },[list])
-  
+
+  useEffect(() => {
+    const schoolId = '6101084673a5f1dcafefa064';
+    //const schoolId = window.localStorage.getItem('school_id');    // DECOMMENTER QUAND LOCALSTORE FONCTIONNEL
+    setSchoolId(schoolId);
+    const fetchBatches = async () => {
+      const rawData = await fetch(`/batch?school_id=${schoolId}`);
+      const response = await rawData.json();
+      //console.log('batches REsponse: ', response);
+      setBatchList(response.batches);
+    };
+    fetchBatches();
+  },[])
+  //console.log('batches: ', batchList);
   
   // A la séléction du template du diplome: on mémorise le choix dans un état, on récupère les fields attendu par ce template et on le stocke dans un etat
-  const onBatchChange = (value) => {
-    setSelectedBatch(value);
-    const templateFromDB = exempleTemplatesFromDB[0]       // A RECUP DANS LA DB QUAND ELLE SE SERA IMPLEMENTE OU recup dans School si déjà importée
+  const onBatchChange = async (batchId) => {
+    // METTRE NE PLACE MECANIQUE POUR VIDER LES CHAMPS (car si les select sont remplis et que le batch est modifier, il est possible qu'un header soit attribué a 2 fields)
+    setSelectOptions(list.data[0]);
+    const selected = batchList.filter(bach => bach._id === batchId)[0];
+    setSelectedBatch(selected);
+    console.log('SELECTED: ',selected);
+    //const templateFromDB = exempleTemplatesFromDB[0]       // A RECUP DANS LA DB QUAND ELLE SE SERA IMPLEMENTE OU recup dans School si déjà importée
+    const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.template_name}`);
+    const data = await rawData.json();
+    const templateFromDB = data.template;
+    //console.log('templateFromDB: ', templateFromDB);
     //setTemplate(templateFromDB);
     const tempHumanNames = {'email': 'email'};
     studentDataToMatch.slice(0, -1).forEach(field => {
-      tempHumanNames[field] = templateFromDB[field]['name'];
+      if (templateFromDB[field]) {
+        tempHumanNames[field] = templateFromDB[field]['name'];
+      }
     })
-    //onsole.log('tempHuman: ', tempHumanNames);
+    //console.log('tempHuman: ', tempHumanNames);
     setFieldHumanNames(tempHumanNames)
   }
 
   const onValidButton = () => {
     //console.log('Validé!!!');
     let fieldToIndexMapping = {};
-    studentDataToMatch.forEach(field => {
+    Object.keys(fieldHumanNames).forEach(field => {
       fieldToIndexMapping[field] = headers.indexOf(matchings[field]);
     });
-    //console.log('Mapping: ', fieldToIndexMapping);
+    console.log('Mapping: ', fieldToIndexMapping);
 
-    studentList.forEach(student => {
-      // AVANT rechercher si student existe dans la DB
+    studentList.forEach( async (student) => {
       const dataStudent = {
         email: student[fieldToIndexMapping.email],
         firstname: student[fieldToIndexMapping.firstname_field],
         lastname: student[fieldToIndexMapping.lastname_field],
         birth_date: student[fieldToIndexMapping.birth_date_field],
-        diplom_student: []
+        diplom_student: [{
+          url_SmartContract: null,
+          mention: null,        // REVOIR POUR RECUP LA MENTION DANS LE CSV
+          id_batch: selectedBatch._id,
+          status: Status.not_confirmed
+        }]
       } 
-      // SAUVER Ou Update le student
 
-      const newDiplom = {
-        url_SmartContract: null,
-        mention: null,
-        id_batch: selectedBatch.id,
-        status: Status.not_confirmed
-      }
-
-      // AJOUTER LE newDiplom comme sous doc au student DANS LA DB
-      dataStudent.diplom_student.push(newDiplom);
+      // ENVOI LES DATA A LA DB POUR QU ELLE L ES INSERE DANS LA DB
       console.log('DATA STUDENT ENVOY2 DANS LA DB: ', dataStudent);
+      const resultRaw = await fetch('/post-csv-import', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(dataStudent)
+      })
+      console.log('result: ', resultRaw);
     })
   }
 
   const batchesOptions = batchList.map((batch, i) => {
-    return <Option key={i} value={batch.id}>{`${batch.cursus} - ${batch.year}`}</Option>
+    return <Option key={i} value={batch._id}>{`${batch.curriculum} - ${batch.year}`}</Option>
   })
 
   
@@ -109,7 +132,7 @@ const ImportConfigScreen = () => {
 
   let FieldSelect = [];
   if (selectedBatch !== ''){
-    FieldSelect = studentDataToMatch.map((field, i) => {
+    FieldSelect = Object.keys(fieldHumanNames).map((field, i) => {
       //console.log('template field: ', template[field]);
       const options = selectOptions.map((header, j) => {
         return <Option key={j} value={header}>{header}</Option>
@@ -146,7 +169,7 @@ const ImportConfigScreen = () => {
 
       <Button
         type="primary"
-        disabled={Object.keys(matchings).length !== studentDataToMatch.length}
+        disabled={Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
         onClick={onValidButton}
       >Valider</Button>
 
