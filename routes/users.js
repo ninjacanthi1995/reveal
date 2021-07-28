@@ -20,7 +20,7 @@ console.log(req.body);
   }
 
 if (error.length == 0){
-  const user = await UserModel.findOne({
+    user = await UserModel.findOne({
     email: req.body.emailFromFront,
     password: req.body.passwordFromFront
   })
@@ -30,13 +30,12 @@ if (user){
   result = true
 
 }else{
-  error.push('email or password incorrect ')
+  error.push('email ou mot de passe incorrect ')
 }
 }
 
 res.json({result, user, error})
 })
-
 
 
 module.exports = router;

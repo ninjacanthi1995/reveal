@@ -146,4 +146,15 @@ router.get("/send-diploma", async (req, res) => {
   res.json({ result: true });
 });
 
+
+
+router.get('/batch', async (req, res) => {
+  const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
+  if (school_batches.length === 0){
+    return res.json({success: false, message:'no template or no school for this school id'})
+  }
+  return res.json({success: true, batches: school_batches})
+})
+
+
 module.exports = router;

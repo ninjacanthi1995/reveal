@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-// import React, {useState} from 'react';
-// import { Rnd } from 'react-rnd';
-// import { Input } from 'antd';
-
-// const { TextArea } = Input;
-
-// const Text = () => {
-//   const [size, setSize] = useState({width: 200, height: "unset"});
-//   const [position, setPosition] = useState({x:0, y:0});
-//   const [value, setValue] = useState("");
-=======
 import React, {useState} from 'react';
 import { Rnd } from 'react-rnd';
 import { Input, Menu, Dropdown, Select, Badge } from 'antd';
@@ -25,7 +13,6 @@ import colors from '../../helpers/colors';
 const { TextArea } = Input;
 const { Option } = Select;
 
->>>>>>> 4467e118142358952d925db937dde6f123e12c32
 
 const Text = ({element, type, index}) => {
   const dispatch = useDispatch()
@@ -115,47 +102,12 @@ const Text = ({element, type, index}) => {
           <Option value={32}>32</Option>
         </Select>
       </Menu.Item>
-      <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index: index})}>
+      <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index})}>
         <DeleteOutlined  style={{color: "red" }} />
       </Menu.Item>
     </Menu>
   );
 
-<<<<<<< HEAD
-//   return (
-//     <Rnd 
-//       onKeyDown={e => console.log(`e.key`, e.key)}
-//       bounds="parent"
-//       size={size}
-//       position={position}
-//       onDragStop={(e, newPosition) => {
-//         setPosition({ x: newPosition.x, y: newPosition.y }) 
-//       }}
-//       onResizeStop={(e, direction, ref, delta, newPosition) => {
-//         const refChild = ref.getElementsByTagName('textarea')[0]
-//         const childHeight = parseInt(refChild.style.height, 10)
-//         setSize({ width: ref.style.width, height: childHeight + 2 });
-//         setPosition(newPosition) 
-//       }}
-//       style={{border:'1px dashed gray'}}
-//     >
-//       <TextArea 
-//         placeholder="Enter your text" 
-//         autoSize
-//         bordered={false}
-//         value={value}
-//         onChange={e => {
-//           const childHeight = parseInt(e.target.style.height, 10)
-//           setSize({ width: size.width, height: childHeight + 2 });
-//           setValue(e.target.value)
-//         }}
-//       /> 
-//     </Rnd>
-//   );
-// }
-
-// export default Text;
-=======
   return (
     <Rnd
       bounds="parent"
@@ -205,5 +157,4 @@ const styles = {
 }
 
 export default Text;
->>>>>>> 4467e118142358952d925db937dde6f123e12c32
 

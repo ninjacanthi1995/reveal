@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import Text from './Text'
+import Image from './Image'
 
 const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
@@ -12,6 +13,13 @@ const Displayer = () => {
         element={element.element}
         type={element.type} 
         index={index} />
+    }else if(element.type === "image"){
+      return <Image 
+        key={index}
+        element={element.element}
+        type={element.type} 
+        index={index}
+      />
     }else{
       return null
     }

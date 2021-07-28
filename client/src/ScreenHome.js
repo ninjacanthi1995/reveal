@@ -31,6 +31,7 @@ var handleSubmitSignin = async () => {
 console.log(body);
     if(body.result === true){
     setUserExists(true)
+    window.localStorage.setItem('school_id',body.user.school_id)
     }  else {
         setErrorsSignin(body.error)
     }
@@ -45,13 +46,17 @@ console.log(body);
 
 
     return (
-    <div>
-        <div style={{display:'flex', flexDirection:'column' , justifyContent: 'center', alignItems:'flex-end', padding: "20px"}}>
-                <Link to="/">Demander mon accès</Link>
-            </div> 
-                <h1>REVEAL</h1>
 
-            <div className= "Login-page" style={{backgroundImage: "url('/backgroundColorReveal.png')"}}>
+
+    <div>
+
+            <div className = "header"  >
+                <Link to="/"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
+                <Link to="/NewUserRequest" style={{height:80, margin:10, marginRight:30}}>Demander mon accès</Link>
+            </div> 
+
+
+            <div className= "Login-page" style={{backgroundImage: "url('/backgroundColorReveal.png')" , opacity: "75%"}}>
 
             {/* SIGN-IN */}
 
@@ -63,7 +68,7 @@ console.log(body);
                     {listErrorsSignin.map((error,i) => {
                     return(<p>{error}</p>)
     })}
-                    <Button onClick={() => handleSubmitSignin() } style={{width:'90px'}} type="primary">Login</Button>
+                    <Button className= 'Button-connect' onClick={() => handleSubmitSignin() } style={{width:'90px' }} type="primary">Login</Button>
             </div>
 
 </div>

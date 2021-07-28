@@ -12,7 +12,7 @@ import ImportConfigScreen from './component/ImportConfigScreen';
 import TemplateCreator from './component/TemplateCreator';
 import CreateDiplomas from './component/CreateDiplomas';
 import NotFoundPAge from './NotFoundPage';
-
+import NewUserRequest from './NewUserRequest';
 
 const store = createStore(combineReducers({studentList, templateElements}));
 
@@ -22,6 +22,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={ScreenHome} />
+          <Route exact path="/NewUserRequest" component={NewUserRequest} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
