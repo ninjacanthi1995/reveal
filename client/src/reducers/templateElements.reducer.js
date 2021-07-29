@@ -26,8 +26,9 @@ const templateReducer = (templateElements = [], action) => {
         position: {x:0, y:0},
         imagePreview: action.imagePreview,
         style:{
+          // ADD OPACITY
           bgPosition: "center",
-          bgSize: "contain"
+          bgSize: "cover"
         }
       }
     }

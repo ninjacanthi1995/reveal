@@ -6,12 +6,51 @@ import {
   BoldOutlined, 
   ItalicOutlined, 
   UnderlineOutlined,
-  DeleteOutlined
+  DeleteOutlined,
 } from '@ant-design/icons';
 import colors from '../../helpers/colors';
 
 const { TextArea } = Input;
 const { Option } = Select;
+
+// "eslint-disable-next-line" sert à éviter les
+// alertes dans la console pour la ligne qui suit
+
+const dynamicValues = [
+  {
+    // eslint-disable-next-line
+    value: "firstname",
+    title: "Prénom"
+  },{
+    // eslint-disable-next-line
+    value: "lastname",
+    title: "Nom"
+  },{
+    // eslint-disable-next-line
+    value: "birth_date",
+    title: "Date de naissance"
+  },{
+    // eslint-disable-next-line
+    value: "mention",
+    title: "Mention"
+  },{
+    // eslint-disable-next-line
+    value: "diploma_name",
+    title: "Nom du diplôme"
+  },{
+    // eslint-disable-next-line
+    value: "diploma_year",
+    title: "Année"
+  },{
+    // eslint-disable-next-line
+    value: "curriculum",
+    title: "Cursus"
+  },{
+    // eslint-disable-next-line
+    value: "promo",
+    title: "Promo"
+  },
+]
 
 
 const Text = ({element, type, index}) => {
@@ -26,6 +65,11 @@ const Text = ({element, type, index}) => {
     color: color,
     fontSize: fontSize,
     height: fontSize*2
+  }
+
+  const fontSizeOptions = []
+  for (let i = 12; i <= 50; i+=2) {
+    fontSizeOptions.push(<Option value={i}>{i}</Option>)
   }
   
   const [visible, setVisible] = useState(false);
@@ -93,17 +137,19 @@ const Text = ({element, type, index}) => {
         <Select size="small" defaultValue={14} bordered={false} onChange={fontSizeValue => {
           updateElement({ width: size.width, height: fontSizeValue*2 }, position, value, bold, italic, underline, color, fontSizeValue)
         }}>
-          <Option value={12}>12</Option>
-          <Option value={14}>14</Option>
-          <Option value={16}>16</Option>
-          <Option value={18}>18</Option>
-          <Option value={20}>20</Option>
-          <Option value={22}>22</Option>
-          <Option value={24}>24</Option>
-          <Option value={26}>26</Option>
-          <Option value={28}>28</Option>
-          <Option value={30}>30</Option>
-          <Option value={32}>32</Option>
+          {fontSizeOptions}
+        </Select>
+      </Menu.Item>
+      <Menu.Item key="dynamicValues">
+        <Select size="small" defaultValue={'Valeur dynamique'} bordered={false} onChange={dynamicValue => {
+          console.log(`dynamicValue`, dynamicValue)
+          dispatch({type: "addRequiredElement", payload: dynamicValue})
+          dynamicValue = value + "${" + dynamicValue + "}"
+          updateElement(size, position, dynamicValue, bold, italic, underline, color, fontSize)
+        }}>
+          {dynamicValues.map(dynamicValue => {
+            return <Option value={dynamicValue.value}>{dynamicValue.title}</Option>
+          })}
         </Select>
       </Menu.Item>
       <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index})}>

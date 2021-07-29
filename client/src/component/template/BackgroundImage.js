@@ -53,7 +53,7 @@ const Text = ({element, type, index}) => {
   const menu = (
     <Menu style={styles.menu}>
       <Menu.Item key="size">
-        <Select size="small" defaultValue={bgPosition} bordered={false} onChange={sizeValue => {
+        <Select size="small" defaultValue={bgSize} bordered={false} onChange={sizeValue => {
           updateElement(size, position, sizeValue, bgPosition)
         }}>
           <Option value={"contain"}>contain</Option>
@@ -61,7 +61,7 @@ const Text = ({element, type, index}) => {
         </Select>
       </Menu.Item>
       <Menu.Item key="position">
-        <Select size="small" defaultValue={bgSize} bordered={false} onChange={positionValue => {
+        <Select size="small" defaultValue={bgPosition} bordered={false} onChange={positionValue => {
           updateElement(size, position, bgSize, positionValue)
         }}>
           <Option value={"bottom"}>bottom</Option>
@@ -99,7 +99,6 @@ const Text = ({element, type, index}) => {
         visible={visible}
       >
         <div style={styles.image}></div>
-        {/* <img src={imagePreview} height={size.height} width={size.width} alt="" /> */}
       </Dropdown>
     </Rnd>
   );
