@@ -10,7 +10,7 @@ export default function Navbar() {
         <Link to="/"><img src="/reveal.png" style={styles.logo} alt="Reveal" /></Link>
         <div style={{display:"flex"}}>
           <Link to="/diploma-list" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des diplômés</Link>
-          <Link to="/" style={styles.link}><img src="/settings.svg" alt="list-icon"/> Settings</Link>
+          <Link to="/settings" style={styles.link}><img src="/settings.svg" alt="list-icon"/> Settings</Link>
         </div>
       </div>
       <div style={styles.navbarPadding}></div>
