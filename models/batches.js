@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const diplomaSchema = new mongoose.Schema({
+const batchSchema = new mongoose.Schema({
   name: String,
   year: Number,
   curriculum: String,
@@ -10,6 +10,6 @@ const diplomaSchema = new mongoose.Schema({
   templateName: String 
 });
 
-const DiplomaModel = mongoose.model('diplomas', diplomaSchema);
+const BatchModel = mongoose.model('batches', batchSchema);
 
-module.exports = DiplomaModel;
+module.exports = BatchModel;

@@ -9,7 +9,7 @@ const { Content } = Layout;
 
 const { Option } = Select;
 
-export default function CreateDiplomaBatch() {
+export default function CreateBatch() {
   const [name, setName] = useState("");
   const [year, setYear] = useState(2021);
   const [curriculum, setCurriculum] = useState("");
@@ -18,7 +18,7 @@ export default function CreateDiplomaBatch() {
   // const [schoolId, setSchoolId] = useState('123');
 
   const onFinish = async () => {
-    await fetch("/create-diploma-batch", {
+    await fetch("/create-batch", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `name=${name}&year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,

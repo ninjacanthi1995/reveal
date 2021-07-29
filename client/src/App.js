@@ -11,7 +11,7 @@ import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
 import DiplomaListScreen from './component/DiplomaListScreen';
 import TemplateCreator from './component/TemplateCreator';
-import CreateDiplomaBatch from './component/CreateDiplomaBatch';
+import CreateBatch from './component/CreateBatch';
 import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
@@ -27,8 +27,7 @@ function App() {
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route path="/diploma-list" component={DiplomaListScreen}  />
-          <Route exact path="/create-diplomas" component={CreateDiplomas} />
-          <Route exact path="/create-diploma-batch" component={CreateDiplomaBatch} />
+          <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
           <Route path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
           <Route component={NotFoundPAge} />
