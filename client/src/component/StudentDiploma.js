@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { Button } from 'antd';
-import { Document, Page, pdfjs } from "react-pdf";
-
-=======
 import React, { useEffect } from "react";
 import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
 import { useParams } from "react-router-dom";
->>>>>>> 0d98ce5269e5bc890e9928af8b721e753b57c44e
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function StudentDiploma() {
