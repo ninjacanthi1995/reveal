@@ -17,6 +17,7 @@ import CreateBatch from './component/CreateBatch';
 import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
+import SettingsScreen from './component/SettingsScreen';
 
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
@@ -33,6 +34,7 @@ function App() {
           <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
           <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
+          <Route exact path="/settings/:tab" component={SettingsScreen} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>
