@@ -3,8 +3,10 @@ import './App.css';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
+
 import studentList from './reducers/studentList.reducer';
 import templateElements from './reducers/templateElements.reducer';
+import requiredElements from './reducers/requiredElements.reducer';
 
 import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
@@ -16,7 +18,8 @@ import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
 import SettingsScreen from './component/SettingsScreen';
-const store = createStore(combineReducers({studentList, templateElements}));
+
+const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
   return (
