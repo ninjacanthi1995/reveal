@@ -22,7 +22,6 @@ router.post("/create-batch", async (req, res) => {
     res.json({ result: false, msg: "Batch deja existant" });
   } else {
     const newBatch = new BatchModel({
-      name: req.body.name,
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,

@@ -10,7 +10,6 @@ const { Content } = Layout;
 const { Option } = Select;
 
 export default function CreateBatch() {
-  const [name, setName] = useState("");
   const [year, setYear] = useState(2021);
   const [curriculum, setCurriculum] = useState("");
   const [promo, setPromo] = useState(1);
@@ -21,9 +20,8 @@ export default function CreateBatch() {
     await fetch("/create-batch", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `name=${name}&year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
+      body: `year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
     });
-    setName("");
     setYear(2021);
     setCurriculum("");
     setPromo(1);
@@ -36,22 +34,6 @@ export default function CreateBatch() {
       <Content style={styles.content}>
         <Title>Créez vos batchs</Title>
         <Form onFinish={onFinish} style={{ width: "50%" }}>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le nom du diplome batch!",
-              },
-            ]}
-          >
-            <Input
-              style={styles.input}
-              placeholder="Name"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
-          </Form.Item>
-
           <Form.Item
             rules={[
               {

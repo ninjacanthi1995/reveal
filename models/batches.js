@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
 const batchSchema = new mongoose.Schema({
-  name: String,
   year: Number,
   curriculum: String,
   promo: Number,
