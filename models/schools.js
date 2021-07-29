@@ -14,6 +14,7 @@ const templateSchema = new mongoose.Schema({
 })
 
 const schoolSchema = new mongoose.Schema({
+  name: String,
   client_id: [String],
   id_students: [String],
   templates: [templateSchema]
