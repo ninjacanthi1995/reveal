@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input, InputNumber, Select, Layout, Form, Button } from "antd";
 import Navbar from "./Navbar";
 import { Typography } from "antd";
@@ -10,9 +10,9 @@ const { Content } = Layout;
 const { Option } = Select;
 
 export default function CreateBatch() {
-  const [year, setYear] = useState(2021);
+  const [year, setYear] = useState(null);
   const [curriculum, setCurriculum] = useState("");
-  const [promo, setPromo] = useState(1);
+  const [promo, setPromo] = useState(null);
   const [templateName, setTemplateName] = useState("");
   // const [schoolId, setSchoolId] = useState('123');
 
@@ -33,63 +33,38 @@ export default function CreateBatch() {
       <Navbar></Navbar>
       <Content style={styles.content}>
         <Title>Créez vos batchs</Title>
-        <Form onFinish={onFinish} style={{ width: "50%" }}>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir l'annne du diplome batch!",
-              },
-            ]}
-          >
+        <Form style={{ width: "50%" }}>
+          <Form.Item>
             <InputNumber
               style={styles.input}
               placeholder="Year"
               onChange={(value) => setYear(value)}
               defaultValue={year}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le cursus du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <Input
               style={styles.input}
               placeholder="Cursus"
               onChange={(e) => setCurriculum(e.target.value)}
               value={curriculum}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le promo du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <InputNumber
               style={styles.input}
               placeholder="Promo"
               onChange={(value) => setPromo(value)}
               defaultValue={promo}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez choisir le template du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <Input.Group compact>
               <Select
                 style={styles.input}
@@ -103,7 +78,12 @@ export default function CreateBatch() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={styles.input}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={styles.input}
+              onClick={onFinish}
+            >
               Submit
             </Button>
           </Form.Item>

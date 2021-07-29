@@ -89,53 +89,68 @@ router.get("/create-pdf", async (req, res) => {
   // const template = await templateModel.findOne({ name: req.body.templateName });
   // const student = await studentModel.findById({ id: req.body.studentId });
   // const batch = await BatchModel.findOne({ name: req.body.batchName });
-  const doc = new PDFDocument({ size: "A4", layout: "landscape" });
-  doc.pipe(fs.createWriteStream("output.pdf"));
-  doc.text(
-    student.firstName,
-    template.firstNameField.positionX,
-    template.firstNameField.positionY
-  );
-  doc.text(
-    student.lastName,
-    template.lastNameField.positionX,
-    template.lastNameField.positionY
-  );
-  doc.text(
-    batch.cursus,
-    template.cursusField.positionX,
-    template.cursusField.positionY
-  );
-  doc.text(
-    "Promo " + batch.promo,
-    template.promoField.positionX,
-    template.promoField.positionY
-  );
-  doc.text(
-    batch.year,
-    template.yearField.positionX,
-    template.yearField.positionY
-  );
-  doc.image(
-    template.logoField.url,
-    template.logoField.positionX,
-    template.logoField.positionY,
-    { scale: template.logoField.scale }
-  );
-  doc.image(
-    template.signatureField.url,
-    template.signatureField.positionX,
-    template.signatureField.positionY,
-    { scale: template.signatureField.scale }
-  );
-  doc.text(
-    "Mention: " + batch.mention,
-    template.mentionField.positionX,
-    template.mentionField.positionY
-  );
-  doc.end();
+  if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
+    res.json({ result: false, msg: "File existe" });
+  } else {
+    const doc = new PDFDocument({ size: "A4", layout: "landscape" });
+    doc.pipe(
+      fs.createWriteStream("./client/public/diploma_student1_batch1.pdf")
+    );
+    doc.text(
+      student.firstName,
+      template.firstNameField.positionX,
+      template.firstNameField.positionY
+    );
+    doc.text(
+      student.lastName,
+      template.lastNameField.positionX,
+      template.lastNameField.positionY
+    );
+    doc.text(
+      batch.cursus,
+      template.cursusField.positionX,
+      template.cursusField.positionY
+    );
+    doc.text(
+      "Promo " + batch.promo,
+      template.promoField.positionX,
+      template.promoField.positionY
+    );
+    doc.text(
+      batch.year,
+      template.yearField.positionX,
+      template.yearField.positionY
+    );
+    doc.image(
+      template.logoField.url,
+      template.logoField.positionX,
+      template.logoField.positionY,
+      { scale: template.logoField.scale }
+    );
+    doc.image(
+      template.signatureField.url,
+      template.signatureField.positionX,
+      template.signatureField.positionY,
+      { scale: template.signatureField.scale }
+    );
+    doc.text(
+      "Mention: " + batch.mention,
+      template.mentionField.positionX,
+      template.mentionField.positionY
+    );
+    doc.end();
 
-  res.json({ result: true, path: "/output.pdf" });
+    res.json({ result: true });
+  }
+});
+
+router.get("/delete-pdf", async (req, res) => {
+  if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
+    fs.unlinkSync("./client/public/diploma_student1_batch1.pdf");
+    res.json({ result: true, msg: "File supprime" });
+  } else {
+    res.json({ result: false, msg: "File non existant" });
+  }
 });
 
 router.post("/create-diploma", async (req, res) => {
@@ -160,16 +175,32 @@ router.post("/create-diploma", async (req, res) => {
   }
 });
 
-router.get("/get-diploma", async (req, res) => {});
-
 router.get("/batch", async (req, res) => {
   // A MODIFIER QUAND DB EN FORME
   //const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
   const school_batches = [
-    {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
-    {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
-    {year: 2019, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
-  ]
+    {
+      year: 2020,
+      curriculum: "Bac Technologique",
+      _id: "61015592b527c72f100f7481",
+      id_School: "6101c0b6208679b2ab7f0884",
+      template_name: "Bac tec",
+    },
+    {
+      year: 2021,
+      curriculum: "BTS mécanique",
+      _id: "6101c206564b97b34f9e16ea",
+      id_School: "6101c0b6208679b2ab7f0884",
+      template_name: "BTS méca",
+    },
+    {
+      year: 2019,
+      curriculum: "BEP comptabilité",
+      _id: "61015592b527c72f100f7483",
+      id_School: "6101c0b6208679b2ab7f0884",
+      template_name: "BEP compta",
+    },
+  ];
   //console.log('BATCHES FROM DB: ', school_batches);
   if (school_batches.length === 0) {
     return res.json({
@@ -260,44 +291,54 @@ router.get("/template", async (req, res) => {
   return res.json({ success: true, template: template[0] });
 });
 
-router.post('/post-csv-import', async (req, res) => {
+router.post("/post-csv-import", async (req, res) => {
   ///// 1 - save diploma in the student document
   const dataStudent = req.body;
   //console.log('DATA: ', dataStudent);
   let student = await studentModel.findOne({
-    email: dataStudent.email
+    email: dataStudent.email,
   });
   //console.log('STUDENT 1: ', student);
   if (!student) {
     student = new studentModel({ ...dataStudent });
   }
   // AJOUT CONTROLE DIPLOME DEJA PRESENT CHEZ LE STUDENT ??
-  student.diplomas.push(dataStudent.diplom_student[0])
+  student.diplomas.push(dataStudent.diplom_student[0]);
   //console.log('STUDENT 2: ', student);
   const studentSaved = await student.save();
-  
-  if (!studentSaved._id){
-    return res.json({success: false, message: `data of student with email ${dataStudent.email} are not saved.`})
+
+  if (!studentSaved._id) {
+    return res.json({
+      success: false,
+      message: `data of student with email ${dataStudent.email} are not saved.`,
+    });
   }
-  
+
   ///// 2 - add student._id in the batch document
-  let batch = await diplomaModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
+  let batch = await diplomaModel.findOne({
+    _id: dataStudent.diplom_student[0].id_batch,
+  });
   if (!batch) {
     //batch = new diplomaModel({year: 2021, curriculum: 'BTS mécanique', schoolId:'6101c0b6208679b2ab7f0884', templateName: 'BTS méca', studentsId: []})
-    return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
+    return res.json({
+      success: false,
+      message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
+    });
   }
   //console.log('BATCH: ', batch);
-  if (!batch.studentsId.includes(studentSaved._id)){
+  if (!batch.studentsId.includes(studentSaved._id)) {
     batch.studentsId.push(studentSaved._id);
   }
   const batchSaved = await batch.save();
 
-  if (!batchSaved._id){
-    return res.json({success: false, message: `Enabled to save student id (${studentSaved._id}) in the document of batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
+  if (!batchSaved._id) {
+    return res.json({
+      success: false,
+      message: `Enabled to save student id (${studentSaved._id}) in the document of batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
+    });
   }
   //console.log(`student ${studentSaved.lastname} saved in Batch`)
-  res.json({success: true});
-
-})
+  res.json({ success: true });
+});
 
 module.exports = router;
