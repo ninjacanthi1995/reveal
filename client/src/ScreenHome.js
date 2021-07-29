@@ -37,7 +37,7 @@ console.log(body);
     }
 
     if(userExists){
-    return <Redirect to='/create-diplomas'/>
+    return <Redirect to="/create-batch"/>
     }
 
     
@@ -50,7 +50,7 @@ console.log(body);
     <div>
 
             <div className = "header"  >
-                <Link to="/"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
+                <Link to="/template-management"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
                 <Link to="/new-user-request" style={{height:80, margin:10, marginRight:30}}>Demander mon accès</Link>
             </div> 
 

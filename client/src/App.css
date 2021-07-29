@@ -72,7 +72,12 @@ h4 {
   
 .Button-connect{
   background-color: #45E4CF;
+}
+
+.Button-connect:hover{
   
+  color: #45E4CF;
+  background-color: #003A5A;
 }
 
   .HomeThemes{

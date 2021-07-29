@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import studentList from './reducers/studentList.reducer';
 import templateElements from './reducers/templateElements.reducer';
 
+
 import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
@@ -15,6 +16,7 @@ import CreateBatch from './component/CreateBatch';
 import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
+import TemplateManagement from './TemplateManagement';
 const store = createStore(combineReducers({studentList, templateElements}));
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={ScreenHome} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
+          <Route exact path="/template-management" component={TemplateManagement} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route path="/diploma-list" component={DiplomaListScreen}  />
