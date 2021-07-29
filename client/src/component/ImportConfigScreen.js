@@ -3,9 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import Navbar from './Navbar';
-
-//import exempleTemplatesFromDB from '../helpers/exampleDeRetourDB-templates';
-//import exempleBatchsFromDB from '../helpers/exampleDeRetourDB-batches';
+import { Redirect } from 'react-router-dom';
 
 import Status from '../helpers/status';
 
@@ -13,28 +11,30 @@ import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
 
+// intégralité des fields relatifs au students, attendu par un template.
 const studentDataToMatch = ['firstname_field', 'lastname_field', 'birth_date_field', 'email']
 
 const ImportConfigScreen = () => {
   const [schoolId, setSchoolId] = useState('');
+
   const [headers, setHeaders] = useState([]);
   const [studentList, setStudentList] = useState([]);
-  //const [template, setTemplate] = useState({});
+
   const [fieldHumanNames, setFieldHumanNames] = useState({});   // object fieldname <=> humane field name. Par ex: {firstname_field:'prénom', ....}
   const [selectOptions, setSelectOptions] = useState([]);       // list of headers that are not selected yet
   const [matchings, setMatchings] = useState({});               // object fieldname <=> header
 
   const [batchList, setBatchList] = useState([]);
   const [selectedBatch, setSelectedBatch] = useState('');
+
+  const [redirection, setRedirection] = useState(false);
   
   const list = useSelector(state => state.studentList);
   
   
-  // Récupérer les headers du CSV, les données des étudiants et les batches de l'école
+  // Récupérer les headers et les données des étudiants du CSV
   useEffect(() => {
-    //console.log('list: ', list);
     setHeaders(list.data[0]);
-    
     setStudentList(list.data.splice(1));
   },[list])
 
@@ -45,26 +45,27 @@ const ImportConfigScreen = () => {
     const fetchBatches = async () => {
       const rawData = await fetch(`/batch?school_id=${schoolId}`);
       const response = await rawData.json();
-      //console.log('batches REsponse: ', response);
       setBatchList(response.batches);
     };
     fetchBatches();
   },[])
   //console.log('batches: ', batchList);
   
-  // A la séléction du template du diplome: on mémorise le choix dans un état, on récupère les fields attendu par ce template et on le stocke dans un etat
+  // A la séléction du batch: 
+  //  on initialise les options de select avec les headers,
+  //  on mémorise le choix dans un état, 
+  //  on récupère le template de la DB, on en déduit les fields attendus et on crée un "dictionnaire" field <=> humanFieldNames que l'on stocke dans un état
   const onBatchChange = async (batchId) => {
-    // METTRE NE PLACE MECANIQUE POUR VIDER LES CHAMPS (car si les select sont remplis et que le batch est modifier, il est possible qu'un header soit attribué a 2 fields)
-    setSelectOptions(list.data[0]);
+    // METTRE EN PLACE MECANIQUE POUR VIDER LES CHAMPS (car si les select sont remplis et que le batch est modifier, il est possible qu'un header soit attribué a 2 fields)
+    setSelectOptions(headers);
     const selected = batchList.filter(bach => bach._id === batchId)[0];
     setSelectedBatch(selected);
-    console.log('SELECTED: ',selected);
-    //const templateFromDB = exempleTemplatesFromDB[0]       // A RECUP DANS LA DB QUAND ELLE SE SERA IMPLEMENTE OU recup dans School si déjà importée
+    //console.log('SELECTED: ',selected);
     const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.template_name}`);
     const data = await rawData.json();
     const templateFromDB = data.template;
     //console.log('templateFromDB: ', templateFromDB);
-    //setTemplate(templateFromDB);
+    // le field email est entré en dur, car nécessaire mais non demandé pour le template.
     const tempHumanNames = {'email': 'email'};
     studentDataToMatch.slice(0, -1).forEach(field => {
       if (templateFromDB[field]) {
@@ -76,13 +77,14 @@ const ImportConfigScreen = () => {
   }
 
   const onValidButton = () => {
-    //console.log('Validé!!!');
+    // création d'un 'dictionnaire' field <=> index des headers
     let fieldToIndexMapping = {};
     Object.keys(fieldHumanNames).forEach(field => {
       fieldToIndexMapping[field] = headers.indexOf(matchings[field]);
     });
-    console.log('Mapping: ', fieldToIndexMapping);
+    //console.log('Mapping: ', fieldToIndexMapping);
 
+    // Mise en forme des données et envoi de la DB
     studentList.forEach( async (student) => {
       const dataStudent = {
         email: student[fieldToIndexMapping.email],
@@ -97,14 +99,19 @@ const ImportConfigScreen = () => {
         }]
       } 
 
-      // ENVOI LES DATA A LA DB POUR QU ELLE L ES INSERE DANS LA DB
-      console.log('DATA STUDENT ENVOY2 DANS LA DB: ', dataStudent);
       const resultRaw = await fetch('/post-csv-import', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(dataStudent)
       })
-      console.log('result: ', resultRaw);
+      const result = await resultRaw.json();
+      //console.log('result: ', result);
+
+      if (!result.success){
+        console.log('Error: ', result.message);
+      } else {
+        setRedirection(true);
+      }
     })
   }
 
@@ -112,11 +119,9 @@ const ImportConfigScreen = () => {
     return <Option key={i} value={batch._id}>{`${batch.curriculum} - ${batch.year}`}</Option>
   })
 
-  
-  //console.log('OPTIONS: ', batchesOptions);
-
-  const selectChange = (field, header) => {
-    const selectOptionsCopy = selectOptions.filter(opt => opt !== header);  // copy the states to work on
+  const onSelectChange = (field, header) => {
+    // copy the states to be able to work on
+    const selectOptionsCopy = selectOptions.filter(opt => opt !== header);  
     const matchingsCopy = {...matchings};
 
     if (matchings[field]){
@@ -143,7 +148,7 @@ const ImportConfigScreen = () => {
                 showSearch
                 style={{ width: 400 }}
                 placeholder={`correspondance dans le fichier CSV pour ${fieldHumanNames[field]}`}
-                onChange={(header) => selectChange(field, header)}
+                onChange={(header) => onSelectChange(field, header)}
               >
                 {options}
               </Select>
@@ -154,6 +159,9 @@ const ImportConfigScreen = () => {
 
   return (
     <div>
+      {
+        redirection && <Redirect to='/diploma-list' />
+      }
       <Navbar></Navbar>
       <Title>Choisissez un batch:</Title>
       <Select
@@ -179,7 +187,7 @@ const ImportConfigScreen = () => {
   )
 }
 
-// RESTE A HANDLE LE BOUTON VALIDé >  envoi à la DB
+
 // PRESENTATION SOUS FORME DE TABLEAU PLUS CLAIRE??
 
 export default ImportConfigScreen;

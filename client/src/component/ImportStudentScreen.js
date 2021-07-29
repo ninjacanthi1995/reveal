@@ -38,15 +38,11 @@ const ImportStudentScreen = () => {
     },
   };
 
-  let redirect = null;
-  if (fileIsUploaded){
-    redirect = <Redirect to='/import-config' />;
-  }
 
   return (
     <div>
       <Navbar></Navbar>
-      {redirect}
+      {fileIsUploaded && <Redirect to='/import-config' />}
       <Upload {...props}>
           <Button 
             icon={<UploadOutlined />}
