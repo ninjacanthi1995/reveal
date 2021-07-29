@@ -18,14 +18,10 @@ import CreateBatch from './component/CreateBatch';
 import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
-<<<<<<< HEAD
-import TemplateManagement from './TemplateManagement';
-const store = createStore(combineReducers({studentList, templateElements}));
-=======
 import SettingsScreen from './component/SettingsScreen';
+import TemplateManagement from './TemplateManagement';
 
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
->>>>>>> 0d98ce5269e5bc890e9928af8b721e753b57c44e
 
 function App() {
   return (
