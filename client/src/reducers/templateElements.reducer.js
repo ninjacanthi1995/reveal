@@ -20,6 +20,20 @@ const templateReducer = (templateElements = [], action) => {
         position: {x:0, y:0},
         imagePreview: action.imagePreview
       }
+    }else if(action.elementType === "dynamic"){
+      element = {
+        name: action.dynamicType.value,
+        size: {width: "unset", height: "unset"},
+        position: {x:0, y:0},
+        value: `{{${action.dynamicType.title}}}`,
+        style:{
+          bold: false,
+          italic: false,
+          underline: false,
+          color: "black",
+          fontSize: 14
+        }
+      }
     }else if(action.elementType === "imageBackground"){
       element = {
         size: {width: "100%", height: "100%"},

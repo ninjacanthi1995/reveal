@@ -22,15 +22,12 @@
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
     "download-file": "^0.1.5",
-    "dropbox-v2-api": "^2.4.44",
     "express": "~4.16.1",
-    "firebase": "^8.8.0",
-    "googleapis": "^39.2.0",
+    "express-fileupload": "^1.2.1",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
     "pdf-lib": "^1.6.0",
     "pdfkit": "^0.12.1",
-    "react-rnd": "^10.3.4",
     "uid2": "0.0.3"
   },
   "devDependencies": {

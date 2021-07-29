@@ -13,45 +13,6 @@ import colors from '../../helpers/colors';
 const { TextArea } = Input;
 const { Option } = Select;
 
-// "eslint-disable-next-line" sert à éviter les
-// alertes dans la console pour la ligne qui suit
-
-const dynamicValues = [
-  {
-    // eslint-disable-next-line
-    value: "firstname",
-    title: "Prénom"
-  },{
-    // eslint-disable-next-line
-    value: "lastname",
-    title: "Nom"
-  },{
-    // eslint-disable-next-line
-    value: "birth_date",
-    title: "Date de naissance"
-  },{
-    // eslint-disable-next-line
-    value: "mention",
-    title: "Mention"
-  },{
-    // eslint-disable-next-line
-    value: "diploma_name",
-    title: "Nom du diplôme"
-  },{
-    // eslint-disable-next-line
-    value: "diploma_year",
-    title: "Année"
-  },{
-    // eslint-disable-next-line
-    value: "curriculum",
-    title: "Cursus"
-  },{
-    // eslint-disable-next-line
-    value: "promo",
-    title: "Promo"
-  },
-]
-
 
 const Text = ({element, type, index}) => {
   const dispatch = useDispatch()
@@ -87,6 +48,7 @@ const Text = ({element, type, index}) => {
       index,
       elementType: type,
       element:{
+        name: type === "dynamic" && element.name,
         size,
         position,
         value,
@@ -140,19 +102,12 @@ const Text = ({element, type, index}) => {
           {fontSizeOptions}
         </Select>
       </Menu.Item>
-      <Menu.Item key="dynamicValues">
-        <Select size="small" defaultValue={'Valeur dynamique'} bordered={false} onChange={dynamicValue => {
-          console.log(`dynamicValue`, dynamicValue)
-          dispatch({type: "addRequiredElement", payload: dynamicValue})
-          dynamicValue = value + "${" + dynamicValue + "}"
-          updateElement(size, position, dynamicValue, bold, italic, underline, color, fontSize)
+      <Menu.Item key="delete" onClick={()=> {
+          if(type === "dynamic"){
+            dispatch({type: 'deleteRequiredElement', value})
+          }
+          dispatch({type: 'deleteElement', index})
         }}>
-          {dynamicValues.map(dynamicValue => {
-            return <Option value={dynamicValue.value}>{dynamicValue.title}</Option>
-          })}
-        </Select>
-      </Menu.Item>
-      <Menu.Item key="delete" onClick={()=> dispatch({type: 'deleteElement', index})}>
         <DeleteOutlined  style={{color: "red" }} />
       </Menu.Item>
     </Menu>
@@ -192,7 +147,7 @@ const Text = ({element, type, index}) => {
           value={value}
           onChange={e => {
             const childHeight = parseInt(e.target.style.height, 10)
-            updateElement({ width: size.width, height: childHeight + 2 }, position, e.target.value, bold, italic, underline, color, fontSize) 
+            if(type === "text") updateElement({ width: size.width, height: childHeight + 2 }, position, e.target.value, bold, italic, underline, color, fontSize) 
           }}
         /> 
       </Dropdown>
@@ -211,3 +166,15 @@ const styles = {
 
 export default Text;
 
+/* <Menu.Item key="dynamicValues">
+  <Select size="small" defaultValue={'Valeur dynamique'} bordered={false} onChange={dynamicValue => {
+    console.log(`dynamicValue`, dynamicValue)
+    dispatch({type: "addRequiredElement", payload: dynamicValue})
+    dynamicValue = value + "${" + dynamicValue + "}"
+    updateElement(size, position, dynamicValue, bold, italic, underline, color, fontSize)
+  }}>
+    {dynamicValues.map(dynamicValue => {
+      return <Option value={dynamicValue.value}>{dynamicValue.title}</Option>
+    })}
+  </Select>
+</Menu.Item> */

@@ -1,7 +1,8 @@
 const requiredReducer = (requiredElements = [], action) => {
   if (action.type === 'addRequiredElement'){
-    if(requiredElements.includes(action.payload)) return requiredElements
     return [...requiredElements, action.payload];
+  } else if (action.type === 'deleteRequiredElement'){
+    return requiredElements.filter(e => !action.value.includes(e.title));
   } else {
     return requiredElements;
   }

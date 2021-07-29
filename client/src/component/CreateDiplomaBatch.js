@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Input, InputNumber, Select, Layout, Form, Button } from "antd";
 import Navbar from "./Navbar";
 import { Typography } from "antd";

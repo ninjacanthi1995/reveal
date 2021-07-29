@@ -1,9 +1,8 @@
 import React, {useState} from 'react';
-// import { Menu, Button, Upload, message } from 'antd';
 import { Menu, Button, message} from 'antd';
 import {
-  // AppstoreAddOutlined,
-  // UserAddOutlined,
+  AppstoreAddOutlined,
+  UserAddOutlined,
   FontSizeOutlined,
   PictureOutlined,
   FileImageOutlined,
@@ -12,10 +11,33 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-// const { SubMenu } = Menu;
+const { SubMenu } = Menu;
 const rootSubmenuKeys = ['addElement', 'addVariable'];
+
+const dynamicValues = [{
+  value: "firstname",
+  title: "Prénom"
+},{
+  value: "lastname",
+  title: "Nom"
+},{
+  value: "birth_date",
+  title: "Date de naissance"
+},{
+  value: "curriculum",
+  title: "Cursus"
+},{
+  value: "promo",
+  title: "Promo"
+},{
+  value: "year",
+  title: "Année"
+},{
+  value: "mention",
+  title: "Mention"
+}]
 
 const ToolBox = () => {
   const dispatch = useDispatch()
@@ -30,6 +52,8 @@ const ToolBox = () => {
     }
   };
 
+  const requiredElements = useSelector(state => state.requiredElements)
+
   const handleImageChange = (e, type) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -41,6 +65,11 @@ const ToolBox = () => {
       }
       reader.readAsDataURL(file)
     }
+  }
+
+  const handleDynamicValue = (dynamicValue) => {
+    dispatch({ type: 'addRequiredElement', payload: dynamicValue })
+    dispatch({ type: 'addElements', elementType: "dynamic", dynamicType: dynamicValue })
   }
 
   return (
@@ -57,15 +86,24 @@ const ToolBox = () => {
           openKeys={openKeys} 
           onOpenChange={onOpenChange}
         >
-          <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
-          <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
-            Image
-            <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
-          </Menu.Item>
-          <Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
-            Image de fond
-            <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
-          </Menu.Item>
+          <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
+            <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
+            <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
+              Image
+              <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
+            </Menu.Item>
+            <Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
+              Image de fond
+              <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
+            </Menu.Item>
+          </SubMenu>
+          <SubMenu key="addVariable" icon={<UserAddOutlined />} title="Ajouter une variable">
+              {dynamicValues.map(dynamicValue => {
+                const check = requiredElements.findIndex(e => e.value === dynamicValue.value)
+                if(check >= 0) return null
+                return <Menu.Item key={dynamicValue.value} onClick={()=> handleDynamicValue(dynamicValue)}>{dynamicValue.title}</Menu.Item>
+              })}
+          </SubMenu>
         </Menu>
       </div>
   );
@@ -80,27 +118,13 @@ const styles = {
   }
 }
 
-/* <SubMenu key="addElement" icon={<AppstoreAddOutlined />} title="Ajouter un élément">
-  <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
-  <Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
-    Image
-    <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
-  </Menu.Item>
-  <Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
-    Image de fond
-    <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
-  </Menu.Item>
-</SubMenu>
-<SubMenu key="addVariable" icon={<UserAddOutlined />} title="Ajouter une variable">
-  <SubMenu key="student" icon={<UserOutlined />} title="Étudiant">
-    <Menu.Item key="firstname">Prénom</Menu.Item>
-    <Menu.Item key="lastname">Nom</Menu.Item>
-    <Menu.Item key="birth_date">Date de Naissance</Menu.Item>
-    <Menu.Item key="mention">Mention</Menu.Item>
-  </SubMenu>
-  <SubMenu key="school" icon={<BankOutlined />} title="École">
-    <Menu.Item key="year">Année</Menu.Item>
-    <Menu.Item key="cursus">Cursus</Menu.Item>
-    <Menu.Item key="promo">Promo</Menu.Item>
-  </SubMenu>
-</SubMenu> */
+
+/* <Menu.Item key="text" icon={<FontSizeOutlined />} onClick={()=> {dispatch({ type: 'addElements', elementType: "text" })}}>Texte</Menu.Item>
+<Menu.Item key="image" icon={<PictureOutlined />} onClick={()=> {document.getElementById('fileUpload').click()}}>
+  Image
+  <input style={{display: "none"}} type="file" name="fileUpload" id="fileUpload" onChange={(e) => handleImageChange(e, "image")} />
+</Menu.Item>
+<Menu.Item key="bgImage" icon={<FileImageOutlined />}  onClick={()=> {document.getElementById('backgroundUpload').click()}}>
+  Image de fond
+  <input style={{display: "none"}} type="file" name="backgroundUpload" id="backgroundUpload" onChange={(e) => handleImageChange(e, "imageBackground")} />
+</Menu.Item> */

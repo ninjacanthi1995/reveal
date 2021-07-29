@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from 'antd';
 import { Document, Page } from "react-pdf";
 import { pdfjs } from "react-pdf";
@@ -7,6 +7,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function StudentDiploma() {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
+
+  //SUPPRIMER
+  if(false) setPageNumber(numPages)
+  //SUPPRIMER
 
 //   useEffect(() => {
 //     fetch("/get-student-diploma/?diplomaId=1")
