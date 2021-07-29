@@ -168,7 +168,7 @@ router.get("/batch", async (req, res) => {
   const school_batches = [
     {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
     {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
-    {year: 2019, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
+    {year: 2021, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
   ]
   //console.log('BATCHES FROM DB: ', school_batches);
   if (school_batches.length === 0) {

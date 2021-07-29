@@ -27,21 +27,7 @@ const { Title } = Typography;
 
 
 
-function onChange(pagination, filters, sorter, extra) {
-  console.log('params', pagination, filters, sorter, extra);
-}
 
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  onSelect: (record, selected, selectedRows) => {
-    console.log(record, selected, selectedRows);
-  },
-  onSelectAll: (selected, selectedRows, changeRows) => {
-    console.log(selected, selectedRows, changeRows);
-  },
-};
 
 
 const DiplomaListScreen = () => {
@@ -52,68 +38,67 @@ const DiplomaListScreen = () => {
   const [schoolId, setSchoolId] = useState('');
   const [data, setData] = useState([]);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
-
+  const [filtersPromo, setFiltersPromo] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  
   const columns = [
     {
       title: 'Curriculum',
       dataIndex: 'curriculum',
-      defaultSortOrder: 'descend',
-      filters: filtersCurriculum
-      
+      filters: filtersCurriculum,
+      onFilter: (value, record) => record.curriculum.includes(value),
     },
     {
       title: 'Promo',
       dataIndex: 'promo',
-      filters: [
-        {
-          text: 'London',
-          value: 'London',
-        },
-        {
-          text: 'New York',
-          value: 'New York',
-        },
-      ],
-      onFilter: (value, record) => record.address.indexOf(value) === 0,
+      filters: filtersPromo,
+      onFilter: (value, record) => record.promo.includes(value),
+      
     },
     {
       title: 'Nom',
       dataIndex: 'lastname',
-      defaultSortOrder: 'descend',
-      sorter: (a, b) => a.age - b.age,
+      defaultSortOrder: ['ascend'],
+      sorter: {
+        compare: (a, b) => a.lastname.localeCompare(b.lastname),
+        multiple: 2
+      },
     },
     {
       title: 'Prénom',
       dataIndex: 'firstname',
-      defaultSortOrder: 'descend',
     },
     {
       title: 'Email',
       dataIndex: 'email',
       defaultSortOrder: 'descend',
-      sorter: (a, b) => a.age - b.age,
+      sorter: {
+        compare: (a, b) => a.email.localeCompare(b.email),
+        multiple: 1
+      },
     },
     {
       title: 'Status',
       dataIndex: 'status',
-      filters: statusFilters
+      filters: statusFilters,
+      onFilter: (value, record) => record.status.includes(value)
     }
   ];
   
-
-
+  
+  
   useEffect(() => {
     const schoolId = '6101084673a5f1dcafefa064';
     //const schoolId = window.localStorage.getItem('school_id');    // DECOMMENTER QUAND LOCALSTORE FONCTIONNEL
     setSchoolId(schoolId);
-
     
-
+    
+    
     const fetchBatches = async () => {
       const rawData = await fetch(`/batch?school_id=${schoolId}`);
       const response = await rawData.json();
       setBatchList(response.batches);
-
+      
       let batchYears = response.batches.map(batch => batch.year);
       batchYears = [...new Set(batchYears)];      //[...new Set(array)] sert à retirer les year en doublon
       batchYears = batchYears.sort();
@@ -126,7 +111,7 @@ const DiplomaListScreen = () => {
   }, []);
   //console.log('batches: ', batchList);
   //console.log('OptionsYear: ', optionsYear);
-
+  
   useEffect(() => {
     const getData = async () => {
       //const rawData = await fetch(`/batches-populated?schoolId=${schoolId}&year=${selectedYear}`);
@@ -216,11 +201,16 @@ const DiplomaListScreen = () => {
         }
       ];
       let curriculumList = [];
+      let promoList = [];
       let tempData = [];
       batchesOfYearWithStudents.forEach((batch) => {
         curriculumList.push({
           text: batch.curriculum,
           value: batch.curriculum,
+        });
+        promoList.push({
+          text: batch.promo,
+          value: batch.promo,
         });
         const batchId = batch._id;
         batch.studentsId.forEach((student) => {
@@ -228,7 +218,7 @@ const DiplomaListScreen = () => {
             if (diploma.id_batch === batchId) {
               const row = {
                 curriculum: batch.curriculum,
-                promo: batch.promo,
+                promo: batch.promo.toString(),
                 lastname: student.lastname,
                 firstname: student.firstname,
                 email: student.email,
@@ -240,12 +230,32 @@ const DiplomaListScreen = () => {
         })
       });
       setFiltersCurriculum(curriculumList);
+      setFiltersPromo(promoList);
       setData(tempData);
     };
     getData();
   }, [selectedYear])
 
 
+  // pour tous filtrage ou tri d'un header
+  function onChange(pagination, filters, sorter, extra) {
+    console.log('params', pagination, filters, sorter, extra);
+  }
+
+
+  // Pour toutes selections / deselections d'une row
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    onSelect: (record, selected, selectedRows) => {
+      console.log(record, selected, selectedRows);
+    },
+    onSelectAll: (selected, selectedRows, changeRows) => {
+      console.log(selected, selectedRows, changeRows);
+    },
+  };
+  
   return (
     <>
       <Navbar/>
@@ -260,9 +270,10 @@ const DiplomaListScreen = () => {
       </Title>
       <Table 
         columns={columns} 
-        dataSource={data} 
+        dataSource={data}
+        pagination={false}
         onChange={onChange} 
-        rowSelection={{ ...rowSelection }}
+        rowSelection={{...rowSelection}}
         scroll={{y: 200}}               // A AFFINER - le plus grand possible
       />
     </>
