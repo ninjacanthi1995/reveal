@@ -29,7 +29,7 @@ function App() {
           <Route path="/diploma-list" component={DiplomaListScreen}  />
           <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
-          <Route path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
+          <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>
