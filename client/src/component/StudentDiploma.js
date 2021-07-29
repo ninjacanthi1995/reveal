@@ -1,38 +1,65 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 import { Button } from 'antd';
 import { Document, Page, pdfjs } from "react-pdf";
 
+=======
+import React, { useEffect } from "react";
+import { Button } from "antd";
+import { DownloadOutlined } from "@ant-design/icons";
+import { Document, Page } from "react-pdf";
+import { pdfjs } from "react-pdf";
+import { useParams } from "react-router-dom";
+>>>>>>> 0d98ce5269e5bc890e9928af8b721e753b57c44e
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 export default function StudentDiploma() {
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
+  const { studentId, batchId } = useParams();
 
-//   useEffect(() => {
-//     fetch("/get-student-diploma/?diplomaId=1")
-//       .then((response) => response.json())
-//       .then((data) => {
-//         // Do something with response.
-//       });
-//   }, []);
+  useEffect(() => {
+    fetch(`/create-pdf/?studentId=${studentId}&id_batch=${batchId}`);
+  }, []);
 
   const handleDownload = () => {
-    // fetch("/get-student-diploma/?studentId=1&batchId=1")
-    fetch("/create-pdf")
-      .then((response) => response.json())
-      .then((data) => window.open(data.path, "_blank"));
+    fetch(`/create-pdf/?studentId=${studentId}&id_batch=${batchId}`).then(
+      window.open("/diploma_student1_batch1.pdf", "_blank")
+    );
+    fetch(`/delete-pdf/?studentId=${studentId}&id_batch=${batchId}`);
   };
 
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
+  function onDocumentLoadSuccess() {
+    fetch(`/delete-pdf/?studentId=${studentId}&id_batch=${batchId}`);
   }
 
   return (
-    <div style={{backgroundColor: 'gray'}}>
-      <Button onClick={handleDownload}>Download</Button>
-      <Document file="/output.pdf" onLoadSuccess={onDocumentLoadSuccess}>
-        <Page pageNumber={pageNumber} />
+    <div style={styles.container}>
+      <Button
+        onClick={handleDownload}
+        icon={<DownloadOutlined />}
+        style={styles.button}
+      >
+        Download
+      </Button>
+      <Document
+        file="/diploma_student1_batch1.pdf"
+        onLoadSuccess={onDocumentLoadSuccess}
+      >
+        <Page pageNumber={1} />
       </Document>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    backgroundColor: "gray",
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  button: {
+    marginBottom: "16px",
+  },
+};

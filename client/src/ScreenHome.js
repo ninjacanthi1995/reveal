@@ -37,7 +37,11 @@ console.log(body);
     }
 
     if(userExists){
+<<<<<<< HEAD
     return <Redirect to="/create-batch"/>
+=======
+    return <Redirect to='/create-batch'/>
+>>>>>>> 0d98ce5269e5bc890e9928af8b721e753b57c44e
     }
 
     

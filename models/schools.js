@@ -8,10 +8,11 @@ const templateSchema = new mongoose.Schema({
   curriculum_field: {type: mongoose.Schema.Types.Mixed},
   promo_field: {type: mongoose.Schema.Types.Mixed},
   year_field: {type: mongoose.Schema.Types.Mixed, required: true},
-  background_image_field: {type: mongoose.Schema.Types.Mixed, required: true},
   mention_field: {type: mongoose.Schema.Types.Mixed},
-  static_fields: {type: mongoose.Schema.Types.Mixed}
+  background_image_field: {type: mongoose.Schema.Types.Mixed, required: true},
+  static_fields: [{type: mongoose.Schema.Types.Mixed}]
 })
+
 
 const schoolSchema = new mongoose.Schema({
   name: String,

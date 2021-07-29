@@ -3,8 +3,10 @@ import './App.css';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
+
 import studentList from './reducers/studentList.reducer';
 import templateElements from './reducers/templateElements.reducer';
+import requiredElements from './reducers/requiredElements.reducer';
 
 
 import ScreenHome from './ScreenHome';
@@ -16,8 +18,14 @@ import CreateBatch from './component/CreateBatch';
 import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
+<<<<<<< HEAD
 import TemplateManagement from './TemplateManagement';
 const store = createStore(combineReducers({studentList, templateElements}));
+=======
+import SettingsScreen from './component/SettingsScreen';
+
+const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
+>>>>>>> 0d98ce5269e5bc890e9928af8b721e753b57c44e
 
 function App() {
   return (
@@ -32,7 +40,8 @@ function App() {
           <Route path="/diploma-list" component={DiplomaListScreen}  />
           <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
-          <Route path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
+          <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
+          <Route exact path="/settings/:tab" component={SettingsScreen} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>
