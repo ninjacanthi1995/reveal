@@ -5,14 +5,14 @@ import { useSelector } from 'react-redux';
 import Navbar from './Navbar';
 import { Redirect } from 'react-router-dom';
 
-import Status from '../helpers/status';
+import { status } from '../helpers/status';
 
 import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
 
 // intégralité des fields relatifs au students, attendu par un template.
-const studentDataToMatch = ['firstname_field', 'lastname_field', 'birth_date_field', 'email']
+const studentDataToMatch = ['firstname_field', 'lastname_field', 'birth_date_field', 'mention_field', 'email']
 
 const ImportConfigScreen = () => {
   const [schoolId, setSchoolId] = useState('');
@@ -95,7 +95,7 @@ const ImportConfigScreen = () => {
           url_SmartContract: null,
           mention: null,        // REVOIR POUR RECUP LA MENTION DANS LE CSV
           id_batch: selectedBatch._id,
-          status: Status.not_confirmed
+          status: status.not_confirmed
         }]
       } 
 

@@ -164,7 +164,7 @@ router.get("/get-diploma", async (req, res) => {});
 
 router.get("/batch", async (req, res) => {
   // A MODIFIER QUAND DB EN FORME
-  //const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
+  //const school_batches = await BatchModel.find({schoolId: req.query.school_id});
   const school_batches = [
     {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
     {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
@@ -206,6 +206,11 @@ router.get("/template", async (req, res) => {
           position_x: 160,
           autresChamps: "PAS UTILE POUR LE MOMENT",
         },
+        mention_field: {
+          name: "mention",
+          position_x: 280,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
         autresChamps: "PAS UTILE POUR LE MOMENT",
       },
       {
@@ -224,6 +229,11 @@ router.get("/template", async (req, res) => {
         birth_date_field: {
           name: "date de naissance",
           position_x: 160,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        mention_field: {
+          name: "mention",
+          position_x: 280,
           autresChamps: "PAS UTILE POUR LE MOMENT",
         },
         autresChamps: "PAS UTILE POUR LE MOMENT",
@@ -281,9 +291,9 @@ router.post('/post-csv-import', async (req, res) => {
   }
   
   ///// 2 - add student._id in the batch document
-  let batch = await diplomaModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
+  let batch = await BatchModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
   if (!batch) {
-    //batch = new diplomaModel({year: 2021, curriculum: 'BTS mécanique', schoolId:'6101c0b6208679b2ab7f0884', templateName: 'BTS méca', studentsId: []})
+    //batch = new BatchModel({year: 2021, curriculum: 'BTS mécanique', schoolId:'6101c0b6208679b2ab7f0884', templateName: 'BTS méca', studentsId: []})
     return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
   }
   //console.log('BATCH: ', batch);
@@ -297,7 +307,19 @@ router.post('/post-csv-import', async (req, res) => {
   }
   //console.log(`student ${studentSaved.lastname} saved in Batch`)
   res.json({success: true});
+});
 
-})
+
+router.get('/batches-populated', async (req, res) => {
+  const batchesOfYearWithStudents = await BatchModel
+    .find({ schoolId: req.query.schoolId, year: req.query.year })
+    .populate('studentsId');
+
+  if (!batchesOfYearWithStudents){
+    return res.json({success: false, message: 'no batches match the given schoolId and year'});
+  }
+  return res.json({ success: true, batchesOfYearWithStudents });
+});
 
 module.exports = router;
+
