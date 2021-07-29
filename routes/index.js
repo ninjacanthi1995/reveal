@@ -16,7 +16,7 @@ router.post("/create-batch", async (req, res) => {
     year: req.body.year,
     curriculum: req.body.curriculum,
     promo: req.body.promo,
-    // schoolId: req.body.schoolId,
+    school_id: req.body.school_id,
   });
   if (searchBatch) {
     res.json({ result: false, msg: "Batch deja existant" });
@@ -25,12 +25,12 @@ router.post("/create-batch", async (req, res) => {
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
-      // schoolId: req.body.schoolId,
+      school_id: req.body.school_id,
       studentsId: [],
       templateName: req.body.templateName,
     });
     const savedBatch = await newBatch.save();
-    res.json({ result: true, msg: "Batch cree" });
+    if(savedBatch) res.json({ result: true, msg: "Batch cree" });
   }
 });
 
