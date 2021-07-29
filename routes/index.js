@@ -86,23 +86,24 @@ const batch = {
 };
 
 router.get("/create-pdf", async (req, res) => {
-  const searchStudent = await studentModel.findById(req.query.studentId);
-  const searchBatch = await BatchModel.findById(req.query.batchId);
-  if (!searchStudent || !searchBatch) {
-    res.json({ result: false, msg: "Student or batch not found" });
-  } else if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
+  // const searchStudent = await studentModel.findById(req.query.studentId);
+  // const searchBatch = await BatchModel.findById(req.query.batchId);
+  // if (!searchStudent || !searchBatch) {
+  //   res.json({ result: false, msg: "Student or batch not found" });
+  // } else 
+  if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
     res.json({ result: false, msg: "File existe" });
   } else {
-    const searchSchool = await schoolModel.populate('schoolId');
-    const searchTemplate = searchSchool.find(template => template.template_name === searchBatch.templateName);
+    // const searchSchool = await schoolModel.populate('schoolId');
+    // const searchTemplate = searchSchool.find(template => template.template_name === searchBatch.templateName);
     const doc = new PDFDocument({ size: "A4", layout: "landscape" });
     doc.pipe(
       fs.createWriteStream("./client/public/diploma_student1_batch1.pdf")
     );
     doc.text(
-      searchStudent.firstName,
-      searchTemplate.firstName_field.position.x,
-      searchTemplate.firstName_field.position.y
+      student.firstName,
+      template.firstNameField.positionX,
+      template.firstNameField.positionY
     );
     doc.text(
       student.lastName,

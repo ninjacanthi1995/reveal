@@ -34,7 +34,7 @@ function App() {
           <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
           <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
-          <Route exact path="/settings" component={SettingsScreen} />
+          <Route exact path="/settings/:tab" component={SettingsScreen} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>
