@@ -10,10 +10,10 @@ import ScreenHome from './ScreenHome';
 import ImportStudentScreen from './component/ImportStudentScreen';
 import ImportConfigScreen from './component/ImportConfigScreen';
 import TemplateCreator from './component/TemplateCreator';
-import CreateDiplomas from './component/CreateDiplomas';
+import CreateDiplomaBatch from './component/CreateDiplomaBatch';
+import StudentDiploma from './component/StudentDiploma';
 import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
-
 const store = createStore(combineReducers({studentList, templateElements}));
 
 function App() {
@@ -25,8 +25,9 @@ function App() {
           <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
-          <Route exact path="/create-diplomas" component={CreateDiplomas} />
-          <Route path="/creer-mon-template" component={TemplateCreator}  />
+          <Route exact path="/create-diploma-batch" component={CreateDiplomaBatch} />
+          <Route path="/creer-mon-template" component={TemplateCreator} />
+          <Route path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>

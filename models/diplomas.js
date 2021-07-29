@@ -10,6 +10,6 @@ const diplomaSchema = new mongoose.Schema({
   templateName: String 
 });
 
-const diplomaModel = mongoose.model('diplomas', diplomaSchema);
+const DiplomaModel = mongoose.model('diplomas', diplomaSchema);
 
-module.exports = diplomaModel;
+module.exports = DiplomaModel;

@@ -1,43 +1,37 @@
 var express = require("express");
 var router = express.Router();
-const diplomaModel = require("../models/diplomas");
+const DiplomaModel = require("../models/diplomas");
+const schoolModel = require("../models/schools");
+const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-const pdfModel = require("../models/pdfs");
-const dropboxV2Api = require("dropbox-v2-api");
-var cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: 'la-capsule-chau',
-  api_key: '215156496698694',
-  api_secret: 'a_eGuCdkfLlPZsizH_XWeYsVwwg' 
- });
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.post("/create-diploma", async (req, res) => {
-  const searchDiploma = await diplomaModel.findOne({
+router.post("/create-diploma-batch", async (req, res) => {
+  const searchDiploma = await DiplomaModel.findOne({
     year: req.body.year,
     curriculum: req.body.curriculum,
     promo: req.body.promo,
-    schoolId: req.body.schoolId,
+    // schoolId: req.body.schoolId,
   });
   if (searchDiploma) {
-    res.json({ result: false, msg: "Diplome est deja existant" });
+    res.json({ result: false, msg: "Batch deja existant" });
   } else {
-    const newDiploma = new diplomaModel({
+    const newDiploma = new DiplomaModel({
       name: req.body.name,
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
-      schoolId: req.body.schoolId,
+      // schoolId: req.body.schoolId,
       studentsId: [],
+      templateName: req.body.templateName,
     });
     const savedDiploma = await newDiploma.save();
-    res.json({ result: true, msg: "Diplome cree" });
+    res.json({ result: true, msg: "Batch cree" });
   }
 });
 
@@ -92,7 +86,7 @@ const diploma = {
   mention: "Tres bien",
 };
 
-router.get("/send-diploma", async (req, res) => {
+router.get("/create-pdf", async (req, res) => {
   // const template = await templateModel.findOne({ name: req.body.templateName });
   // const student = await studentModel.findById({ id: req.body.studentId });
   // const diploma = await diplomaModel.findOne({ name: req.body.diplomaName });
@@ -141,20 +135,170 @@ router.get("/send-diploma", async (req, res) => {
     template.mentionField.positionY
   );
   doc.end();
-  await cloudinary.uploader.upload("output.pdf", function(error, result) {console.log(result, error); });
 
-  res.json({ result: true });
+  res.json({ result: true, path: "/output.pdf" });
 });
 
-
-
-router.get('/batch', async (req, res) => {
-  const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
-  if (school_batches.length === 0){
-    return res.json({success: false, message:'no template or no school for this school id'})
+router.post("/create-student-diploma", async (req, res) => {
+  const searchStudent = await studentModel.findById(req.body.studentId);
+  if (!searchStudent) {
+    res.json({ result: false, msg: "Student non existant" });
+  } else {
+    const searchDiploma = searchStudent.diplomas.find(
+      (diploma) => diploma.id_batch === req.body.id_batch
+    );
+    if (searchDiploma) {
+      res.json({ result: false, msg: "Diplome deja existant" });
+    } else {
+      searchStudent.diplomas.push({
+        id_batch: req.body.id_batch,
+        mention: req.body.mention,
+        status: req.body.status,
+        url_SmartContract: "abc",
+      });
+      res.json({ result: true, msg: "Diplome cree" });
+    }
   }
-  return res.json({success: true, batches: school_batches})
-})
+});
 
+router.get("/get-student-diploma", async (req, res) => {});
+
+router.get("/batch", async (req, res) => {
+  // A MODIFIER QUAND DB EN FORME
+  //const school_batches = await diplomaModel.find({schoolId: req.query.school_id});
+  const school_batches = [
+    {
+      year: 2020,
+      curriculum: "Bac Technologique",
+      _id: "0001",
+      id_School: "00101",
+      template_name: "Bac tec",
+    },
+    {
+      year: 2021,
+      curriculum: "BTS mécanique",
+      _id: "0003",
+      id_School: "00103",
+      template_name: "BTS méca",
+    },
+    {
+      year: 2019,
+      curriculum: "BEP comptabilité",
+      _id: "0006",
+      id_School: "00101",
+      template_name: "BEP compta",
+    },
+  ];
+  //console.log('BATCHES FROM DB: ', school_batches);
+  if (school_batches.length === 0) {
+    return res.json({
+      success: false,
+      message: "no template or no school for this school id",
+    });
+  }
+  return res.json({ success: true, batches: school_batches });
+});
+
+router.get("/template", async (req, res) => {
+  // A MODIFIER QUAND DB EN FORME
+  //const school = await schoolModel.findOne({schoolId: req.query.school_id});
+  const school = {
+    _id: "6101084673a5f1dcafefa064c",
+    client_id: ["60ffda648dac09e6d540eb27"],
+    id_students: [],
+    templates: [
+      {
+        _id: "010001",
+        template_name: "Bac tec",
+        firstname_field: {
+          name: "prénom",
+          position_x: 10,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        lastname_field: {
+          name: "nom",
+          position_x: 40,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        birth_date_field: {
+          name: "date de naissance",
+          position_x: 160,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        autresChamps: "PAS UTILE POUR LE MOMENT",
+      },
+      {
+        _id: "010002",
+        template_name: "BTS méca",
+        firstname_field: {
+          name: "prénom",
+          position_x: 10,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        lastname_field: {
+          name: "nom",
+          position_x: 40,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        birth_date_field: {
+          name: "date de naissance",
+          position_x: 160,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        autresChamps: "PAS UTILE POUR LE MOMENT",
+      },
+      {
+        _id: "010003",
+        template_name: "BEP compta",
+        firstname_field: {
+          name: "prénom",
+          position_x: 10,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        lastname_field: {
+          name: "nom",
+          position_x: 40,
+          autresChamps: "PAS UTILE POUR LE MOMENT",
+        },
+        autresChamps: "PAS UTILE POUR LE MOMENT",
+      },
+    ],
+  };
+  //console.log('school: ', school);
+  const template = school.templates.filter(
+    (template) => template.template_name === req.query.template_name
+  );
+
+  if (template.length === 0) {
+    return res.json({
+      success: false,
+      message: "no template or no school found",
+    });
+  }
+  //console.log('template: ', template[0]);
+  return res.json({ success: true, template: template[0] });
+});
+
+router.post("/post-csv-import", async (req, res) => {
+  const dataStudent = req.body;
+  //console.log('DATA: ', dataStudent);
+  let student = await studentModel.findOne({ email: dataStudent.email });
+  console.log("STUDENT 1: ", student);
+  if (!student) {
+    student = new studentModel({ ...dataStudent });
+  }
+  student.diplomas.push(dataStudent.diplom_student[0]);
+  console.log("STUDENT 2: ", student);
+  const studentSaved = await student.save();
+
+  if (studentSaved) {
+    res.json({ success: true });
+  } else {
+    res.json({
+      success: false,
+      message: `data of student with email ${dataStudent.email} are not saved.`,
+    });
+  }
+});
 
 module.exports = router;
