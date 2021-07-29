@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-const DiplomaModel = require("../models/diplomas");
+const BatchModel = require("../models/batches");
 const schoolModel = require("../models/schools");
 const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
@@ -11,18 +11,17 @@ router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
 });
 
-router.post("/create-diploma-batch", async (req, res) => {
-  const searchDiploma = await DiplomaModel.findOne({
+router.post("/create-batch", async (req, res) => {
+  const searchBatch = await BatchModel.findOne({
     year: req.body.year,
     curriculum: req.body.curriculum,
     promo: req.body.promo,
     // schoolId: req.body.schoolId,
   });
-  if (searchDiploma) {
+  if (searchBatch) {
     res.json({ result: false, msg: "Batch deja existant" });
   } else {
-    const newDiploma = new DiplomaModel({
-      name: req.body.name,
+    const newBatch = new BatchModel({
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
@@ -30,7 +29,7 @@ router.post("/create-diploma-batch", async (req, res) => {
       studentsId: [],
       templateName: req.body.templateName,
     });
-    const savedDiploma = await newDiploma.save();
+    const savedBatch = await newBatch.save();
     res.json({ result: true, msg: "Batch cree" });
   }
 });
@@ -79,7 +78,7 @@ const student = {
   lastName: "Hoang",
 };
 
-const diploma = {
+const batch = {
   cursus: "Web Dev Fullstack JS",
   promo: 34,
   year: 2021,
@@ -89,7 +88,7 @@ const diploma = {
 router.get("/create-pdf", async (req, res) => {
   // const template = await templateModel.findOne({ name: req.body.templateName });
   // const student = await studentModel.findById({ id: req.body.studentId });
-  // const diploma = await diplomaModel.findOne({ name: req.body.diplomaName });
+  // const batch = await BatchModel.findOne({ name: req.body.batchName });
   const doc = new PDFDocument({ size: "A4", layout: "landscape" });
   doc.pipe(fs.createWriteStream("output.pdf"));
   doc.text(
@@ -103,17 +102,17 @@ router.get("/create-pdf", async (req, res) => {
     template.lastNameField.positionY
   );
   doc.text(
-    diploma.cursus,
+    batch.cursus,
     template.cursusField.positionX,
     template.cursusField.positionY
   );
   doc.text(
-    "Promo " + diploma.promo,
+    "Promo " + batch.promo,
     template.promoField.positionX,
     template.promoField.positionY
   );
   doc.text(
-    diploma.year,
+    batch.year,
     template.yearField.positionX,
     template.yearField.positionY
   );
@@ -130,7 +129,7 @@ router.get("/create-pdf", async (req, res) => {
     { scale: template.signatureField.scale }
   );
   doc.text(
-    "Mention: " + diploma.mention,
+    "Mention: " + batch.mention,
     template.mentionField.positionX,
     template.mentionField.positionY
   );
@@ -139,7 +138,7 @@ router.get("/create-pdf", async (req, res) => {
   res.json({ result: true, path: "/output.pdf" });
 });
 
-router.post("/create-student-diploma", async (req, res) => {
+router.post("/create-diploma", async (req, res) => {
   const searchStudent = await studentModel.findById(req.body.studentId);
   if (!searchStudent) {
     res.json({ result: false, msg: "Student non existant" });
@@ -161,7 +160,7 @@ router.post("/create-student-diploma", async (req, res) => {
   }
 });
 
-router.get("/get-student-diploma", async (req, res) => {});
+router.get("/get-diploma", async (req, res) => {});
 
 router.get("/batch", async (req, res) => {
   // A MODIFIER QUAND DB EN FORME

@@ -4,7 +4,7 @@ const diplomSchema = new mongoose.Schema({
   url_SmartContract: String,
   mention: String,
   status: String,
-  id_batch: { type: mongoose.Schema.Types.ObjectId, ref: "diplomas" },
+  id_batch: { type: mongoose.Schema.Types.ObjectId, ref: "batches" },
 })
 
 const studentSchema = new mongoose.Schema({
