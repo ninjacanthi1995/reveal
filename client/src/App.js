@@ -22,7 +22,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={ScreenHome} />
-          <Route exact path="/NewUserRequest" component={NewUserRequest} />
+          <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/import" component={ImportStudentScreen} />
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route exact path="/create-diplomas" component={CreateDiplomas} />
