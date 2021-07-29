@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Input, InputNumber, Select, Layout, Form, Button } from "antd";
+import React, { useState, useEffect } from "react";
+import { Input, InputNumber, Select, Layout, Form, Button, message } from "antd";
 import Navbar from "./Navbar";
 import { Typography } from "antd";
 
@@ -14,17 +14,41 @@ export default function CreateBatch() {
   const [curriculum, setCurriculum] = useState("");
   const [promo, setPromo] = useState(null);
   const [templateName, setTemplateName] = useState("");
-  // const [schoolId, setSchoolId] = useState('123');
+  const [school_id, setSchool_id] = useState("");
+  const [templateList, setTemplateList] = useState([]);
+  useEffect(() => {
+    const school_id = "6101c0b6208679b2ab7f0884"
+    // const school_id = window.localStorage.getItem('school_id')
+    setSchool_id(school_id)
+    const getTemplates = async ()=>{
+      const request = await fetch(`/templates/get-templates/${school_id}`)
+      const response = await request.json()
+      if(response.result){
+        setTemplateList(response.templateList)
+      }else{
+        message.error(response.error)
+      }
+    }
+    getTemplates()
+  }, []);
+
+  console.log(`school_id`, school_id)
 
   const onFinish = async () => {
-    await fetch("/create-batch", {
+    const request = await fetch("/create-batch", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
+      body: `year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}&school_id=${school_id}`,
     });
-    setYear(2021);
+    const response = await request.json()
+    if(response.result){
+      message.success(response.msg)
+    }else {
+      message.error(response.msg)
+    }
+    setYear(null);
     setCurriculum("");
-    setPromo(1);
+    setPromo(null);
     setTemplateName("");
   };
 
@@ -38,6 +62,7 @@ export default function CreateBatch() {
             <InputNumber
               style={styles.input}
               placeholder="Year"
+              value={year}
               onChange={(value) => setYear(value)}
               defaultValue={year}
               required
@@ -48,8 +73,8 @@ export default function CreateBatch() {
             <Input
               style={styles.input}
               placeholder="Cursus"
-              onChange={(e) => setCurriculum(e.target.value)}
               value={curriculum}
+              onChange={(e) => setCurriculum(e.target.value)}
               required
             />
           </Form.Item>
@@ -58,6 +83,7 @@ export default function CreateBatch() {
             <InputNumber
               style={styles.input}
               placeholder="Promo"
+              value={promo}
               onChange={(value) => setPromo(value)}
               defaultValue={promo}
               required
@@ -69,10 +95,12 @@ export default function CreateBatch() {
               <Select
                 style={styles.input}
                 placeholder="Select a template"
+                value={templateName}
                 onSelect={(value) => setTemplateName(value)}
               >
-                <Option value="template 1">Template 1</Option>
-                <Option value="template 2">Template 2</Option>
+                {templateList.map(template => {
+                  return <Option key={template.template_name} value={template.template_name}>{template.template_name}</Option>
+                })}
               </Select>
             </Input.Group>
           </Form.Item>

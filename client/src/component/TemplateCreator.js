@@ -20,7 +20,6 @@ export default function TemplateCreator() {
   
   const [template_name, setTemplate_name] = useState("");
   
-  console.log(`school_id`, school_id)
   const handleSubmit = async () => {
     const checkBackground = templateElements.findIndex(e => e.type === "imageBackground") >= 0
     const checkFirstname = requiredElements.findIndex(e => e.value === "firstname") >= 0

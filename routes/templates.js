@@ -7,7 +7,16 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET 
- });
+});
+
+router.get("/get-templates/:school_id", async (req, res) => {
+  const school = await SchoolModel.findById(req.params.school_id)
+  if(!school){
+    res.json({result: false, error: "Nous ne retrouvons pas votre école 😭"})
+  }else{
+    res.json({result:true, templateList: school.templates})
+  }
+})
 
 router.post("/create/:school_id", async function (req, res) {
   console.log(`req.params.school_id`, req.params.school_id)
