@@ -38,7 +38,7 @@ console.log(body);
     }
 
     if(userExists){
-    return <Redirect to='/create-diplomas'/>
+    return <Redirect to='/create-batch'/>
     }
 
     

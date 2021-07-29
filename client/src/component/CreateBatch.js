@@ -9,21 +9,19 @@ const { Content } = Layout;
 
 const { Option } = Select;
 
-export default function CreateDiplomaBatch() {
-  const [name, setName] = useState("");
-  const [year, setYear] = useState(2021);
+export default function CreateBatch() {
+  const [year, setYear] = useState(null);
   const [curriculum, setCurriculum] = useState("");
-  const [promo, setPromo] = useState(1);
+  const [promo, setPromo] = useState(null);
   const [templateName, setTemplateName] = useState("");
   // const [schoolId, setSchoolId] = useState('123');
 
   const onFinish = async () => {
-    await fetch("/create-diploma-batch", {
+    await fetch("/create-batch", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `name=${name}&year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
+      body: `year=${year}&curriculum=${curriculum}&promo=${promo}&templateName=${templateName}`,
     });
-    setName("");
     setYear(2021);
     setCurriculum("");
     setPromo(1);
@@ -35,79 +33,38 @@ export default function CreateDiplomaBatch() {
       <Navbar></Navbar>
       <Content style={styles.content}>
         <Title>Créez vos batchs</Title>
-        <Form onFinish={onFinish} style={{ width: "50%" }}>
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le nom du diplome batch!",
-              },
-            ]}
-          >
-            <Input
-              style={styles.input}
-              placeholder="Name"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
-          </Form.Item>
-
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir l'annne du diplome batch!",
-              },
-            ]}
-          >
+        <Form style={{ width: "50%" }}>
+          <Form.Item>
             <InputNumber
               style={styles.input}
               placeholder="Year"
               onChange={(value) => setYear(value)}
               defaultValue={year}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le cursus du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <Input
               style={styles.input}
               placeholder="Cursus"
               onChange={(e) => setCurriculum(e.target.value)}
               value={curriculum}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez remplir le promo du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <InputNumber
               style={styles.input}
               placeholder="Promo"
               onChange={(value) => setPromo(value)}
               defaultValue={promo}
+              required
             />
           </Form.Item>
 
-          <Form.Item
-            rules={[
-              {
-                required: true,
-                message: "Veuillez choisir le template du diplome batch!",
-              },
-            ]}
-          >
+          <Form.Item>
             <Input.Group compact>
               <Select
                 style={styles.input}
@@ -121,7 +78,12 @@ export default function CreateDiplomaBatch() {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" style={styles.input}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={styles.input}
+              onClick={onFinish}
+            >
               Submit
             </Button>
           </Form.Item>
