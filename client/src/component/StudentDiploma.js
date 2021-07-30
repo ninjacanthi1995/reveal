@@ -10,18 +10,18 @@ export default function StudentDiploma() {
   const { studentId, batchId } = useParams();
 
   useEffect(() => {
-    fetch(`/create-pdf/?studentId=${studentId}&id_batch=${batchId}`);
+    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
   }, []);
 
   const handleDownload = () => {
-    fetch(`/create-pdf/?studentId=${studentId}&id_batch=${batchId}`).then(
-      window.open("/diploma_student1_batch1.pdf", "_blank")
+    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
+      window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank")
     );
-    fetch(`/delete-pdf/?studentId=${studentId}&id_batch=${batchId}`);
+    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
   };
 
   function onDocumentLoadSuccess() {
-    fetch(`/delete-pdf/?studentId=${studentId}&id_batch=${batchId}`);
+    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
   }
 
   return (
@@ -34,7 +34,7 @@ export default function StudentDiploma() {
         Download
       </Button>
       <Document
-        file="/diploma_student1_batch1.pdf"
+        file={`/diploma_student${studentId}_batch${batchId}.pdf`}
         onLoadSuccess={onDocumentLoadSuccess}
       >
         <Page pageNumber={1} />
