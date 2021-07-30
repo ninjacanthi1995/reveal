@@ -26,9 +26,12 @@
     "express-fileupload": "^1.2.1",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
+    "nodemon": "^2.0.12",
     "pdf-lib": "^1.6.0",
     "pdfkit": "^0.12.1",
-    "uid2": "0.0.3"
+    "to": "^0.2.9",
+    "uid2": "0.0.3",
+    "update": "^0.7.4"
   },
   "devDependencies": {
     "supertest": "^6.1.4"

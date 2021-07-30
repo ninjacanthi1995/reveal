@@ -2,8 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {Input,Button} from 'antd';
 import {Redirect, Link} from 'react-router-dom';
-
-
+import { MailOutlined, LockOutlined } from '@ant-design/icons';
 
 
 
@@ -51,8 +50,8 @@ console.log(body);
     <div>
 
             <div className = "header"  >
-                <Link to="/"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
-                <Link to="/NewUserRequest" style={{height:80, margin:10, marginRight:30}}>Demander mon accès</Link>
+                <Link to="/template-management"><img src="/reveal.png" style={{height:80, margin:10, marginLeft:30}} alt="Reveal" /></Link>
+                <Link to="/new-user-request" style={{height:80, margin:10, marginRight:30}}>Demander mon accès</Link>
             </div> 
 
 
@@ -62,9 +61,9 @@ console.log(body);
 
             <div className="Sign" >
 
-                    <Input onChange= {(e) => setSignInEmail(e.target.value)} className="Login-input" placeholder="votre adresse email"  />
+                    <Input onChange= {(e) => setSignInEmail(e.target.value)} className="Login-input" placeholder= "votre adresse email" prefix={<MailOutlined style={{fontSize: 20, color: 'grey'}}  />} />
 
-                    <Input.Password onChange={(e) => setSignInPassword(e.target.value)} className="Login-input" placeholder="password"  />
+                    <Input.Password onChange={(e) => setSignInPassword(e.target.value)} className="Login-input" placeholder="password" prefix={<LockOutlined style={{fontSize: 20, color: 'grey'}}  />} />
                     {listErrorsSignin.map((error,i) => {
                     return(<p>{error}</p>)
     })}
