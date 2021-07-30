@@ -163,13 +163,12 @@ router.post("/create-diploma", async (req, res) => {
 router.get("/get-diploma", async (req, res) => {});
 
 router.get("/batch", async (req, res) => {
-  // A MODIFIER QUAND DB EN FORME
-  //const school_batches = await BatchModel.find({schoolId: req.query.school_id});
-  const school_batches = [
+  const school_batches = await BatchModel.find({schoolId: req.query.school_id});
+  /* const school_batches = [
     {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
     {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
     {year: 2021, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
-  ]
+  ] */
   //console.log('BATCHES FROM DB: ', school_batches);
   if (school_batches.length === 0) {
     return res.json({
@@ -181,9 +180,8 @@ router.get("/batch", async (req, res) => {
 });
 
 router.get("/template", async (req, res) => {
-  // A MODIFIER QUAND DB EN FORME
-  //const school = await schoolModel.findOne({schoolId: req.query.school_id});
-  const school = {
+  const school = await schoolModel.findOne({schoolId: req.query.school_id});
+  /* const school = {
     _id: "6101084673a5f1dcafefa064c",
     client_id: ["60ffda648dac09e6d540eb27"],
     id_students: [],
@@ -254,7 +252,7 @@ router.get("/template", async (req, res) => {
         autresChamps: "PAS UTILE POUR LE MOMENT",
       },
     ],
-  };
+  }; */
   //console.log('school: ', school);
   const template = school.templates.filter(
     (template) => template.template_name === req.query.template_name
@@ -293,7 +291,6 @@ router.post('/post-csv-import', async (req, res) => {
   ///// 2 - add student._id in the batch document
   let batch = await BatchModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
   if (!batch) {
-    //batch = new BatchModel({year: 2021, curriculum: 'BTS mécanique', schoolId:'6101c0b6208679b2ab7f0884', templateName: 'BTS méca', studentsId: []})
     return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
   }
   //console.log('BATCH: ', batch);

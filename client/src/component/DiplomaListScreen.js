@@ -88,8 +88,8 @@ const DiplomaListScreen = () => {
   
   
   useEffect(() => {
-    const schoolId = '6101084673a5f1dcafefa064';
-    //const schoolId = window.localStorage.getItem('school_id');    // DECOMMENTER QUAND LOCALSTORE FONCTIONNEL
+    //const schoolId = '6101084673a5f1dcafefa064';
+    const schoolId = window.localStorage.getItem('school_id');
     setSchoolId(schoolId);
     
     
@@ -114,11 +114,11 @@ const DiplomaListScreen = () => {
   
   useEffect(() => {
     const getData = async () => {
-      //const rawData = await fetch(`/batches-populated?schoolId=${schoolId}&year=${selectedYear}`);
-      //const data = await rawData.json();
-      //const batchesOfYearWithStudents = data.batchesOfYearWithStudents;
+      const rawData = await fetch(`/batches-populated?schoolId=${schoolId}&year=${selectedYear}`);
+      const data = await rawData.json();
+      const batchesOfYearWithStudents = data.batchesOfYearWithStudents;
       //console.log('populated: ', batchesOfYearWithStudents);
-      const batchesOfYearWithStudents = [
+/*       const batchesOfYearWithStudents = [
         {
           _id:'6101c206564b97b34f9e16ea',
           year: 2021,
@@ -199,7 +199,7 @@ const DiplomaListScreen = () => {
             }
           ]
         }
-      ];
+      ]; */
       let curriculumList = [];
       let promoList = [];
       let tempData = [];
@@ -281,3 +281,6 @@ const DiplomaListScreen = () => {
 };
 
 export default DiplomaListScreen;
+
+
+// REGLER LE FILTRAGE DU STATUS ET LA SELECTION DES ROW

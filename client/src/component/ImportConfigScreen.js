@@ -39,8 +39,8 @@ const ImportConfigScreen = () => {
   },[list])
 
   useEffect(() => {
-    const schoolId = '6101084673a5f1dcafefa064';
-    //const schoolId = window.localStorage.getItem('school_id');    // DECOMMENTER QUAND LOCALSTORE FONCTIONNEL
+    //const schoolId = '6101084673a5f1dcafefa064';
+    const schoolId = window.localStorage.getItem('school_id');
     setSchoolId(schoolId);
     const fetchBatches = async () => {
       const rawData = await fetch(`/batch?school_id=${schoolId}`);
