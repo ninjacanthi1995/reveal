@@ -21,6 +21,6 @@ export default function NewUserRequest() {
                 <Link to="/">Retour à la page de connexion</Link>
             </div>
         </div>
-        </div>
+</div>
     );
     }
