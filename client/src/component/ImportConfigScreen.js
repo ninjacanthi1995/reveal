@@ -36,7 +36,7 @@ const ImportConfigScreen = () => {
   useEffect(() => {
     setHeaders(list.data[0]);
     setStudentList(list.data.splice(1));
-  },[list])
+  },[list]);
 
   useEffect(() => {
     //const schoolId = '6101084673a5f1dcafefa064';
@@ -61,7 +61,7 @@ const ImportConfigScreen = () => {
     const selected = batchList.filter(bach => bach._id === batchId)[0];
     setSelectedBatch(selected);
     //console.log('SELECTED: ',selected);
-    const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.template_name}`);
+    const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.templateName}`);
     const data = await rawData.json();
     const templateFromDB = data.template;
     //console.log('templateFromDB: ', templateFromDB);
@@ -91,9 +91,9 @@ const ImportConfigScreen = () => {
         firstname: student[fieldToIndexMapping.firstname_field],
         lastname: student[fieldToIndexMapping.lastname_field],
         birth_date: student[fieldToIndexMapping.birth_date_field],
-        diplom_student: [{
+        diplomas: [{
           url_SmartContract: null,
-          mention: null,        // REVOIR POUR RECUP LA MENTION DANS LE CSV
+          mention: student[fieldToIndexMapping.mention_field],
           id_batch: selectedBatch._id,
           status: status.not_confirmed
         }]
@@ -177,7 +177,7 @@ const ImportConfigScreen = () => {
 
       <Button
         type="primary"
-        disabled={Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
+        disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
         onClick={onValidButton}
       >Valider</Button>
 
@@ -187,7 +187,7 @@ const ImportConfigScreen = () => {
   )
 }
 
-
+// DISABLED LE BUTTON VALIDER QUAND AUCUN BATCH SELECTIONNER
 // PRESENTATION SOUS FORME DE TABLEAU PLUS CLAIRE??
 
 export default ImportConfigScreen;
