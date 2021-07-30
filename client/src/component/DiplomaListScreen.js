@@ -5,7 +5,7 @@ import { Table } from 'antd';
 
 import { statusFilters } from '../helpers/status';
 
-import { Select, Typography, Button } from 'antd';
+import { Select, Typography } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
 
@@ -34,8 +34,7 @@ const DiplomaListScreen = () => {
   const now = new Date();
   const [optionsYear, setOptionsYear] = useState([]);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
-  const [batchList, setBatchList] = useState([]);
-  const [schoolId, setSchoolId] = useState('');
+  //const [schoolId, setSchoolId] = useState('');
   const [data, setData] = useState([]);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
@@ -90,14 +89,11 @@ const DiplomaListScreen = () => {
   useEffect(() => {
     //const schoolId = '6101084673a5f1dcafefa064';
     const schoolId = window.localStorage.getItem('school_id');
-    setSchoolId(schoolId);
-    
-    
-    
+    //setSchoolId(schoolId);
+
     const fetchBatches = async () => {
       const rawData = await fetch(`/batch?school_id=${schoolId}`);
       const response = await rawData.json();
-      setBatchList(response.batches);
       
       let batchYears = response.batches.map(batch => batch.year);
       batchYears = [...new Set(batchYears)];      //[...new Set(array)] sert à retirer les year en doublon
@@ -114,6 +110,7 @@ const DiplomaListScreen = () => {
   
   useEffect(() => {
     const getData = async () => {
+      const schoolId = window.localStorage.getItem('school_id');  // nécessaire pour avoir schoolId au 1er render (pas commode de le stoker dans un useState)
       const rawData = await fetch(`/batches-populated?schoolId=${schoolId}&year=${selectedYear}`);
       const data = await rawData.json();
       const batchesOfYearWithStudents = data.batchesOfYearWithStudents;
@@ -259,10 +256,13 @@ const DiplomaListScreen = () => {
   return (
     <>
       <Navbar/>
-      <Title level={4}>Séléctionner l'année: 
+      <Title 
+        level={4}
+        style={{marginLeft: 5, marginTop: 10}}
+      >Séléctionner l'année: 
         <Select
           defaultValue={now.getFullYear()}
-          style={{width:100}}
+          style={{width:100, marginLeft: 10}}
           onChange={(year) => {setSelectedYear(year)}}
         >
           {optionsYear}
@@ -275,6 +275,7 @@ const DiplomaListScreen = () => {
         onChange={onChange} 
         rowSelection={{...rowSelection}}
         scroll={{y: 200}}               // A AFFINER - le plus grand possible
+        style={{marginLeft: 5, marginRight: 5}}
       />
     </>
   )
