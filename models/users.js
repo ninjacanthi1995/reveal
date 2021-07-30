@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
     email : String,
     password : String,
     admin : String,
-    school_id : String,
+    school_id : {type:mongoose.Schema.Types.ObjectId, ref: 'schools'},
     // token: String
 });
 
