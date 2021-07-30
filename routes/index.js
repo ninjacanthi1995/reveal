@@ -6,7 +6,10 @@ const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 var cloudinary = require("cloudinary").v2;
-request = require("request");
+const fetch = require("node-fetch");
+
+const pdfWidth = 841.89;
+const pdfHeight = 595.28;
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -106,6 +109,7 @@ router.get("/create-pdf", async (req, res) => {
   ) {
     res.json({ result: false, msg: "File existe" });
   } else {
+    console.log("ok2");
     const searchSchool = await schoolModel.findById(searchBatch.schoolId);
     const searchTemplate = searchSchool.templates.find(
       (template) => template.template_name === searchBatch.templateName
@@ -116,6 +120,49 @@ router.get("/create-pdf", async (req, res) => {
         `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
       )
     );
+
+    fetch(searchTemplate.background_image_field.imagePreview).then((res) => {
+      const dest = fs.createWriteStream("./client/public/backgroundImage.jpg");
+      res.body.pipe(dest);
+      doc.image(
+        "./client/public/backgroundImage.jpg",
+        searchTemplate.background_image_field.position.x,
+        searchTemplate.background_image_field.position.y,
+        { width: 100, height: 100 }
+      );
+    });
+
+    // const response = await fetch(searchTemplate.background_image_field.imagePreview);
+    // const dest = fs.createWriteStream(
+    //   "./client/public/backgroundImage.jpeg"
+    // );
+    // await response.body.pipe(dest);
+    // doc.image(
+    //   "./client/public/backgroundImage.jpeg",
+    //   searchTemplate.background_image_field.position.x,
+    //   searchTemplate.background_image_field.position.y,
+    //   {
+    //     width: 100,
+    //       // (Number(
+    //       //   searchTemplate.background_image_field.size.width.slice(
+    //       //     0,
+    //       //     searchTemplate.background_image_field.size.width.length - 1
+    //       //   )
+    //       // ) *
+    //       //   pdfWidth) /
+    //       // 100,
+    //     height: 100
+    //       // (Number(
+    //       //   searchTemplate.background_image_field.size.height.slice(
+    //       //     0,
+    //       //     searchTemplate.background_image_field.size.height.length - 1
+    //       //   )
+    //       // ) *
+    //       //   pdfHeight) /
+    //       // 100,
+    //   }
+    // );
+
     doc.fontSize(searchTemplate.firstname_field.style.fontSize);
     doc
       .fillColor(searchTemplate.firstname_field.style.color)
@@ -167,7 +214,38 @@ router.get("/create-pdf", async (req, res) => {
         searchTemplate.mention_field.position.x,
         searchTemplate.mention_field.position.y
       );
+
+    // searchTemplate.static_fields.forEach((field, i) => {
+    //   if (field.type === "text") {
+    //     doc
+    //       .fillColor(field.style.color)
+    //       .text(field.value, field.position.x, field.position.y);
+    //   } else {
+    //     fetch(field.imagePreview).then((response) => {
+    //       const dest = fs.createWriteStream(`./client/public/image${i}.png`);
+    //       response.body.pipe(dest);
+    //       doc.image(
+    //         `./client/public/image${i}.png`,
+    //         field.position.x,
+    //         field.position.y,
+    //         {
+    //           width:
+    //             Number(field.size.width.slice(0, field.size.width.length - 2)) *
+    //             0.75,
+    //           height:
+    //             Number(
+    //               field.size.height.slice(0, field.size.width.length - 2)
+    //             ) * 0.75,
+    //         }
+    //       );
+    //       fs.unlinkSync(`./client/public/image${i}.png`);
+    //     });
+    //   }
+    // });
+
     doc.end();
+
+    fs.unlinkSync("./client/public/backgroundImage.jpg");
 
     res.json({ result: true });
   }
