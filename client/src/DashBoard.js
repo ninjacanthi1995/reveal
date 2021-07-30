@@ -19,7 +19,7 @@ export default function DashBoard() {
         <>
         <Navbar/>
         <div>
-        
+
 <div className="dashboard-page" style={{backgroundImage: "url('/dashboard2.png')" , opacity: "75%"}}>
     <div>  
         <h1 className="dashboard-h1" >Dashboard</h1>
