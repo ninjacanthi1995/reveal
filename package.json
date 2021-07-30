@@ -4,16 +4,36 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build",
+    "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-brands-svg-icons": "^5.15.3",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@google-cloud/storage": "^5.11.0",
+    "@shelf/jest-mongodb": "^2.0.1",
+    "antd": "^4.16.8",
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.26.2",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^10.0.0",
+    "download-file": "^0.1.5",
     "express": "~4.16.1",
+    "express-fileupload": "^1.2.1",
     "mongoose": "^5.13.3",
     "morgan": "~1.9.1",
-    "uid2": "0.0.3"
+    "nodemon": "^2.0.12",
+    "pdf-lib": "^1.6.0",
+    "pdfkit": "^0.12.1",
+    "to": "^0.2.9",
+    "uid2": "0.0.3",
+    "update": "^0.7.4"
+  },
+  "devDependencies": {
+    "supertest": "^6.1.4"
   }
 }
