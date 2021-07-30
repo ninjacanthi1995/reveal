@@ -8,7 +8,7 @@ import BackgroundImage from './BackgroundImage'
 const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
   const elementList = templateElements.map((element, index) => {
-    if(element.type === "text"){
+    if(element.type === "text" || element.type === "dynamic"){
       return <Text 
         key={index}
         element={element.element}
