@@ -15,7 +15,6 @@ export default function SettingsScreen() {
     window.localStorage.removeItem('school_id')
     history.push("/");
   }
-
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar></Navbar>
