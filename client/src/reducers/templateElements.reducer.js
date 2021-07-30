@@ -22,7 +22,8 @@ const templateReducer = (templateElements = [], action) => {
       }
     }else if(action.elementType === "dynamic"){
       element = {
-        name: action.dynamicType.value,
+        dynamicValue: action.dynamicType.value,
+        name: action.dynamicType.title,
         size: {width: "unset", height: "unset"},
         position: {x:0, y:0},
         value: `{{${action.dynamicType.title}}}`,

@@ -48,6 +48,7 @@ const Text = ({element, type, index}) => {
       index,
       elementType: type,
       element:{
+        dynamicValue: type === "dynamic" && element.dynamicValue,
         name: type === "dynamic" && element.name,
         size,
         position,
