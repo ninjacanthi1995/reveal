@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { readString } from 'react-papaparse';
-import { Upload, Button } from 'antd';
+import { Upload, Button, Typography } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { Redirect } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
+import Colors from '../helpers/colors';
+
 import Navbar from './Navbar';
+
+const { Title } = Typography;
 
 const ImportStudentScreen = () => {
 
@@ -31,8 +35,6 @@ const ImportStudentScreen = () => {
           setFileIsUploaded(true);
         }, 1000);
         
-        //console.log('UPLOADED');
-
         // Prevent upload
         return false;
     },
@@ -41,15 +43,28 @@ const ImportStudentScreen = () => {
 
   return (
     <div>
-      <Navbar></Navbar>
       {fileIsUploaded && <Redirect to='/import-config' />}
+      <Navbar />
+      <Title>Téléchargez votre fichier .CSV:</Title>
       <Upload {...props}>
           <Button 
+            type='primary'
+            shape='round'
+            size='large'
             icon={<UploadOutlined />}
+            style={styles.uploadButton}
           >Télécharger</Button>
       </Upload>
     </div>
   )
+}
+
+const styles = {
+  uploadButton: {
+    backgroundColor: Colors.green,
+    border: Colors.green,
+    margin: 'auto'
+  }
 }
 
 

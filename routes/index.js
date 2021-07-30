@@ -186,7 +186,6 @@ router.get("/batch", async (req, res) => {
     {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
     {year: 2021, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
   ] */
-  //console.log('BATCHES FROM DB: ', school_batches);
   if (school_batches.length === 0) {
     return res.json({
       success: false,
@@ -197,7 +196,8 @@ router.get("/batch", async (req, res) => {
 });
 
 router.get("/template", async (req, res) => {
-  const school = await schoolModel.findOne({schoolId: req.query.school_id});
+  const school = await schoolModel.findOne({_id: req.query.school_id});
+  
   /* const school = {
     _id: "6101084673a5f1dcafefa064c",
     client_id: ["60ffda648dac09e6d540eb27"],
@@ -270,11 +270,11 @@ router.get("/template", async (req, res) => {
       },
     ],
   }; */
-  //console.log('school: ', school);
-  const template = school.templates.filter(
-    (template) => template.template_name === req.query.template_name
-  );
 
+  const template = school.templates.filter(
+    (item) => item.template_name === req.query.template_name
+  );
+    
   if (template.length === 0) {
     return res.json({
       success: false,
@@ -289,15 +289,22 @@ router.post("/post-csv-import", async (req, res) => {
   ///// 1 - save diploma in the student document
   const dataStudent = req.body;
   //console.log('DATA: ', dataStudent);
+  const batchId = dataStudent.diplomas[0].id_batch;
   let student = await studentModel.findOne({
     email: dataStudent.email,
   });
+  // Check if diploma is already registered in the student data.
+  if (student){
+    const diplomaIsAlreadyRegistered = student.diplomas.filter(diploma => diploma.id_batch == batchId).length > 0;
+    if (diplomaIsAlreadyRegistered){
+      return res.json({success: true, message: `this diploma was already registered to the student ${student.lastname}`});
+    }
+    student.diplomas.push(dataStudent.diplomas[0]);
+  }
   //console.log('STUDENT 1: ', student);
   if (!student) {
     student = new studentModel({ ...dataStudent });
   }
-  // AJOUT CONTROLE DIPLOME DEJA PRESENT CHEZ LE STUDENT ??
-  student.diplomas.push(dataStudent.diplom_student[0]);
   //console.log('STUDENT 2: ', student);
   const studentSaved = await student.save();
 
@@ -309,7 +316,7 @@ router.post("/post-csv-import", async (req, res) => {
   }
 
   ///// 2 - add student._id in the batch document
-  let batch = await BatchModel.findOne({_id: dataStudent.diplom_student[0].id_batch});
+  let batch = await BatchModel.findOne({_id: dataStudent.diplomas[0].id_batch});
   if (!batch) {
     return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
   }
@@ -327,6 +334,8 @@ router.post("/post-csv-import", async (req, res) => {
   }
   //console.log(`student ${studentSaved.lastname} saved in Batch`)
   res.json({success: true});
+
+  // AJOUTER AUSSI LE STUDENT ID DANS LA TABLE DE SA SCHOOL ????
 });
 
 
