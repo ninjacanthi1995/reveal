@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { Button, Breadcrumb, Input, message } from 'antd';
 import 'antd/dist/antd.css'
 import { useSelector } from 'react-redux';
+import { useHistory } from "react-router-dom"
 
 import colors from '../helpers/colors'
 import Navbar from './Navbar'
@@ -9,12 +10,13 @@ import ToolBox from "./template/ToolBox"
 import Displayer from "./template/Displayer"
 
 export default function TemplateCreator() {
+  let history = useHistory();
   const templateElements = useSelector(state => state.templateElements)
   const requiredElements = useSelector(state => state.requiredElements)
+  const [isLoading, setIsLoading] = useState(false);
   const [school_id, setSchool_id] = useState("");
   useEffect(() => {
-    const school_id = "6101c0b6208679b2ab7f0884"
-    // const school_id = window.localStorage.getItem('school_id')
+    const school_id = window.localStorage.getItem('school_id')
     setSchool_id(school_id)
   }, []);
   
@@ -34,48 +36,59 @@ export default function TemplateCreator() {
     }else if(!checkRequired){
       message.error("Le prénom et nom de l'élève, ainsi que son année sont requis 🤓")
     }else{
-      const template = {
-        template_name: template_name,
-        firstname_field: false,
-        lastname_field: false,
-        birth_date_field: false,
-        curriculum_field: false,
-        promo_field: false,
-        year_field: false,
-        background_image_field: false,
-        mention_field: false,
-        static_fields: []
-      }
-      const elements = templateElements.map(element => {
-        return { type: element.type, ...element.element }
-      })
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        if(element.type !== 'dynamic' && element.type !== "imageBackground"){
-          delete element.name
-          template.static_fields.push(element)
-        }else if(element.type === "imageBackground") {
-          template.background_image_field = element
-        }else{
-          element.type = "text"
-          for (const key in template) {
-            if (Object.hasOwnProperty.call(template, key) && key.includes(element.name)) {
-              template[key] = element
+      setIsLoading(true)
+      if(!isLoading){
+        const template = {
+          template_name: template_name,
+          firstname_field: false,
+          lastname_field: false,
+          birth_date_field: false,
+          curriculum_field: false,
+          promo_field: false,
+          year_field: false,
+          background_image_field: false,
+          mention_field: false,
+          static_fields: []
+        }
+        const elements = templateElements.map(element => {
+          return { type: element.type, ...element.element }
+        })
+        for (let i = 0; i < elements.length; i++) {
+          const element = elements[i];
+          if(element.type !== 'dynamic' && element.type !== "imageBackground"){
+            delete element.dynamicValue
+            delete element.name
+            template.static_fields.push(element)
+          }else if(element.type === "imageBackground") {
+            template.background_image_field = element
+          }else{
+            element.type = "text"
+            for (const key in template) {
+              if (Object.hasOwnProperty.call(template, key) && key.includes(element.dynamicValue)) {
+                delete element.dynamicValue
+                template[key] = element
+              }
             }
           }
         }
-      }
-      
-      const request = await fetch(`/templates/create/${school_id}`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(template)
-      })
-      const response = await request.json()
-      if(response.result){
-        message.success(response.message)
-      }else{
-        message.error(response.error)
+        
+        // console.log(`template`, template)
+        const request = await fetch(`/templates/create/${school_id}`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(template)
+        })
+        const response = await request.json()
+        if(response.result){
+          message.success(response.message)
+          setIsLoading(false)
+          setTimeout(() => {
+            history.push("/");
+          }, 3000);
+        }else{
+          message.error(response.error)
+          setIsLoading(false)
+        }
       }
     }
   }
@@ -92,7 +105,7 @@ export default function TemplateCreator() {
       <div style={styles.templateBackground}>
         <ToolBox />
         <Displayer />
-        <Button style={styles.saveButton} onClick={handleSubmit} type="primary">Enregistrer mon template</Button>
+        <Button loading={isLoading} style={styles.saveButton} onClick={handleSubmit} type="primary">Enregistrer mon template</Button>
       </div>
     </>
   )

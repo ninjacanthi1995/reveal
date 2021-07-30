@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../src/component/Navbar';
-import { Switch , Checkbox , Button } from 'antd';
-import {Link} from 'react-router-dom';
+import { Switch, Checkbox, Button } from 'antd';
+import { Link } from 'react-router-dom';
 import './App.css';
 
 
@@ -10,12 +10,12 @@ export default function DashBoard() {
 
     function onChange(checked) {
         console.log(`switch to ${checked}`);
-}
+    }
 
 
 
 
-        return (
+    return (
         <>
         <Navbar/>
         <div>
@@ -28,8 +28,9 @@ export default function DashBoard() {
                 <Link to="/creer-mon-template" style={{marginLeft : 200 ,fontWeight: "bold" , fontSize:'1.2em' }}>1/ Créer votre premier diplôme</Link>
                     <Switch defaultChecked onChange={onChange} style={{marginRight : 200 }}/>
                 </div>
+
             <div className="dashboard" style={{marginTop : 40}}>
-            <Link to="/create-batch" style={{marginLeft : 200, fontWeight: "bold", fontSize:'1.2em' }}>2/ Importez vos diplômes</Link>
+            <Link to="/create-batch" style={{marginLeft : 200, fontWeight: "bold", fontSize:'1.2em' }}>2/ Créer votre premier batch</Link>
                 <Switch defaultChecked onChange={onChange} style={{marginRight : 200 }}/>
                     </div>
                         <div className="dashboard" style={{marginTop : 40}}>

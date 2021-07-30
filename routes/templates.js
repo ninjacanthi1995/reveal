@@ -47,7 +47,7 @@ router.post("/create/:school_id", async function (req, res) {
     school.save()
     res.json({
       result: true, 
-      message: "Votre template est bien enregistré",
+      message: "Votre template est bien enregistré, vous allez être redirigé vers le dashboard",
       template
     })
   }
