@@ -1,8 +1,8 @@
 import React from 'react';
 import Navbar from '../src/component/Navbar';
-import { Table, Space, Button , Switch } from 'antd';
+import { Switch , Checkbox , Button } from 'antd';
 import {Link} from 'react-router-dom';
-
+import './App.css';
 
 
 
@@ -10,29 +10,40 @@ export default function DashBoard() {
 
     function onChange(checked) {
         console.log(`switch to ${checked}`);
-      }
+}
 
 
-const MyButton = () => {
-      return <Button className= 'Button-connect'  style={{marginLeft:20, marginBottom:10, borderRadius:6, fontWeight: "bold"}}> +Ajouter un modele</Button>
-  }
-  
-  
-      return (
+
+
+        return (
         <>
         <Navbar/>
-            <h1>Dashboard</h1>
-
-        <div style={{marginTop : 100}}>
-            <div className="dashboard" style={{marginTop : 20}} ><Switch defaultChecked onChange={onChange} />
-            <Link to="/creer-mon-template" >Creer votre premier diplome</Link></div>
-            <div className="dashboard" style={{marginTop : 20}}><Switch defaultChecked onChange={onChange} />
-            <Link to="/creer-mon-template" >Importez vos diplomes</Link></div>
-            <div className="dashboard" style={{marginTop : 20}}><Switch defaultChecked onChange={onChange} />
-            <Link to="/creer-mon-template" >Envoyer les diplomes aux eleves</Link></div>
+        <div>
+        
+        <div className="dashboard-page" style={{backgroundImage: "url('/dashboard2.png')" , opacity: "75%"}}>
+         <div>  
+         <h1 className="dashboard-h1" >Dashboard</h1>
+        <div style={{marginTop : 40}}>
+            <div className="dashboard" style={{marginTop : 40 }} >
+                <Link to="/creer-mon-template" style={{marginLeft : 200 ,fontWeight: "bold" , fontSize:'1.2em' }}>1/ Créer votre premier diplôme</Link>
+                <Switch defaultChecked onChange={onChange} style={{marginRight : 200 }}/>
+            </div>
+            <div className="dashboard" style={{marginTop : 40}}>
+            <Link to="/create-batch" style={{marginLeft : 200, fontWeight: "bold", fontSize:'1.2em' }}>2/ Importez vos diplômes</Link>
+                <Switch defaultChecked onChange={onChange} style={{marginRight : 200 }}/>
+            </div>
+            <div className="dashboard" style={{marginTop : 40}}>
+            <Link to="/#" style={{marginLeft : 200, marginRight:30 , fontWeight: "bold", fontSize:'1.2em'}}>3/ Envoyer les diplômes aux élèves 🎉</Link>
+                <Switch defaultChecked onChange={onChange} style={{marginRight : 200 }}/>
+            </div>
+        </div>
+        </div>
+        </div>
         </div> 
-            
-            </>
-         
+        </>
+
+
+
+
     );
-  }
+}
