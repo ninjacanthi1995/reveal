@@ -5,6 +5,17 @@ const schoolModel = require("../models/schools");
 const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+var cloudinary = require("cloudinary").v2;
+const fetch = require("node-fetch");
+
+const pdfWidth = 841.89;
+const pdfHeight = 595.28;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -30,7 +41,7 @@ router.post("/create-batch", async (req, res) => {
       templateName: req.body.templateName,
     });
     const savedBatch = await newBatch.save();
-    if(savedBatch) res.json({ result: true, msg: "Batch cree" });
+    if (savedBatch) res.json({ result: true, msg: "Batch cree" });
   }
 });
 
@@ -86,71 +97,169 @@ const batch = {
 };
 
 router.get("/create-pdf", async (req, res) => {
-  // const searchStudent = await studentModel.findById(req.query.studentId);
-  // const searchBatch = await BatchModel.findById(req.query.batchId);
-  // if (!searchStudent || !searchBatch) {
-  //   res.json({ result: false, msg: "Student or batch not found" });
-  // } else 
-  if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
+  console.log("ok");
+  const searchStudent = await studentModel.findById(req.query.studentId);
+  const searchBatch = await BatchModel.findById(req.query.batchId);
+  if (!searchStudent || !searchBatch) {
+    res.json({ result: false, msg: "Student or batch not found" });
+  } else if (
+    fs.existsSync(
+      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
+    )
+  ) {
     res.json({ result: false, msg: "File existe" });
   } else {
-    // const searchSchool = await schoolModel.populate('schoolId');
-    // const searchTemplate = searchSchool.find(template => template.template_name === searchBatch.templateName);
+    console.log("ok2");
+    const searchSchool = await schoolModel.findById(searchBatch.schoolId);
+    const searchTemplate = searchSchool.templates.find(
+      (template) => template.template_name === searchBatch.templateName
+    );
     const doc = new PDFDocument({ size: "A4", layout: "landscape" });
     doc.pipe(
-      fs.createWriteStream("./client/public/diploma_student1_batch1.pdf")
+      fs.createWriteStream(
+        `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
+      )
     );
-    doc.text(
-      student.firstName,
-      template.firstNameField.positionX,
-      template.firstNameField.positionY
-    );
-    doc.text(
-      student.lastName,
-      template.lastNameField.positionX,
-      template.lastNameField.positionY
-    );
-    doc.text(
-      batch.cursus,
-      template.cursusField.positionX,
-      template.cursusField.positionY
-    );
-    doc.text(
-      "Promo " + batch.promo,
-      template.promoField.positionX,
-      template.promoField.positionY
-    );
-    doc.text(
-      batch.year,
-      template.yearField.positionX,
-      template.yearField.positionY
-    );
-    doc.image(
-      template.logoField.url,
-      template.logoField.positionX,
-      template.logoField.positionY,
-      { scale: template.logoField.scale }
-    );
-    doc.image(
-      template.signatureField.url,
-      template.signatureField.positionX,
-      template.signatureField.positionY,
-      { scale: template.signatureField.scale }
-    );
-    doc.text(
-      "Mention: " + batch.mention,
-      template.mentionField.positionX,
-      template.mentionField.positionY
-    );
+
+    fetch(searchTemplate.background_image_field.imagePreview).then((res) => {
+      const dest = fs.createWriteStream("./client/public/backgroundImage.jpg");
+      res.body.pipe(dest);
+      doc.image(
+        "./client/public/backgroundImage.jpg",
+        searchTemplate.background_image_field.position.x,
+        searchTemplate.background_image_field.position.y,
+        { width: 100, height: 100 }
+      );
+    });
+
+    // const response = await fetch(searchTemplate.background_image_field.imagePreview);
+    // const dest = fs.createWriteStream(
+    //   "./client/public/backgroundImage.jpeg"
+    // );
+    // await response.body.pipe(dest);
+    // doc.image(
+    //   "./client/public/backgroundImage.jpeg",
+    //   searchTemplate.background_image_field.position.x,
+    //   searchTemplate.background_image_field.position.y,
+    //   {
+    //     width: 100,
+    //       // (Number(
+    //       //   searchTemplate.background_image_field.size.width.slice(
+    //       //     0,
+    //       //     searchTemplate.background_image_field.size.width.length - 1
+    //       //   )
+    //       // ) *
+    //       //   pdfWidth) /
+    //       // 100,
+    //     height: 100
+    //       // (Number(
+    //       //   searchTemplate.background_image_field.size.height.slice(
+    //       //     0,
+    //       //     searchTemplate.background_image_field.size.height.length - 1
+    //       //   )
+    //       // ) *
+    //       //   pdfHeight) /
+    //       // 100,
+    //   }
+    // );
+
+    doc.fontSize(searchTemplate.firstname_field.style.fontSize);
+    doc
+      .fillColor(searchTemplate.firstname_field.style.color)
+      .text(
+        searchStudent.firstname,
+        searchTemplate.firstname_field.position.x,
+        searchTemplate.firstname_field.position.y
+      );
+    doc.fontSize(searchTemplate.lastname_field.style.fontSize);
+    doc
+      .fillColor(searchTemplate.lastname_field.style.color)
+      .text(
+        searchStudent.lastname,
+        searchTemplate.lastname_field.position.x,
+        searchTemplate.lastname_field.position.y
+      );
+    doc
+      .fillColor(searchTemplate.birth_date_field.style.color)
+      .text(
+        searchStudent.birth_date,
+        searchTemplate.birth_date_field.position.x,
+        searchTemplate.birth_date_field.position.y
+      );
+    doc
+      .fillColor(searchTemplate.curriculum_field.style.color)
+      .text(
+        searchBatch.curriculum,
+        searchTemplate.curriculum_field.position.x,
+        searchTemplate.curriculum_field.position.y
+      );
+    doc
+      .fillColor(searchTemplate.promo_field.style.color)
+      .text(
+        searchBatch.promo,
+        searchTemplate.promo_field.position.x,
+        searchTemplate.promo_field.position.y
+      );
+    doc
+      .fillColor(searchTemplate.year_field.style.color)
+      .text(
+        searchBatch.year,
+        searchTemplate.year_field.position.x,
+        searchTemplate.year_field.position.y
+      );
+    doc
+      .fillColor(searchTemplate.mention_field.style.color)
+      .text(
+        searchBatch.mention,
+        searchTemplate.mention_field.position.x,
+        searchTemplate.mention_field.position.y
+      );
+
+    // searchTemplate.static_fields.forEach((field, i) => {
+    //   if (field.type === "text") {
+    //     doc
+    //       .fillColor(field.style.color)
+    //       .text(field.value, field.position.x, field.position.y);
+    //   } else {
+    //     fetch(field.imagePreview).then((response) => {
+    //       const dest = fs.createWriteStream(`./client/public/image${i}.png`);
+    //       response.body.pipe(dest);
+    //       doc.image(
+    //         `./client/public/image${i}.png`,
+    //         field.position.x,
+    //         field.position.y,
+    //         {
+    //           width:
+    //             Number(field.size.width.slice(0, field.size.width.length - 2)) *
+    //             0.75,
+    //           height:
+    //             Number(
+    //               field.size.height.slice(0, field.size.width.length - 2)
+    //             ) * 0.75,
+    //         }
+    //       );
+    //       fs.unlinkSync(`./client/public/image${i}.png`);
+    //     });
+    //   }
+    // });
+
     doc.end();
+
+    fs.unlinkSync("./client/public/backgroundImage.jpg");
 
     res.json({ result: true });
   }
 });
 
 router.get("/delete-pdf", async (req, res) => {
-  if (fs.existsSync("./client/public/diploma_student1_batch1.pdf")) {
-    fs.unlinkSync("./client/public/diploma_student1_batch1.pdf");
+  if (
+    fs.existsSync(
+      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
+    )
+  ) {
+    fs.unlinkSync(
+      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
+    );
     res.json({ result: true, msg: "File supprime" });
   } else {
     res.json({ result: false, msg: "File non existant" });
@@ -180,7 +289,9 @@ router.post("/create-diploma", async (req, res) => {
 });
 
 router.get("/batch", async (req, res) => {
-  const school_batches = await BatchModel.find({schoolId: req.query.school_id});
+  const school_batches = await BatchModel.find({
+    schoolId: req.query.school_id,
+  });
   /* const school_batches = [
     {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
     {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
@@ -318,7 +429,10 @@ router.post("/post-csv-import", async (req, res) => {
   ///// 2 - add student._id in the batch document
   let batch = await BatchModel.findOne({_id: dataStudent.diplomas[0].id_batch});
   if (!batch) {
-    return res.json({success: false, message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`})
+    return res.json({
+      success: false,
+      message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
+    });
   }
   //console.log('BATCH: ', batch);
   if (!batch.studentsId.includes(studentSaved._id)) {
@@ -338,17 +452,19 @@ router.post("/post-csv-import", async (req, res) => {
   // AJOUTER AUSSI LE STUDENT ID DANS LA TABLE DE SA SCHOOL ????
 });
 
+router.get("/batches-populated", async (req, res) => {
+  const batchesOfYearWithStudents = await BatchModel.find({
+    schoolId: req.query.schoolId,
+    year: req.query.year,
+  }).populate("studentsId");
 
-router.get('/batches-populated', async (req, res) => {
-  const batchesOfYearWithStudents = await BatchModel
-    .find({ schoolId: req.query.schoolId, year: req.query.year })
-    .populate('studentsId');
-
-  if (!batchesOfYearWithStudents){
-    return res.json({success: false, message: 'no batches match the given schoolId and year'});
+  if (!batchesOfYearWithStudents) {
+    return res.json({
+      success: false,
+      message: "no batches match the given schoolId and year",
+    });
   }
   return res.json({ success: true, batchesOfYearWithStudents });
 });
 
 module.exports = router;
-
