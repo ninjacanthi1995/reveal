@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from '../src/component/Navbar';
-import { Switch , Checkbox , Button } from 'antd';
-import {Link} from 'react-router-dom';
+import { Switch, Checkbox, Button } from 'antd';
+import { Link } from 'react-router-dom';
 import './App.css';
 
 
@@ -10,12 +10,12 @@ export default function DashBoard() {
 
     function onChange(checked) {
         console.log(`switch to ${checked}`);
-}
+    }
 
 
 
 
-        return (
+    return (
         <>
         <Navbar/>
         <div>
