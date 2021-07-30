@@ -8,7 +8,6 @@ const userSchema = mongoose.Schema({
     admin : String,
     school_id : String,
     // token: String
-
 });
 
 const UserModel = mongoose.model('users', userSchema);

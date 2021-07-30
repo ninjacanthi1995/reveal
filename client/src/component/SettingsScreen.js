@@ -16,6 +16,7 @@ const { Header, Sider, Content } = Layout;
 
 export default function SettingsScreen() {
   const { tab } = useParams();
+  
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar></Navbar>
