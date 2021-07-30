@@ -20,7 +20,7 @@ import NotFoundPAge from './NotFoundPage';
 import NewUserRequest from './NewUserRequest';
 import SettingsScreen from './component/SettingsScreen';
 import TemplateManagement from './TemplateManagement';
-
+import DashBoard from './DashBoard'
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
@@ -29,6 +29,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={ScreenHome} />
+          <Route exact path="/dashboard" component={DashBoard} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/template-management" component={TemplateManagement} />
           <Route exact path="/import" component={ImportStudentScreen} />
