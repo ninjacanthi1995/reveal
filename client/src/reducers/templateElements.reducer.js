@@ -22,7 +22,8 @@ const templateReducer = (templateElements = [], action) => {
       }
     }else if(action.elementType === "dynamic"){
       element = {
-        name: action.dynamicType.value,
+        dynamicValue: action.dynamicType.value,
+        name: action.dynamicType.title,
         size: {width: "unset", height: "unset"},
         position: {x:0, y:0},
         value: `{{${action.dynamicType.title}}}`,
@@ -76,6 +77,38 @@ const templateReducer = (templateElements = [], action) => {
     const newList = [...templateElements]
     newList.splice(action.index, 1)
     return newList
+  }else if(action.type === 'clearTemplate'){
+    return []
+  }else if(action.type === 'loadTemplate'){
+    const template = []
+    const adaptElement = (element, value, title) => {
+      let templateElement
+      if(value === "background_image_field" || !value){
+        templateElement = {type: element.type}
+        templateElement.element = {...element}
+        delete templateElement.element.type
+      }else if(element){
+        templateElement = {type: "dynamic"}
+        templateElement.element = {...element}
+        templateElement.element.dynamicValue = value
+        templateElement.element.value = `{{${title}}}`
+        delete templateElement.element.type
+      }
+      if(element) template.push(templateElement)
+    }
+    for (let i = 0; i < action.payload.static_fields.length; i++) {
+      const element = action.payload.static_fields[i];
+      adaptElement(element)
+    }
+    adaptElement(action.payload.background_image_field, "background_image_field")
+    adaptElement(action.payload.birth_date_field, "birth_date", "Date de naissance")
+    adaptElement(action.payload.curriculum_field, "curriculum", "Cursus")
+    adaptElement(action.payload.firstname_field, "firstname", "Prénom")
+    adaptElement(action.payload.lastname_field, "lastname", "Nom")
+    adaptElement(action.payload.mention_field, "mention", "Mention")
+    adaptElement(action.payload.promo_field, "promo", "Promo")
+    adaptElement(action.payload.year_field, "year", "Année")
+    return template
   } else {
     return templateElements;
   }

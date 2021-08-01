@@ -45,10 +45,11 @@ const ImportStudentScreen = () => {
     <div>
       {fileIsUploaded && <Redirect to='/import-config' />}
       <Navbar />
-      <Title>Téléchargez votre fichier .CSV:</Title>
-      <Upload {...props}>
+      <Title
+        style={{color: Colors.violet}}
+      >Téléchargez votre fichier .CSV:</Title>
+      <Upload {...props} >
           <Button 
-            type='primary'
             shape='round'
             size='large'
             icon={<UploadOutlined />}
@@ -63,7 +64,7 @@ const styles = {
   uploadButton: {
     backgroundColor: Colors.green,
     border: Colors.green,
-    margin: 'auto'
+    color: "white"
   }
 }
 

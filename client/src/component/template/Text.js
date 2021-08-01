@@ -30,7 +30,7 @@ const Text = ({element, type, index}) => {
 
   const fontSizeOptions = []
   for (let i = 12; i <= 50; i+=2) {
-    fontSizeOptions.push(<Option value={i}>{i}</Option>)
+    fontSizeOptions.push(<Option key={i} value={i}>{i}</Option>)
   }
   
   const [visible, setVisible] = useState(false);
@@ -48,6 +48,7 @@ const Text = ({element, type, index}) => {
       index,
       elementType: type,
       element:{
+        dynamicValue: type === "dynamic" && element.dynamicValue,
         name: type === "dynamic" && element.name,
         size,
         position,
