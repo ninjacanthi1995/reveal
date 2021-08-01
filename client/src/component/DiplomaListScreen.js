@@ -1,32 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
 import Navbar from './Navbar';
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 
 import { statusFilters } from '../helpers/status';
+import Colors from '../helpers/colors';
+import emailFetcher from '../helpers/emailFetcher';
+
 
 import { Select, Typography } from 'antd';
 const { Option } = Select;
 const { Title } = Typography;
-
-
-
-
-
-/* const data = [
-  {
-    key: '1',
-    curriculum: 'John Brown',
-    promo: 32,
-    lastname: 'New York No. 1 Lake Park',
-    firstname: 32,
-    email: 32,
-    status: 32
-  },
-]; */
-
-
-
 
 
 
@@ -38,18 +22,22 @@ const DiplomaListScreen = () => {
   const [data, setData] = useState([]);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedDiplomas, setSelectedDiplomas] = useState([]);
   
   const columns = [
     {
       title: 'Curriculum',
       dataIndex: 'curriculum',
+      defaultSortOrder: 'ascend',
+      sorter:{multiple: 4},
       filters: filtersCurriculum,
       onFilter: (value, record) => record.curriculum.includes(value),
     },
     {
       title: 'Promo',
       dataIndex: 'promo',
+      defaultSortOrder: 'ascend',
+      sorter:{multiple: 3},
       filters: filtersPromo,
       onFilter: (value, record) => record.promo.includes(value),
       
@@ -57,11 +45,11 @@ const DiplomaListScreen = () => {
     {
       title: 'Nom',
       dataIndex: 'lastname',
-      defaultSortOrder: ['ascend'],
+      defaultSortOrder: 'ascend',
       sorter: {
         compare: (a, b) => a.lastname.localeCompare(b.lastname),
         multiple: 2
-      },
+      }
     },
     {
       title: 'Prénom',
@@ -70,7 +58,6 @@ const DiplomaListScreen = () => {
     {
       title: 'Email',
       dataIndex: 'email',
-      defaultSortOrder: 'descend',
       sorter: {
         compare: (a, b) => a.email.localeCompare(b.email),
         multiple: 1
@@ -80,7 +67,7 @@ const DiplomaListScreen = () => {
       title: 'Status',
       dataIndex: 'status',
       filters: statusFilters,
-      onFilter: (value, record) => record.status.includes(value)
+      onFilter: (value, record) => record.status===value
     }
   ];
   
@@ -115,92 +102,11 @@ const DiplomaListScreen = () => {
       const data = await rawData.json();
       const batchesOfYearWithStudents = data.batchesOfYearWithStudents;
       //console.log('populated: ', batchesOfYearWithStudents);
-/*       const batchesOfYearWithStudents = [
-        {
-          _id:'6101c206564b97b34f9e16ea',
-          year: 2021,
-          curriculum: 'BTS mécanique',
-          promo: 17,
-          schoolId: '6101c0b6208679b2ab7f0884',
-          template_name: 'BTS méca',
-          studentsId:[
-            {
-              _id:'sss1c0b6208679b2ab7f0884',
-              email: 'a@a.a',
-              firstname: 'Emilien',
-              lastname: 'Dreyer',
-              birth_date: '06/05/1982',
-              diplomas: [
-                {
-                  url_SmartContract: null,
-                  mention: null,
-                  status: 'non confirmé',
-                  id_batch: '6101c206564b97b34f9e16ea'
-                }
-              ]
-            },
-            {
-              _id:'sss1c0b6208679b2ab7f0885',
-              email: 'b@b.b',
-              firstname: 'Marty',
-              lastname: 'Mac Fly',
-              birth_date: '10/11/1992',
-              diplomas: [
-                {
-                  url_SmartContract: null,
-                  mention: 'Trés bien',
-                  status: 'non confirmé',
-                  id_batch: '6101c206564b97b34f9e16ea'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          _id:'61015592b527c72f100f7483',
-          year: 2021,
-          curriculum: 'BEP comptabilité',
-          promo: 9,
-          schoolId: '6101c0b6208679b2ab7f0884',
-          template_name: 'BEP compta',
-          studentsId:[
-            {
-              _id:'sss1c0b6208679b2ab7f0886',
-              email: 'c@c.c',
-              firstname: 'Leonard',
-              lastname: 'DeVinci',
-              birth_date: '22/03/1856',
-              diplomas: [
-                {
-                  url_SmartContract: null,
-                  mention: null,
-                  status: 'non confirmé',
-                  id_batch: '61015592b527c72f100f7483'
-                }
-              ]
-            },
-            {
-              _id:'sss1c0b6208679b2ab7f0887',
-              email: 'e@e.e',
-              firstname: 'Jean',
-              lastname: 'Dujardin',
-              birth_date: '01/01/1971',
-              diplomas: [
-                {
-                  url_SmartContract: null,
-                  mention: 'Bien',
-                  status: 'non confirmé',
-                  id_batch: '61015592b527c72f100f7483'
-                }
-              ]
-            }
-          ]
-        }
-      ]; */
+
       let curriculumList = [];
       let promoList = [];
       let tempData = [];
-      batchesOfYearWithStudents.forEach((batch) => {
+      batchesOfYearWithStudents.forEach((batch, i) => {
         curriculumList.push({
           text: batch.curriculum,
           value: batch.curriculum,
@@ -210,16 +116,18 @@ const DiplomaListScreen = () => {
           value: batch.promo,
         });
         const batchId = batch._id;
-        batch.studentsId.forEach((student) => {
-          student.diplomas.forEach((diploma) => {
+        batch.studentsId.forEach((student, j) => {
+          student.diplomas.forEach((diploma, k) => {
             if (diploma.id_batch === batchId) {
               const row = {
+                key: i.toString() + j.toString() + k.toString(),
                 curriculum: batch.curriculum,
                 promo: batch.promo.toString(),
                 lastname: student.lastname,
                 firstname: student.firstname,
                 email: student.email,
-                status: diploma.status
+                status: diploma.status,
+                birth_date: student.birth_date  // not diplayed in table but will be used in email.
               }
               tempData.push(row);
             }
@@ -243,45 +151,71 @@ const DiplomaListScreen = () => {
   // Pour toutes selections / deselections d'une row
   const rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      //console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      setSelectedDiplomas(selectedRows);
     },
-    onSelect: (record, selected, selectedRows) => {
-      console.log(record, selected, selectedRows);
+    /* onSelect: (record, selected, selectedRows) => {
+      console.log('ON_SELECT: ', record, selected, selectedRows);
     },
     onSelectAll: (selected, selectedRows, changeRows) => {
-      console.log(selected, selectedRows, changeRows);
-    },
+      console.log('ON_SELECT_ALL: ', selected, selectedRows, changeRows);
+    }, */
   };
   
   return (
     <>
       <Navbar/>
-      <Title 
-        level={4}
-        style={{marginLeft: 5, marginTop: 10}}
-      >Séléctionner l'année: 
-        <Select
-          defaultValue={now.getFullYear()}
-          style={{width:100, marginLeft: 10}}
-          onChange={(year) => {setSelectedYear(year)}}
-        >
-          {optionsYear}
-        </Select>
-      </Title>
+      <div style={styles.selectBatchAndMailButton}>
+        <Title 
+          level={4}
+          style={{color: Colors.violet}}
+        >Séléctionner l'année: 
+          <Select
+            defaultValue={now.getFullYear()}
+            style={{width:100, marginLeft: 10}}
+            onChange={(year) => {setSelectedYear(year)}}
+          >
+            {optionsYear}
+          </Select>
+        </Title>
+        <Button
+          shape='round'
+          size='medium'
+          style={styles.button}
+          onClick={() => emailFetcher(selectedDiplomas)}
+        >Envoyer les mails</Button>
+      </div>
       <Table 
         columns={columns} 
         dataSource={data}
         pagination={false}
         onChange={onChange} 
         rowSelection={{...rowSelection}}
-        scroll={{y: 200}}               // A AFFINER - le plus grand possible
+        scroll={{y: 600}}               // A AFFINER - le plus grand possible
         style={{marginLeft: 5, marginRight: 5}}
       />
+      
     </>
   )
 };
+
+
+const styles = {
+  button: {
+    backgroundColor: Colors.green,
+    border: Colors.green,
+    color: "white"
+  },
+  selectBatchAndMailButton: {
+    marginTop: 10,
+    margin: 10,
+    display: 'flex',
+    justifyContent: 'space-between'
+  }
+}
 
 export default DiplomaListScreen;
 
 
 // REGLER LE FILTRAGE DU STATUS ET LA SELECTION DES ROW
+// AJOUT BUTTON ENVOI MAIL
