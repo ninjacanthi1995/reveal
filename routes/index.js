@@ -38,59 +38,7 @@ router.post("/create-batch", async (req, res) => {
   }
 });
 
-const template = {
-  firstNameField: {
-    positionX: 300,
-    positionY: 300,
-  },
-  lastNameField: {
-    positionX: 450,
-    positionY: 300,
-  },
-  cursusField: {
-    positionX: 425,
-    positionY: 400,
-  },
-  promoField: {
-    positionX: 415,
-    positionY: 200,
-  },
-  yearField: {
-    positionX: 500,
-    positionY: 200,
-  },
-  logoField: {
-    url: "client/public/reveal.png",
-    positionX: 100,
-    positionY: 50,
-    scale: 0.1,
-  },
-  signatureField: {
-    url: "client/public/signature.png",
-    positionX: 700,
-    positionY: 550,
-    scale: 0.1,
-  },
-  mentionField: {
-    positionX: 410,
-    positionY: 450,
-  },
-};
-
-const student = {
-  firstName: "Minh Chau",
-  lastName: "Hoang",
-};
-
-const batch = {
-  cursus: "Web Dev Fullstack JS",
-  promo: 34,
-  year: 2021,
-  mention: "Tres bien",
-};
-
 router.get("/create-pdf", async (req, res) => {
-  console.log("ok");
   const searchStudent = await studentModel.findById(req.query.studentId);
   const searchBatch = await BatchModel.findById(req.query.batchId);
   if (!searchStudent || !searchBatch) {
@@ -102,7 +50,6 @@ router.get("/create-pdf", async (req, res) => {
   ) {
     res.json({ result: false, msg: "File existe" });
   } else {
-    console.log("ok2");
     const searchSchool = await schoolModel.findById(searchBatch.schoolId);
     const searchTemplate = searchSchool.templates.find(
       (template) => template.template_name === searchBatch.templateName
@@ -114,47 +61,40 @@ router.get("/create-pdf", async (req, res) => {
       )
     );
 
-    fetch(searchTemplate.background_image_field.imagePreview).then((res) => {
-      const dest = fs.createWriteStream("./client/public/backgroundImage.PNG");
-      res.body.pipe(dest);
-      doc.image(
-        "./client/public/backgroundImage.PNG",
-        searchTemplate.background_image_field.position.x,
-        searchTemplate.background_image_field.position.y,
-        { width: 100, height: 100 }
+    async function downloadImg(url, path) {
+      const response = await fetch(url);
+      const buffer = await response.buffer();
+      fs.writeFileSync(path, buffer, () =>
+        console.log("finished downloading!")
       );
-    });
+    }
 
-    // const response = await fetch(searchTemplate.background_image_field.imagePreview);
-    // const dest = fs.createWriteStream(
-    //   "./client/public/backgroundImage.jpeg"
-    // );
-    // await response.body.pipe(dest);
-    // doc.image(
-    //   "./client/public/backgroundImage.jpeg",
-    //   searchTemplate.background_image_field.position.x,
-    //   searchTemplate.background_image_field.position.y,
-    //   {
-    //     width: 100,
-    //       // (Number(
-    //       //   searchTemplate.background_image_field.size.width.slice(
-    //       //     0,
-    //       //     searchTemplate.background_image_field.size.width.length - 1
-    //       //   )
-    //       // ) *
-    //       //   pdfWidth) /
-    //       // 100,
-    //     height: 100
-    //       // (Number(
-    //       //   searchTemplate.background_image_field.size.height.slice(
-    //       //     0,
-    //       //     searchTemplate.background_image_field.size.height.length - 1
-    //       //   )
-    //       // ) *
-    //       //   pdfHeight) /
-    //       // 100,
-    //   }
-    // );
+    const bgImgField = searchTemplate.background_image_field;
+    if (!fs.existsSync("./client/public/backgroundImage.jpg"))
+      await downloadImg(
+        bgImgField.imagePreview,
+        "./client/public/backgroundImage.jpg"
+      );
+
+    doc.image(
+      "./client/public/backgroundImage.jpg",
+      bgImgField.position.x,
+      bgImgField.position.y,
+      {
+        width:
+          (Number(
+            bgImgField.size.width.slice(0, bgImgField.size.width.length - 1)
+          ) *
+            pdfWidth) /
+          100,
+        height:
+          (Number(
+            bgImgField.size.height.slice(0, bgImgField.size.height.length - 1)
+          ) *
+            pdfHeight) /
+          100,
+      }
+    );
 
     doc.fontSize(searchTemplate.firstname_field.style.fontSize);
     doc
@@ -208,37 +148,33 @@ router.get("/create-pdf", async (req, res) => {
         searchTemplate.mention_field.position.y
       );
 
-    // searchTemplate.static_fields.forEach((field, i) => {
-    //   if (field.type === "text") {
-    //     doc
-    //       .fillColor(field.style.color)
-    //       .text(field.value, field.position.x, field.position.y);
-    //   } else {
-    //     fetch(field.imagePreview).then((response) => {
-    //       const dest = fs.createWriteStream(`./client/public/image${i}.png`);
-    //       response.body.pipe(dest);
-    //       doc.image(
-    //         `./client/public/image${i}.png`,
-    //         field.position.x,
-    //         field.position.y,
-    //         {
-    //           width:
-    //             Number(field.size.width.slice(0, field.size.width.length - 2)) *
-    //             0.75,
-    //           height:
-    //             Number(
-    //               field.size.height.slice(0, field.size.width.length - 2)
-    //             ) * 0.75,
-    //         }
-    //       );
-    //       fs.unlinkSync(`./client/public/image${i}.png`);
-    //     });
-    //   }
-    // });
+    searchTemplate.static_fields.forEach(async (field, i) => {
+      if (field.type === "text") {
+        doc
+          .fillColor(field.style.color)
+          .text(field.value, field.position.x, field.position.y);
+      } else {
+        await downloadImg(field.imagePreview, `./client/public/image${i}.png`);
+        doc.image(
+          `./client/public/image${i}.png`,
+          field.position.x,
+          field.position.y,
+          {
+            width:
+              Number(field.size.width.slice(0, field.size.width.length - 2)) *
+              0.75,
+            height:
+              Number(field.size.height.slice(0, field.size.width.length - 2)) *
+              0.75,
+          }
+        );
+        // fs.unlinkSync(`./client/public/image${i}.png`);
+      }
+    });
 
     doc.end();
 
-    // fs.unlinkSync("./client/public/backgroundImage.PNG");
+    fs.unlinkSync("./client/public/backgroundImage.jpg");
 
     res.json({ result: true });
   }
