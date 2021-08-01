@@ -1,3 +1,5 @@
+import oldToNewPx from "../helpers/pxToPerCentConverter"
+
 const templateReducer = (templateElements = [], action) => {
   if (action.type === 'addElements'){
     let element = {}
@@ -82,17 +84,33 @@ const templateReducer = (templateElements = [], action) => {
   }else if(action.type === 'loadTemplate'){
     const template = []
     const adaptElement = (element, value, title) => {
+      const adaptDimensions = () => {
+        templateElement.element.position = {
+          x: oldToNewPx(templateElement.element.position.x, action.payload.template_dimensions, "width"),
+          y: oldToNewPx(templateElement.element.position.y, action.payload.template_dimensions, "height")
+        }
+        templateElement.element.size = {
+          width: oldToNewPx(templateElement.element.size.width, action.payload.template_dimensions, "width"),
+          height: oldToNewPx(templateElement.element.size.height, action.payload.template_dimensions, "height")
+        }
+        if(templateElement.element.style && templateElement.element.style.fontSize){
+          templateElement.element.style.fontSize = Math.floor(oldToNewPx(templateElement.element.style.fontSize, action.payload.template_dimensions, "width"))
+          templateElement.element.style.height = templateElement.element.style.fontSize*2
+        }
+        delete templateElement.element.type
+      }
+
       let templateElement
       if(value === "background_image_field" || !value){
         templateElement = {type: element.type}
         templateElement.element = {...element}
-        delete templateElement.element.type
+        adaptDimensions()
       }else if(element){
         templateElement = {type: "dynamic"}
         templateElement.element = {...element}
         templateElement.element.dynamicValue = value
         templateElement.element.value = `{{${title}}}`
-        delete templateElement.element.type
+        adaptDimensions()
       }
       if(element) template.push(templateElement)
     }

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const templateSchema = new mongoose.Schema({
   template_name: {type: String, unique: true, required: true},
+  template_dimensions: {type: mongoose.Schema.Types.Mixed},
   firstname_field: {type: mongoose.Schema.Types.Mixed, required: true},
   lastname_field: {type: mongoose.Schema.Types.Mixed, required: true},
   birth_date_field: {type: mongoose.Schema.Types.Mixed},
