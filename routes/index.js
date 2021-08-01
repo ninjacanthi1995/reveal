@@ -10,6 +10,14 @@ const fetch = require("node-fetch");
 const pdfWidth = 841.89;
 const pdfHeight = 595.28;
 
+async function downloadImg(url, path) {
+  const response = await fetch(url);
+  const buffer = await response.buffer();
+  fs.writeFileSync(path, buffer, () =>
+    console.log("finished downloading!")
+  );
+}
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index", { title: "Express" });
@@ -60,14 +68,6 @@ router.get("/create-pdf", async (req, res) => {
         `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
       )
     );
-
-    async function downloadImg(url, path) {
-      const response = await fetch(url);
-      const buffer = await response.buffer();
-      fs.writeFileSync(path, buffer, () =>
-        console.log("finished downloading!")
-      );
-    }
 
     const bgImgField = searchTemplate.background_image_field;
     if (!fs.existsSync("./client/public/backgroundImage.jpg"))
@@ -148,13 +148,26 @@ router.get("/create-pdf", async (req, res) => {
         searchTemplate.mention_field.position.y
       );
 
-    searchTemplate.static_fields.forEach(async (field, i) => {
-      if (field.type === "text") {
-        doc
-          .fillColor(field.style.color)
-          .text(field.value, field.position.x, field.position.y);
-      } else {
-        await downloadImg(field.imagePreview, `./client/public/image${i}.png`);
+    const textFields = await searchTemplate.static_fields.filter(
+      (field) => field.type === "text"
+    );
+    const imgFields = await searchTemplate.static_fields.filter(
+      (field) => field.type === "image"
+    );
+
+    textFields.forEach((field) =>
+      doc
+        .fillColor(field.style.color)
+        .text(field.value, field.position.x, field.position.y)
+    );
+
+    for (let i = 0; i < imgFields.length; i++) {
+      if (!fs.existsSync(`./client/public/image${i}.png`))
+        await downloadImg(imgFields[i].imagePreview, `./client/public/image${i}.png`);
+    }
+
+    imgFields.forEach((field, i) => {
+      if (fs.existsSync(`./client/public/image${i}.png`))
         doc.image(
           `./client/public/image${i}.png`,
           field.position.x,
@@ -168,13 +181,15 @@ router.get("/create-pdf", async (req, res) => {
               0.75,
           }
         );
-        // fs.unlinkSync(`./client/public/image${i}.png`);
-      }
     });
 
     doc.end();
 
     fs.unlinkSync("./client/public/backgroundImage.jpg");
+    imgFields.forEach((field, i) => {
+      if (fs.existsSync(`./client/public/image${i}.png`))
+        fs.unlinkSync(`./client/public/image${i}.png`)
+    });
 
     res.json({ result: true });
   }
