@@ -28,16 +28,17 @@ router.post("/create-batch", async (req, res) => {
     year: req.body.year,
     curriculum: req.body.curriculum,
     promo: req.body.promo,
-    school_id: req.body.school_id,
+    schoolId: req.body.school_id,
   });
   if (searchBatch) {
     res.json({ result: false, msg: "Batch deja existant" });
   } else {
+    const searchSchool = await schoolModel.findById(req.body.school_id);
     const newBatch = new BatchModel({
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
-      school_id: req.body.school_id,
+      schoolId: searchSchool.id,
       studentsId: [],
       templateName: req.body.templateName,
     });
