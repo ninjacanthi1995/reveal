@@ -34,7 +34,7 @@ const Displayer = () => {
   })
 
   return (
-    <div style={styles.displayer}>
+    <div style={styles.displayer} id='displayer'>
       {templateElements.length !== 0 && elementList}
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { List, Typography, Divider, Button, Input } from "antd";
+import { List, Button, Input } from "antd";
 
 const user = {
   _id: { $oid: "60ffda648dac09e6d540eb27" },
@@ -9,8 +9,6 @@ const user = {
   school_id: "60fff6d28dac09ffff40eb28",
   firstname: "toto",
 };
-
-const data = [];
 
 export default function MyAccountScreen() {
   const [edit, setEdit] = useState(false);

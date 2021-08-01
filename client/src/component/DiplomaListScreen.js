@@ -38,7 +38,6 @@ const DiplomaListScreen = () => {
   const [data, setData] = useState([]);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
   
   const columns = [
     {
