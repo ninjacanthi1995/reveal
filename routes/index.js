@@ -5,17 +5,10 @@ const schoolModel = require("../models/schools");
 const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-var cloudinary = require("cloudinary").v2;
 const fetch = require("node-fetch");
 
 const pdfWidth = 841.89;
 const pdfHeight = 595.28;
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -122,10 +115,10 @@ router.get("/create-pdf", async (req, res) => {
     );
 
     fetch(searchTemplate.background_image_field.imagePreview).then((res) => {
-      const dest = fs.createWriteStream("./client/public/backgroundImage.jpg");
+      const dest = fs.createWriteStream("./client/public/backgroundImage.PNG");
       res.body.pipe(dest);
       doc.image(
-        "./client/public/backgroundImage.jpg",
+        "./client/public/backgroundImage.PNG",
         searchTemplate.background_image_field.position.x,
         searchTemplate.background_image_field.position.y,
         { width: 100, height: 100 }
@@ -245,7 +238,7 @@ router.get("/create-pdf", async (req, res) => {
 
     doc.end();
 
-    fs.unlinkSync("./client/public/backgroundImage.jpg");
+    // fs.unlinkSync("./client/public/backgroundImage.PNG");
 
     res.json({ result: true });
   }
@@ -307,8 +300,8 @@ router.get("/batch", async (req, res) => {
 });
 
 router.get("/template", async (req, res) => {
-  const school = await schoolModel.findOne({_id: req.query.school_id});
-  
+  const school = await schoolModel.findOne({ _id: req.query.school_id });
+
   /* const school = {
     _id: "6101084673a5f1dcafefa064c",
     client_id: ["60ffda648dac09e6d540eb27"],
@@ -385,7 +378,7 @@ router.get("/template", async (req, res) => {
   const template = school.templates.filter(
     (item) => item.template_name === req.query.template_name
   );
-    
+
   if (template.length === 0) {
     return res.json({
       success: false,
@@ -405,10 +398,15 @@ router.post("/post-csv-import", async (req, res) => {
     email: dataStudent.email,
   });
   // Check if diploma is already registered in the student data.
-  if (student){
-    const diplomaIsAlreadyRegistered = student.diplomas.filter(diploma => diploma.id_batch == batchId).length > 0;
-    if (diplomaIsAlreadyRegistered){
-      return res.json({success: true, message: `this diploma was already registered to the student ${student.lastname}`});
+  if (student) {
+    const diplomaIsAlreadyRegistered =
+      student.diplomas.filter((diploma) => diploma.id_batch == batchId).length >
+      0;
+    if (diplomaIsAlreadyRegistered) {
+      return res.json({
+        success: true,
+        message: `this diploma was already registered to the student ${student.lastname}`,
+      });
     }
     student.diplomas.push(dataStudent.diplomas[0]);
   }
@@ -427,7 +425,9 @@ router.post("/post-csv-import", async (req, res) => {
   }
 
   ///// 2 - add student._id in the batch document
-  let batch = await BatchModel.findOne({_id: dataStudent.diplomas[0].id_batch});
+  let batch = await BatchModel.findOne({
+    _id: dataStudent.diplomas[0].id_batch,
+  });
   if (!batch) {
     return res.json({
       success: false,
@@ -447,7 +447,7 @@ router.post("/post-csv-import", async (req, res) => {
     });
   }
   //console.log(`student ${studentSaved.lastname} saved in Batch`)
-  res.json({success: true});
+  res.json({ success: true });
 
   // AJOUTER AUSSI LE STUDENT ID DANS LA TABLE DE SA SCHOOL ????
 });
