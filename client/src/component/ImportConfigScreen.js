@@ -6,6 +6,8 @@ import Navbar from './Navbar';
 import { Redirect } from 'react-router-dom';
 
 import { status } from '../helpers/status';
+import Colors from '../helpers/colors';
+
 
 import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
@@ -95,7 +97,7 @@ const ImportConfigScreen = () => {
           url_SmartContract: null,
           mention: student[fieldToIndexMapping.mention_field],
           id_batch: selectedBatch._id,
-          status: status.not_confirmed
+          status: status.not_mailed
         }]
       } 
 
@@ -176,9 +178,11 @@ const ImportConfigScreen = () => {
       {FieldSelect}
 
       <Button
-        type="primary"
+        shape='round'
+        size='large'
         disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
         onClick={onValidButton}
+        style={styles.button}
       >Valider</Button>
 
     </div>
@@ -187,7 +191,16 @@ const ImportConfigScreen = () => {
   )
 }
 
-// DISABLED LE BUTTON VALIDER QUAND AUCUN BATCH SELECTIONNER
+const styles = {
+  button: {
+    backgroundColor: Colors.green,
+    border: Colors.green,
+    color: "white"
+  }
+}
+
+// REVOIR L AJOUT ID STUDENT DANS LE BATCH
+// REVOIR LE SELECT BATCH - un batch nouvellement créé n'apparait pas dans les options.
 // PRESENTATION SOUS FORME DE TABLEAU PLUS CLAIRE??
 
 export default ImportConfigScreen;
