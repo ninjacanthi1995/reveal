@@ -11,7 +11,7 @@ export default function StudentDiploma() {
 
   useEffect(() => {
     fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
-  }, []);
+  }, [studentId, batchId]);
 
   const handleDownload = () => {
     fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
