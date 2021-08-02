@@ -2,6 +2,7 @@ import React from "react";
 import { Row, Col, Divider, List } from "antd";
 import Navbar from "./Navbar";
 import MyAccountScreen from "./MyAccountScreen";
+import MyCollaboratorsScreen from "./MyCollaboratorsScreen";
 // import { Layout } from "antd";
 import { Link, useParams, useHistory } from "react-router-dom"
 
@@ -30,6 +31,7 @@ export default function SettingsScreen() {
         <Divider type="vertical" style={{ height: "100%" }} />
         <Col span={17} style={{ height: "100%" }}>
           {tab === 'account' && <MyAccountScreen />}
+          {tab === 'collaborators' && <MyCollaboratorsScreen />}
         </Col>
       </Row>
     </div>
