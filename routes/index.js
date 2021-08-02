@@ -33,7 +33,6 @@ router.post("/create-batch", async (req, res) => {
   if (searchBatch) {
     res.json({ result: false, msg: "Batch deja existant" });
   } else {
-    const searchSchool = await schoolModel.findById(req.body.school_id);
     const newBatch = new BatchModel({
       year: req.body.year,
       curriculum: req.body.curriculum,
@@ -211,24 +210,39 @@ router.get("/delete-pdf", async (req, res) => {
   }
 });
 
-router.post("/create-diploma", async (req, res) => {
-  const searchStudent = await studentModel.findById(req.body.studentId);
+router.get("/validate-diploma", async (req, res) => {
+  const searchStudent = await studentModel.findById(req.query.id_student);
   if (!searchStudent) {
-    res.json({ result: false, msg: "Student non existant" });
+    res.json({ result: false, msg: "L'étudiant n'existe pas" });
   } else {
-    const searchDiploma = searchStudent.diplomas.find(
-      (diploma) => diploma.id_batch === req.body.id_batch
+    const searchDiplomaIndex = searchStudent.diplomas.findIndex(
+      (diploma) => diploma.id === req.query.id_diploma
     );
-    if (searchDiploma) {
-      res.json({ result: false, msg: "Diplome deja existant" });
+    if (searchDiplomaIndex === -1) {
+      res.json({ result: false, msg: "Le diplôme n'existe pas" });
     } else {
-      searchStudent.diplomas.push({
-        id_batch: req.body.id_batch,
-        mention: req.body.mention,
-        status: req.body.status,
-        url_SmartContract: "abc",
-      });
-      res.json({ result: true, msg: "Diplome cree" });
+      searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
+      searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = "abc";
+      await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
+      res.json({ result: true, msg: "Votre diplôme a été validé" });
+    }
+  }
+});
+
+router.get("/error-diploma", async (req, res) => {
+  const searchStudent = await studentModel.findById(req.query.id_student);
+  if (!searchStudent) {
+    res.json({ result: false, msg: "L'étudiant n'existe pas" });
+  } else {
+    const searchDiplomaIndex = searchStudent.diplomas.findIndex(
+      (diploma) => diploma.id === req.query.id_diploma
+    );
+    if (searchDiplomaIndex === -1) {
+      res.json({ result: false, msg: "Le diplôme n'existe pas" });
+    } else {
+      searchStudent.diplomas[searchDiplomaIndex].status = "à corriger";
+      await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
+      res.json({ result: true, msg: "Veuillez contacter votre secrétariat" });
     }
   }
 });
@@ -324,5 +338,14 @@ router.get("/batches-populated", async (req, res) => {
   }
   return res.json({ success: true, batchesOfYearWithStudents });
 });
+
+router.get("/get-school", async (req, res) => {
+  const searchSchool = await schoolModel.findById(req.query.school_id);
+  if (!searchSchool) {
+    res.json({ result: false, msg: "Ecole non existant" })
+  } else {
+    res.json({ result: true, school: searchSchool })
+  }
+})
 
 module.exports = router;

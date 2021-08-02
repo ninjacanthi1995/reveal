@@ -48,6 +48,15 @@ const templateReducer = (templateElements = [], action) => {
           bgSize: "cover"
         }
       }
+    }else if(action.elementType === "qrCode"){
+      element = {
+        size: {width: 100, height: 100},
+        position: {
+          x:20, 
+          y: action.displayer.offsetHeight - 120
+        },
+        imagePreview: "/qrcode_placeholder.svg",
+      }
     }
     
     // Remplace le background si un BG est présent
@@ -101,24 +110,28 @@ const templateReducer = (templateElements = [], action) => {
       }
 
       let templateElement
-      if(value === "background_image_field" || !value){
-        templateElement = {type: element.type}
-        templateElement.element = {...element}
-        adaptDimensions()
-      }else if(element){
-        templateElement = {type: "dynamic"}
-        templateElement.element = {...element}
-        templateElement.element.dynamicValue = value
-        templateElement.element.value = `{{${title}}}`
-        adaptDimensions()
+      if(element){
+        if(value === "background_image_field" || value === "qrcode_field" || !value){
+          templateElement = {type: element.type}
+          templateElement.element = {...element}
+          adaptDimensions()
+        }else if(element){
+          templateElement = {type: "dynamic"}
+          templateElement.element = {...element}
+          templateElement.element.dynamicValue = value
+          templateElement.element.value = `{{${title}}}`
+          adaptDimensions()
+        }
+        template.push(templateElement)
       }
-      if(element) template.push(templateElement)
     }
     for (let i = 0; i < action.payload.static_fields.length; i++) {
       const element = action.payload.static_fields[i];
       adaptElement(element)
     }
     adaptElement(action.payload.background_image_field, "background_image_field")
+    adaptElement(action.payload.qrcode_field, "qrcode_field")
+
     adaptElement(action.payload.birth_date_field, "birth_date", "Date de naissance")
     adaptElement(action.payload.curriculum_field, "curriculum", "Cursus")
     adaptElement(action.payload.firstname_field, "firstname", "Prénom")

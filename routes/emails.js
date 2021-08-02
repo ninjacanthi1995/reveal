@@ -40,8 +40,6 @@ const sendMail = (templatePath, matchings, options, errors) => {
 }
 
 
-
-
 router.post("/confirmation", async (req, res) => {
   const diplomasData = req.body;     // un tableau de dilpomasData
   
@@ -95,33 +93,7 @@ router.post("/confirmation", async (req, res) => {
 });
 
 
-router.get('/confirmed/:studentId/:diplomaId', async (req, res) => {
-  const student = await studentModel.findById(req.params.studentId);
-  //console.log('student: ', student);
-  const diplomas = student.diplomas.map(diploma => {
-    if (diploma._id == req.params.diplomaId){
-      console.log('in the IF of /confirmed');
-      diploma.status = 'confirmé';
-    }
-    return diploma;
-  });
-  //console.log('diplomas: ', diplomas);
-  student.diplomas = diplomas;
-  //console.log(' before save: ', student);
-
-  const studentSaved = await student.save();
-  console.log('after save: ', studentSaved);
-  if (!studentSaved._id){
-    return res.json({message: "Echec de la confirmation, veuillez ré-essayer!"});
-  }
-  res.json({message: "Votre confirmation de donnée a bien été prise en compte"});
-
-})
-
-
 module.exports = router;
 
 
-// RESTE A ECRIRE LES MAILS EN HTML OU EN TEXT / A LES PERSONALISER ET
-// A LES ASSIGNER CHACUN A UNE ROUTE.
-// BLOQUER LA REPONSE AU MAIL APRES LA 1ERE REPONSE
+// RESTER A CREER LA ROUTE ET LE MAIL POUR L ENVOI DU DIPLOME + URL SMARTCONTRACT
