@@ -34,6 +34,8 @@ export default function TemplateCreator() {
         }
       }
       getTemplate()
+    }else if(school_id && !template_name_params){
+      dispatch({type: 'addElements', elementType: "qrCode", displayer: document.getElementById('displayer')})
     }
     // clear reducers when the templateCreator is left.
     return () => {
@@ -64,6 +66,7 @@ export default function TemplateCreator() {
         const template = {
           template_name: template_name,
           template_dimensions: {width: displayer.offsetWidth, height: displayer.offsetHeight},
+          qrcode_field: false,
           firstname_field: false,
           lastname_field: false,
           birth_date_field: false,
@@ -79,12 +82,14 @@ export default function TemplateCreator() {
         })
         for (let i = 0; i < elements.length; i++) {
           const element = elements[i];
-          if(element.type !== 'dynamic' && element.type !== "imageBackground"){
+          if(element.type !== 'dynamic' && element.type !== "imageBackground" && element.type !== "qrCode"){
             delete element.dynamicValue
             delete element.name
             template.static_fields.push(element)
           }else if(element.type === "imageBackground") {
             template.background_image_field = element
+          }else if(element.type === "qrCode") {
+            template.qrcode_field = element
           }else{
             element.type = "text"
             for (const key in template) {
