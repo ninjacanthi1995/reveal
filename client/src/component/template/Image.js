@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Rnd } from 'react-rnd';
 import { useDispatch } from 'react-redux';
 import { Menu, Dropdown } from 'antd';
-import { DeleteOutlined, DragOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 
 
 const Text = ({element, type, index}) => {
@@ -39,15 +39,13 @@ const Text = ({element, type, index}) => {
       margin: "auto"
     },
     dragIcon:{
-      display: visible ? "block" : "none",
       position: 'absolute',
-      backgroundColor: "white",
-      padding: 5,
-      borderRadius: 20,
+      backgroundColor: "transparent",
       cursor: "all-scroll",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)"
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%"
     }
   }
 
@@ -83,7 +81,7 @@ const Text = ({element, type, index}) => {
         visible={visible}
       >
         <div style={{position: "relative"}}>
-          <DragOutlined className="dragIcon" style={styles.dragIcon} />
+          <div className="dragIcon" style={styles.dragIcon}></div>
           <img src={imagePreview} height={size.height} alt="" />
         </div>
       </Dropdown>

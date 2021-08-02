@@ -22,6 +22,7 @@ export default function TemplateCreator() {
   useEffect(() => {
     const school_id = window.localStorage.getItem('school_id')
     setSchool_id(school_id)
+    // Check if a specific template is required and go look for it in db
     if(school_id && template_name_params){
       const getTemplate = async () => {
         const request = await fetch(`/templates/get/${school_id}/${template_name_params}`)
@@ -34,6 +35,7 @@ export default function TemplateCreator() {
       }
       getTemplate()
     }
+    // clear reducers when the templateCreator is left.
     return () => {
       dispatch({type: "clearTemplate"})
       dispatch({type: "clearRequiredElements"})
@@ -58,8 +60,10 @@ export default function TemplateCreator() {
     }else{
       setIsLoading(true)
       if(!isLoading){
+        const displayer = document.getElementById('displayer')
         const template = {
           template_name: template_name,
+          template_dimensions: {width: displayer.offsetWidth, height: displayer.offsetHeight},
           firstname_field: false,
           lastname_field: false,
           birth_date_field: false,

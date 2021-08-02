@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom';
 export default function TemplateManagement() {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [school_id, setSchool_id] = useState("");
   useEffect(() => {
+    const school_id = window.localStorage.getItem('school_id')
+    setSchool_id(school_id)
     const getTemplates = async () => {
-      const school_id = window.localStorage.getItem('school_id')
       const request = await fetch(`/templates/get-templates/${school_id}`)
       const response = await request.json()
       if(response.result){
@@ -16,17 +18,29 @@ export default function TemplateManagement() {
         setLoading(false)
       }else{
         message.error(response.error)
+        setLoading(false)
       }
     }
     getTemplates()
   }, []);
+  
+  const deleteTemplate = async (record) => {
+    const request = await fetch(`/templates/delete/${school_id}/${record.template_name}`, {method: "DELETE"})
+    const response = await request.json()
+    if(response.result){
+      message.success(response.message)
+      setTemplates(response.templateList)
+    }else{
+      message.error(response.error)
+    }
+  }
 
   const columns = [
     {
       title: "Modeles de nos diplomes",
       dataIndex: 'template_name',
       key: 'template_name',
-      render: text => <a href="/#">{text}</a>,
+      render: (text, record) => <Link to={`/creer-mon-template/${record.template_name}`}>{text}</Link>
     },{
       title: 'Action',
       key: 'action',
@@ -34,7 +48,7 @@ export default function TemplateManagement() {
         <>
           <Space size="middle">
             <Link to={`/creer-mon-template/${record.template_name}`}>Edit</Link>
-            <a href="/#">Delete</a>
+            <p style={styles.p} onClick={() => deleteTemplate(record)}>Delete</p>
           </Space>
         </>
       ),
@@ -57,4 +71,12 @@ export default function TemplateManagement() {
       />
     </>
   );
+}
+
+const styles = {
+  p:{
+    margin: 0,
+    cursor: "pointer",
+    color: "red"
+  }
 }

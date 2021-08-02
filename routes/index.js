@@ -38,7 +38,7 @@ router.post("/create-batch", async (req, res) => {
       year: req.body.year,
       curriculum: req.body.curriculum,
       promo: req.body.promo,
-      schoolId: searchSchool.id,
+      schoolId: req.body.school_id,
       studentsId: [],
       templateName: req.body.templateName,
     });
@@ -237,11 +237,6 @@ router.get("/batch", async (req, res) => {
   const school_batches = await BatchModel.find({
     schoolId: req.query.school_id,
   });
-  /* const school_batches = [
-    {year: 2020, curriculum: 'Bac Technologique', _id:'61015592b527c72f100f7481', id_School:'6101c0b6208679b2ab7f0884', template_name: 'Bac tec'},
-    {year: 2021, curriculum: 'BTS mécanique', _id:'6101c206564b97b34f9e16ea', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BTS méca'},
-    {year: 2021, curriculum: 'BEP comptabilité', _id:'61015592b527c72f100f7483', id_School:'6101c0b6208679b2ab7f0884', template_name: 'BEP compta'}
-  ] */
   if (school_batches.length === 0) {
     return res.json({
       success: false,
@@ -252,81 +247,7 @@ router.get("/batch", async (req, res) => {
 });
 
 router.get("/template", async (req, res) => {
-  const school = await schoolModel.findOne({ _id: req.query.school_id });
-
-  /* const school = {
-    _id: "6101084673a5f1dcafefa064c",
-    client_id: ["60ffda648dac09e6d540eb27"],
-    id_students: [],
-    templates: [
-      {
-        _id: "010001",
-        template_name: "Bac tec",
-        firstname_field: {
-          name: "prénom",
-          position_x: 10,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        lastname_field: {
-          name: "nom",
-          position_x: 40,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        birth_date_field: {
-          name: "date de naissance",
-          position_x: 160,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        mention_field: {
-          name: "mention",
-          position_x: 280,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        autresChamps: "PAS UTILE POUR LE MOMENT",
-      },
-      {
-        _id: "010002",
-        template_name: "BTS méca",
-        firstname_field: {
-          name: "prénom",
-          position_x: 10,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        lastname_field: {
-          name: "nom",
-          position_x: 40,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        birth_date_field: {
-          name: "date de naissance",
-          position_x: 160,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        mention_field: {
-          name: "mention",
-          position_x: 280,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        autresChamps: "PAS UTILE POUR LE MOMENT",
-      },
-      {
-        _id: "010003",
-        template_name: "BEP compta",
-        firstname_field: {
-          name: "prénom",
-          position_x: 10,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        lastname_field: {
-          name: "nom",
-          position_x: 40,
-          autresChamps: "PAS UTILE POUR LE MOMENT",
-        },
-        autresChamps: "PAS UTILE POUR LE MOMENT",
-      },
-    ],
-  }; */
-
+  const school = await schoolModel.findOne({_id: req.query.school_id});
   const template = school.templates.filter(
     (item) => item.template_name === req.query.template_name
   );

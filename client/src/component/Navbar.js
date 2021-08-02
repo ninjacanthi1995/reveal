@@ -45,7 +45,7 @@ const styles = {
   link:{
     margin: 20,
     marginTop: 0,
-    marginBottom: 0
+    marginBottom: 0,
   },
   navbarPadding:{
     width: "100vw",
