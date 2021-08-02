@@ -56,12 +56,19 @@ const Text = ({element, type, index}) => {
       </Menu.Item>
     </Menu>
   );
+  const qrcode_menu = (
+    <Menu style={styles.menu}>
+      <Menu.Item key="info">
+        Cet élément ne peut être supprimé
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <Rnd
       bounds="parent"
       lockAspectRatio={true}
-      size={size}
+      size={{width: size.width+2, height: size.height+2}}
       dragHandleClassName='dragIcon'
       position={position}
       onDragStop={(e, newPosition) => {
@@ -74,7 +81,7 @@ const Text = ({element, type, index}) => {
       style={styles.rnd}
     >
       <Dropdown 
-        overlay={menu} 
+        overlay={type === "image" ? menu : qrcode_menu} 
         placement="topCenter" 
         trigger={['click']}
         onVisibleChange={handleVisibleChange}
