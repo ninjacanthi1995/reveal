@@ -1,69 +1,71 @@
-import React, { useState } from "react";
-import { List, Button, Input } from "antd";
+import React, { useEffect, useState } from "react";
+import { List, Input, Modal } from "antd";
+
+const user = JSON.parse(window.localStorage.getItem("user"));
 
 export default function MyCollaboratorsScreen() {
-  const [edit, setEdit] = useState(false);
-  const [firstname, setFirstname] = useState(user.firstname);
-  const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState(user.password);
+  const [collaborators, setCollaborators] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [inputFirstname, setInputFirstname] = useState('');
+  const [inputEmail, setInputEmail] = useState('');
 
-  const onValidate = () => {
-    setEdit(false);
-    fetch("/users/edit-my-account/60ffda648dac09e6d540eb27", {
+  useEffect(() => {
+    fetch(`/users/get-collaborators/?school_id=${user.school_id}`)
+      .then((res) => res.json())
+      .then((data) => setCollaborators(data.collaborators));
+  }, [isModalVisible]);
+
+  const showModal = (index) => {
+    setSelectedIndex(index);
+    setInputFirstname(collaborators[index].firstname);
+    setInputEmail(collaborators[index].email);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    fetch(`/users/edit-user/${collaborators[selectedIndex]._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `firstname=${firstname}&email=${email}&password=${password}`,
+      body: `firstname=${inputFirstname}&email=${inputEmail}`,
     });
+    setIsModalVisible(false);
   };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleDelete = (index) => {
+    
+  }
 
   return (
     <div>
-      <List style={{ marginRight: "2%", marginLeft: "2%" }}>
-        <List.Item style={styles.listItem}>
-          Firstname:{" "}
-          {edit ? (
-            <Input
-              placeholder={firstname}
-              value={firstname}
-              onChange={(e) => setFirstname(e.target.value)}
-            />
-          ) : (
-            firstname
-          )}
-        </List.Item>
-        <List.Item style={styles.listItem}>
-          Email:{" "}
-          {edit ? (
-            <Input
-              placeholder={email}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          ) : (
-            email
-          )}
-        </List.Item>
-        <List.Item style={styles.listItem}>
-          Password:{" "}
-          {edit ? (
-            <Input
-              placeholder={password}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          ) : (
-            password
-          )}
-        </List.Item>
-        <List.Item style={styles.listItem}>
-          School ID: {user.school_id}
-        </List.Item>
-        {edit ? (
-          <Button onClick={onValidate}>Validate</Button>
-        ) : (
-          <Button onClick={() => setEdit(true)}>Edit</Button>
+      <List
+        className="demo-loadmore-list"
+        itemLayout="horizontal"
+        dataSource={collaborators}
+        renderItem={(collaborator, index) => (
+          <List.Item
+            actions={[<a onClick={() => showModal(index)}>éditer</a>, <a onClick={() => handleDelete(index)}>supprimer</a>]}
+          >
+            <span>Prénom: {collaborator.firstname}</span>
+            <span>Email: {collaborator.email}</span>
+          </List.Item>
         )}
-      </List>
+      />
+      <Modal
+        title="Editez votre collaborator"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        Prénom
+        <Input value={inputFirstname} onChange={e => setInputFirstname(e.target.value)} />
+        Email 
+        <Input value={inputEmail} onChange={e => setInputEmail(e.target.value)} />
+      </Modal>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function MyAccountScreen() {
 
   const onValidate = () => {
     setEdit(false);
-    fetch("/users/edit-my-account/60ffda648dac09e6d540eb27", {
+    fetch(`/users/edit-user/${user._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `firstname=${firstname}&email=${email}&password=${password}`,

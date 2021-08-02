@@ -240,7 +240,7 @@ router.get("/error-diploma", async (req, res) => {
     if (searchDiplomaIndex === -1) {
       res.json({ result: false, msg: "Le diplôme n'existe pas" });
     } else {
-      searchStudent.diplomas[searchDiplomaIndex].status = "à valider";
+      searchStudent.diplomas[searchDiplomaIndex].status = "à corriger";
       await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
       res.json({ result: true, msg: "Veuillez contacter votre secrétariat" });
     }
@@ -359,16 +359,6 @@ router.get("/get-school", async (req, res) => {
   if (!searchSchool) {
     res.json({ result: false, msg: "Ecole non existant" })
   } else {
-    res.json({ result: true, school: searchSchool })
-  }
-})
-
-router.get("/get-collaborators", async (req, res) => {
-  const searchSchool = await schoolModel.findById(req.query.school_id);
-  if (!searchSchool) {
-    res.json({ result: false, msg: "Ecole non existant" })
-  } else {
-    
     res.json({ result: true, school: searchSchool })
   }
 })
