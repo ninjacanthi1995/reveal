@@ -17,10 +17,9 @@ export default function CreateBatch() {
   const [school_id, setSchool_id] = useState("");
   const [templateList, setTemplateList] = useState([]);
   useEffect(() => {
-    const school_id = "6101c0b6208679b2ab7f0884"
-    // const school_id = window.localStorage.getItem('school_id')
+    const school_id = window.localStorage.getItem('school_id')
     setSchool_id(school_id)
-    const getTemplates = async ()=>{
+    const getTemplates = async () => {
       const request = await fetch(`/templates/get-templates/${school_id}`)
       const response = await request.json()
       if(response.result){
@@ -31,8 +30,6 @@ export default function CreateBatch() {
     }
     getTemplates()
   }, []);
-
-  console.log(`school_id`, school_id)
 
   const onFinish = async () => {
     const request = await fetch("/create-batch", {

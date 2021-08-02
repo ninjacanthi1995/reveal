@@ -11,13 +11,18 @@ export default function StudentDiploma() {
 
   useEffect(() => {
     fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
-  }, []);
+  }, [studentId, batchId]);
 
-  const handleDownload = () => {
-    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
-      window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank")
+  const handleDownload = async () => {
+    await fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
+      async (res) => {
+        window.open(
+          `/diploma_student${studentId}_batch${batchId}.pdf`,
+          "_blank"
+        );
+        fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
+      }
     );
-    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
   };
 
   function onDocumentLoadSuccess() {
