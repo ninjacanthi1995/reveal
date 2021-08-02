@@ -63,7 +63,7 @@ const ImportConfigScreen = () => {
     const selected = batchList.filter(bach => bach._id === batchId)[0];
     setSelectedBatch(selected);
     //console.log('SELECTED: ',selected);
-    const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.templateName}`);
+    const rawData = await fetch(`/templates/get/${schoolId}/${selected.templateName}`);
     const data = await rawData.json();
     const templateFromDB = data.template;
     //console.log('templateFromDB: ', templateFromDB);

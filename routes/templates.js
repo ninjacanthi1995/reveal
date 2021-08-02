@@ -48,7 +48,13 @@ router.get("/get-templates/:school_id", async (req, res) => {
 
 router.get("/get/:school_id/:template_name", async (req, res) => {
   getSchool(res, req.params.school_id, school => {
-    const template = school.templates.find(e=> e.template_name.includes(req.params.template_name))
+    const template = school.templates.find(e=> e.template_name === req.params.template_name)
+    if (!template) {
+      return res.json({
+        success: false,
+        message: "no template or no school found",
+      });
+    }
     res.json({result:true, template: template})
   })
 })

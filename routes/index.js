@@ -246,21 +246,6 @@ router.get("/batch", async (req, res) => {
   return res.json({ success: true, batches: school_batches });
 });
 
-router.get("/template", async (req, res) => {
-  const school = await schoolModel.findOne({_id: req.query.school_id});
-  const template = school.templates.filter(
-    (item) => item.template_name === req.query.template_name
-  );
-
-  if (template.length === 0) {
-    return res.json({
-      success: false,
-      message: "no template or no school found",
-    });
-  }
-  //console.log('template: ', template[0]);
-  return res.json({ success: true, template: template[0] });
-});
 
 router.post("/post-csv-import", async (req, res) => {
   ///// 1 - save diploma in the student document

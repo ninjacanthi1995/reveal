@@ -127,7 +127,9 @@ const DiplomaListScreen = () => {
                 firstname: student.firstname,
                 email: student.email,
                 status: diploma.status,
-                birth_date: student.birth_date  // not diplayed in table but will be used in email.
+                birth_date: student.birth_date,  // not diplayed in table but will be used in email.
+                studentId: student._id,
+                diplomaId: diploma._id
               }
               tempData.push(row);
             }
