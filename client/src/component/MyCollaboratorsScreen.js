@@ -1,20 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { List, Button, Input } from "antd";
 
-const user = JSON.parse(window.localStorage.getItem("user"));
-
-export default function MyAccountScreen() {
+export default function MyCollaboratorsScreen() {
   const [edit, setEdit] = useState(false);
   const [firstname, setFirstname] = useState(user.firstname);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState(user.password);
-  const [schoolName, setSchoolName] = useState('');
-
-  useEffect(() => {
-    fetch(`/get-school/?school_id=${user.school_id}`)
-      .then((res) => res.json())
-      .then((data) => setSchoolName(data.school.name));
-  }, []);
 
   const onValidate = () => {
     setEdit(false);
@@ -65,7 +56,7 @@ export default function MyAccountScreen() {
           )}
         </List.Item>
         <List.Item style={styles.listItem}>
-          School name: {schoolName}
+          School ID: {user.school_id}
         </List.Item>
         {edit ? (
           <Button onClick={onValidate}>Validate</Button>

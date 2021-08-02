@@ -14,11 +14,9 @@ const templateSchema = new mongoose.Schema({
   static_fields: [{type: mongoose.Schema.Types.Mixed}]
 })
 
-
 const schoolSchema = new mongoose.Schema({
   name: String,
   client_id: [String],
-  id_students: [String],
   templates: [templateSchema]
 });
 
