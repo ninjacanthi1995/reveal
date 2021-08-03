@@ -7,7 +7,7 @@ export default function ScreenDiplomaError() {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    fetch(`/error-diploma/?id_student=${id_student}&id_diploma=${id_diploma}`)
+    fetch(`/emails/error-diploma/?id_student=${id_student}&id_diploma=${id_diploma}`)
       .then((res) => res.json())
       .then((data) => setMsg(data.msg));
   }, [id_student, id_diploma]);

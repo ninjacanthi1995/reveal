@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import Navbar from './Navbar';
-import { Table, Button, message } from 'antd';
 
-import { statusFilters } from '../helpers/status';
+import { Table, Button, Modal, Input, message } from 'antd';
+
+
+import { status, statusFilters } from '../helpers/status';
 import Colors from '../helpers/colors';
 import emailFetcher from '../helpers/emailFetcher';
 
@@ -13,17 +15,71 @@ const { Option } = Select;
 const { Title } = Typography;
 
 
-
 const DiplomaListScreen = () => {
   const now = new Date();
   const [optionsYear, setOptionsYear] = useState([]);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
+  const [dataRefresher, setDataRefresher] = useState(0);  // utile pour rafraichir les status après l'envoi des emails
   //const [schoolId, setSchoolId] = useState('');
   const [data, setData] = useState([]);
+  const [missingData, setMissingData] = useState(false);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
   const [selectedDiplomas, setSelectedDiplomas] = useState([]);
-  
+
+  const [visible, setVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [editedRow, setEditedRow] = useState({});
+
+
+  // Modal helpers:
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    // data preparation
+    const tempData = [...data];
+    const tempRow = {...editedRow};
+    tempRow.status = status.not_mailed;
+    const editedIndex = tempData.findIndex(row => row.key === editedRow.key);
+    tempData[editedIndex] = tempRow;
+
+    // update in DB
+    const updatedRaw = await fetch('/update-student', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(tempRow)
+    });
+    const updated = await updatedRaw.json();
+
+    if (!updated.result){
+      message.error(updated.message)
+      setConfirmLoading(false);
+      return;
+    }
+
+    // update data (will update Table)
+    setData(tempData);
+    message.success("Les informations de l'étudiant ont été modifié.");
+
+    setVisible(false);
+    setConfirmLoading(false);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+    message.warning("Modifications annulées.");
+  };
+
+
+  const openModal = (record) => {
+    if (record.status === status.confirmed) {
+      message.warning("impossible de modifié un étudiant avec le statut 'confirtmé'.")
+      return;
+    }
+    setEditedRow(record);
+    setVisible(true);
+  }
+
+
   const columns = [
     {
       title: 'Curriculum',
@@ -122,7 +178,7 @@ const DiplomaListScreen = () => {
           student.diplomas.forEach((diploma, k) => {
             if (diploma.id_batch === batchId) {
               const row = {
-                key: i.toString() + j.toString() + k.toString(),
+                key: `b${i}s${j}d${k}`,
                 curriculum: batch.curriculum,
                 promo: batch.promo.toString(),
                 lastname: student.lastname,
@@ -143,7 +199,7 @@ const DiplomaListScreen = () => {
       setData(tempData);
     };
     getData();
-  }, [selectedYear])
+  }, [selectedYear, dataRefresher])
 
 
   // pour tous filtrage ou tri d'un header
@@ -186,9 +242,22 @@ const DiplomaListScreen = () => {
           shape='round'
           size='medium'
           style={styles.button}
-          onClick={() => emailFetcher(selectedDiplomas)}
+          onClick={ async () => {
+            const result = await emailFetcher(selectedDiplomas);
+            if (result.notSent){
+              message.error(`${result.notSent} emails n'ont pas été envoyé. Sur un total de ${result.total}. Voir les status.`)
+            } else {
+              message.success("Tous les emails ont été envoyé avec succés.")
+            }
+
+            setDataRefresher(dataRefresher + 1);
+          }}
         >Envoyer les mails</Button>
       </div>
+      <p style={styles.p} >
+        - Editez un étudiant en double cliquant dessus -
+        <span style={styles.alert}>Attention, il y des status 'données incomplètes'</span>
+      </p>
       <Table 
         columns={columns} 
         dataSource={data}
@@ -197,8 +266,79 @@ const DiplomaListScreen = () => {
         rowSelection={{...rowSelection}}
         scroll={{y: 600}}               // A AFFINER - le plus grand possible
         style={{marginLeft: 5, marginRight: 5}}
+        onRow={(record, rowIndex) => {
+        return{
+          onDoubleClick: () => openModal(record)
+        }}
+      }
       />
-      
+      <Modal
+        title="Editer les informations:"
+        visible={visible}
+        onOk={handleOk}
+        okText='Enregistrer'
+        confirmLoading={confirmLoading}
+        onCancel={handleCancel}
+        cancelText='Annuler'
+        maskClosable={false}
+      >
+        <table>
+          <tr>
+            <td>Nom: </td>
+            <td>
+              <Input 
+                value={editedRow.lastname}
+                onChange={e => {
+                  const tempRow = {...editedRow}
+                  tempRow.lastname = e.target.value;
+                  setEditedRow(tempRow);
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>Prénom: </td>
+            <td>
+              <Input 
+                value={editedRow.firstname}
+                onChange={e => {
+                  const tempRow = {...editedRow}
+                  tempRow.firstname = e.target.value;
+                  setEditedRow(tempRow);
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>Date de naissance: </td>
+            <td>
+              <Input 
+                value={editedRow.birth_date}
+                onChange={e => {
+                  const tempRow = {...editedRow}
+                  tempRow.birth_date = e.target.value;
+                  setEditedRow(tempRow);
+                }}
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>Email: </td>
+            <td>
+              <Input 
+                style={styles.modalInput}
+                value={editedRow.email}
+                onChange={e => {
+                  const tempRow = {...editedRow}
+                  tempRow.email = e.target.value;
+                  //console.log('onchange', tempRow)
+                  setEditedRow(tempRow);
+                }}
+              />
+            </td>
+          </tr>
+        </table>
+      </Modal>
     </>
   )
 };
@@ -215,6 +355,16 @@ const styles = {
     margin: 10,
     display: 'flex',
     justifyContent: 'space-between'
+  },
+  modalInput: {
+    width: 400
+  },
+  p:{
+    color: Colors.gray,
+    textAlign: 'center'
+  },
+  alert:{
+    color: 'red'
   }
 }
 
@@ -222,3 +372,4 @@ export default DiplomaListScreen;
 
 
 // REGLER LE FILTRAGE DU STATUS ET LA SELECTION DES ROW
+// FINIR L ALERTE POUR LES STATUS 'DONNEES MANQUANTES'

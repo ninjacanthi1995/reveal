@@ -16,7 +16,7 @@
     <meta name="format-detection" content="address=no" />
     <meta name="format-detection" content="telephone=no" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'/>
-    <title>Confirmation de vos données</title>
+    <title>Félicitations! Votre diplôme certifié!</title>
     
 
     <style type="text/css" media="screen">
@@ -64,36 +64,29 @@
     </style>
 </head>
 <body class="body" style="padding:0 !important; margin:0 !important; display:block !important; background:#f8f8f8; -webkit-text-size-adjust:none">
-        <h1>Veuillez vérifier l'exactitude de vos données:</h1>
-        <p><%= firstname %> avez récemment passé un diplôme.</p>
-        <p>Votre centre de formation, va certififer votre diplôme à l'aide de la technologie Block-Chain.</p>
-        <p>Cette technologie est infalsifiable et n'autorise aucune modification après un enregistrement.</p>
-        <p>Il est donc primordial de bien vérifier l'exactitude des informations suivantes:</p>
-        <table>
-          <tr>
-            <td>Votre prénom: </td>
-            <td><%= firstname %></td>
-          </tr>
-          <tr>
-            <td>Votre nom: </td>
-            <td><%= lastname %></td>
-          </tr>
-          <tr>
-            <td>Votre date de naissance: </td>
-            <td><%= birth_date %></td>
-          </tr>
-          <tr>
-            <td>Votre diplôme: </td>
-            <td><%= curriculum %></td>
-          </tr>
-          <tr>
-            <td>Votre promo: </td>
-            <td><%= promo %></td>
-          </tr>
-        </table>
+        <h1>Félicitations! Voici les liens vers votre diplôme certifié</h1>
+        <p><%= firstname %>, vous avez travaillé dur pour obtenir votre diplôme. Et vous l'avez eu</p>
+        <p>Votre centre de formation certifie votre diplôme grâce à une technologie infalsifiable: la blockchain.</p>
+        <p>Rassurez vous, l'authenticité de votre diplôme est très facile à prouver à un recruteur.</p>
+        <p>Il y a 2 niveaux de vérification:</p>
+        <ol>
+          <li>Un support visuel, semblable à un diplôme classique, au format pdf. Il est hébergé sur nos serveurs, ce qui apporte déjà un niveau de sécurité rassurant pour un recruteur.
+              Il inclu également un QR code. En scannant tout simplement ce QR Code un recruteur (ou n'importe qui avec un smartphone) accède à l'url du smartContract associé à votre diplôme.(voir ci-dessus)
+              <div><%= pdfLink %></div>
+          </li>
+          <li>
+            Une url vers le smartContract associé à votre diplôme. Qu'elle soit saisie dans un navigateur ou scannée via le Qr Code, elle vous amène aux
+            données de votre diplôme directement dans la blockchain. Pas de blabla technique, il faut juste savoir que cette technologie est infalsifiable! 
+            Avec cela vous pouvez prouver à qui vous voulez que vous avez bien décroché ce diplôme.
+            <div><%= smartContractUrl %></div>
+          </li>
+        </ol>
+        <p>Conservez ces liens précieusement.</p>
+        <p>Vous pouvez aussi les partager librement, sur votre profil LinkedIn par exemple.</p>
 
-        <a href=<%= validLink %>><button>TOUTES mes données sont exactes</button></a>
-        <a href=<%= errorLink %>><button>Mes données sont eronnées.</button></a>
+        <p>Encore toutes nos félicitations pour cette réussite.</p>
+        <p>L'équipe de Reval</p>
+
 </body>
 </html>
 
