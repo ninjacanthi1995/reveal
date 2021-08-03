@@ -13,7 +13,7 @@ export default function SettingsScreen() {
   let history = useHistory();
 
   const disconnect = () => {
-    window.localStorage.removeItem('school_id')
+    window.localStorage.removeItem('admin')
     history.push("/");
   }
   return (
