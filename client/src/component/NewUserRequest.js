@@ -49,7 +49,7 @@ export default function NewUserRequest() {
             </Form.Item>
             <Form.Item
               label="Nom"
-              name="name"
+              name="lastname"
               rules={[{ required: true, message: 'Merci de renseigner votre nom' }]}
             >
               <Input />
