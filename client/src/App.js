@@ -34,6 +34,7 @@ function App() {
           <Route exact path="/" component={ScreenHome} />
           <Route exact path="/dashboard" component={DashBoard} />
           <Route exact path="/dashboard-admin" component={DashBoardAdmin} />
+          <Route exact path="/dashboard-admin/:tab" component={DashBoardAdmin} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/template-management" component={TemplateManagement} />
           <Route exact path="/import" component={ImportStudentScreen} />
