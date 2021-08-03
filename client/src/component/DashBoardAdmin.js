@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 
 import{ Link , useParams, useHistory} from 'react-router-dom';
-import '../App.css';
+import '../App.less';
 
 
 
@@ -20,11 +20,12 @@ export default function DashBoardAdmin() {
     window.localStorage.removeItem('admin')
     history.push("/");
   }
-   
+
     return (
-        
+
         <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <Navbar></Navbar>
+      <h1> ADMIN DASHBOARD</h1>
       <Row style={{ flexGrow: 2 }}>
         <Col span={6} style={{ height: "100%", marginLeft: "2%" }}>
           <List>
@@ -37,7 +38,7 @@ export default function DashBoardAdmin() {
         <Divider type="vertical" style={{ height: "100%" }} />
         
         <Col span={17} style={{ height: "100%" }}>
-        <h1> ADMIN DASHBOARD</h1>
+       
           {tab === 'school-list' && <SchoolCustomerList />}
           {tab === 'add-school' && < SchoolCustomerList/>}
           {tab === 'add-school-admin' && < SchoolCustomerList/>}
