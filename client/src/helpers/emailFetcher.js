@@ -11,6 +11,13 @@ const emailFetcher = async (selectedRows) => {
     });
     const result = await resultRaw.json();
     console.log('confirm Result: ', result);
+    if (!result.success){
+      return {
+        total: diplomasNotMailed.length,
+        notSent: result.errors.length
+      }
+    }
+    return true;
   }
   //console.log('end of emailfetcher');
 };

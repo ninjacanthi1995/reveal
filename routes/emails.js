@@ -59,8 +59,8 @@ router.post("/confirmation", async (req, res) => {
       firstname: diplomaData.firstname,
       lastname: diplomaData.lastname,
       birth_date: diplomaData.birth_date,
-      studentId: diplomaData.studentId,
-      diplomaId: diplomaData.diplomaId
+      validLink:`${process.env.DOMAIN_NAME}/diploma-validated/${diplomaData.studentId}/${diplomaData.diplomaId}`,
+      errorLink: `${process.env.DOMAIN_NAME}/diploma-error/${diplomaData.studentId}/${diplomaData.diplomaId}`
     }
 
     const err = sendMail('emails/firstEmail.ejs', matchings, options);
@@ -91,6 +91,75 @@ router.post("/confirmation", async (req, res) => {
   }
   res.json({success: true});
 });
+
+
+router.get("/validate-diploma", async (req, res) => {
+  const searchStudent = await studentModel.findById(req.query.id_student);
+  if (!searchStudent) {
+    return res.json({ result: false, msg: "L'étudiant n'existe pas" });
+  }
+  const searchDiplomaIndex = searchStudent.diplomas.findIndex(
+    (diploma) => diploma.id === req.query.id_diploma
+  );
+  if (searchDiplomaIndex === -1) {
+    return res.json({ result: false, msg: "Le diplôme n'existe pas" });
+  }
+  if (searchStudent.diplomas[searchDiplomaIndex].status === "confirmé"){
+    return res.json({ result: false, msg: "Vous avez déjà validé vos informations. Si vous n'avez pas reçu votre diplôme, vérifiez dans votre dossier spam." });
+  }
+
+  searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
+  const smartContractUrl = "abc";
+  searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = smartContractUrl;
+  await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
+
+  // envoi email avec les liens vers le diplome pdf et le smartContract
+
+  const batchId = searchStudent.diplomas[searchDiplomaIndex].id_batch;
+
+  const options = {
+    to: searchStudent.email,
+    subject: 'Votre diplôme certifié est disponible!',
+  }
+
+  const matchings = {
+    firstname: searchStudent.firstname,
+    lastname: searchStudent.lastname,
+    pdfLink: `${process.env.DOMAIN_NAME}/diploma-student/${searchStudent._id}/${batchId}`,
+    smartContractUrl: smartContractUrl
+  }
+
+  const err = sendMail('emails/finalEmail.ejs', matchings, options);
+
+  if (err){
+    console.log('Error: ', err);
+  }
+
+  res.json({ result: true, msg: "Votre diplôme a été validé" });
+  
+});
+
+
+router.get("/error-diploma", async (req, res) => {
+  const searchStudent = await studentModel.findById(req.query.id_student);
+  if (!searchStudent) {
+    return res.json({ result: false, msg: "L'étudiant n'existe pas" });
+  }
+  const searchDiplomaIndex = searchStudent.diplomas.findIndex(
+    (diploma) => diploma.id === req.query.id_diploma
+  );
+  if (searchDiplomaIndex === -1) {
+    return res.json({ result: false, msg: "Le diplôme n'existe pas" });
+  }
+  if (searchStudent.diplomas[searchDiplomaIndex].status === "confirmé") {
+    return res.json({ result: false, msg: "Vous avez déjà validé vos informations. Contactez votre secrétariat" })
+  }
+
+  searchStudent.diplomas[searchDiplomaIndex].status = "à corriger";
+  await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
+  res.json({ result: true, msg: "Veuillez contacter votre secrétariat" });
+});
+
 
 
 module.exports = router;

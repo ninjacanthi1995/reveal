@@ -210,42 +210,6 @@ router.get("/delete-pdf", async (req, res) => {
   }
 });
 
-router.get("/validate-diploma", async (req, res) => {
-  const searchStudent = await studentModel.findById(req.query.id_student);
-  if (!searchStudent) {
-    res.json({ result: false, msg: "L'étudiant n'existe pas" });
-  } else {
-    const searchDiplomaIndex = searchStudent.diplomas.findIndex(
-      (diploma) => diploma.id === req.query.id_diploma
-    );
-    if (searchDiplomaIndex === -1) {
-      res.json({ result: false, msg: "Le diplôme n'existe pas" });
-    } else {
-      searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
-      searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = "abc";
-      await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
-      res.json({ result: true, msg: "Votre diplôme a été validé" });
-    }
-  }
-});
-
-router.get("/error-diploma", async (req, res) => {
-  const searchStudent = await studentModel.findById(req.query.id_student);
-  if (!searchStudent) {
-    res.json({ result: false, msg: "L'étudiant n'existe pas" });
-  } else {
-    const searchDiplomaIndex = searchStudent.diplomas.findIndex(
-      (diploma) => diploma.id === req.query.id_diploma
-    );
-    if (searchDiplomaIndex === -1) {
-      res.json({ result: false, msg: "Le diplôme n'existe pas" });
-    } else {
-      searchStudent.diplomas[searchDiplomaIndex].status = "à corriger";
-      await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
-      res.json({ result: true, msg: "Veuillez contacter votre secrétariat" });
-    }
-  }
-});
 
 router.get("/batch", async (req, res) => {
   const school_batches = await BatchModel.find({
@@ -342,10 +306,28 @@ router.get("/batches-populated", async (req, res) => {
 router.get("/get-school", async (req, res) => {
   const searchSchool = await schoolModel.findById(req.query.school_id);
   if (!searchSchool) {
-    res.json({ result: false, msg: "Ecole non existant" })
+    res.json({ result: false, msg: "Ecole non existante" })
   } else {
     res.json({ result: true, school: searchSchool })
   }
+})
+
+router.post("/update-student", async (req, res) => {
+  const {studentId, firstname, lastname, birth_date, email, diplomaId, status} = req.body;
+  const student = await studentModel.findById(studentId);
+
+  student.firstname = firstname;
+  student.lastname = lastname;
+  student.email = email;
+  student.birth_date = birth_date;
+  const diplomaIndex = student.diplomas.findIndex(diploma => diploma._id == diplomaId);  
+  student.diplomas[diplomaIndex].status = status;
+  const updated = await student.save();
+
+  if (!updated._id) {
+    return res.json({result: false, message: 'student informations not updated.'})
+  }
+  res.json({result: true});
 })
 
 module.exports = router;
