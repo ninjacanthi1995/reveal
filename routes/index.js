@@ -162,6 +162,7 @@ router.get("/create-pdf", async (req, res) => {
         searchTemplate.mention_field.position.x,
         searchTemplate.mention_field.position.y
       );
+    
 
     const textFields = await searchTemplate.static_fields.filter(
       (field) => field.type === "text"
