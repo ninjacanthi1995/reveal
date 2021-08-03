@@ -32,7 +32,8 @@ const sendMail = (templatePath, matchings, options, errors) => {
             console.log('ERROR: ', err);
             return err;
           } else {
-              console.log('Message sent: ' + info.response);
+            console.log('Message sent: ' + info.response);
+            return false
           }
       });
     }
@@ -91,6 +92,24 @@ router.post("/confirmation", async (req, res) => {
   }
   res.json({success: true});
 });
+
+
+router.post("/demande-inscription", function (req, res) {
+  const newUser = req.body.values;
+
+  const mailGerant = "frederic.garnier@mycommunicationtoolbox.com"
+  
+  const options = {
+    to: mailGerant,
+    subject: 'Bonjour Fred, vous avez une nouvelle demande sur Reveal.com',
+  }
+
+  const err = sendMail('emails/inscriptionEmail.ejs', newUser, options);
+
+  if (err) res.json({result: false, error: `Votre demande n'a pas pu être envoyé, vous pouvez nous contacter à cette adresse: ${mailGerant}`})
+  res.json({result: true, message: "Votre demande a bien été envoyée, nous revenons vers vous au plus vite !"});
+});
+
 
 
 module.exports = router;
