@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import { Button, Breadcrumb, Input, message } from 'antd';
-import 'antd/dist/antd.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory, useParams } from "react-router-dom"
 

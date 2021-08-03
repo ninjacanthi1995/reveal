@@ -42,7 +42,7 @@ const ImportStudentScreen = () => {
 
 
   return (
-    <div>
+    <>
       {fileIsUploaded && <Redirect to='/import-config' />}
       <Navbar />
       <div style={styles.importCSV}>
@@ -62,7 +62,7 @@ const ImportStudentScreen = () => {
       <div>
 
       </div>
-    </div>
+    </>
   )
 }
 
