@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import { Switch } from 'antd';
-import { Link , Redirect} from 'react-router-dom';
-import '../App.css';
+import { Link, Redirect } from 'react-router-dom';
+import '../App.less';
 
 
 
@@ -14,7 +14,7 @@ export default function DashBoard() {
         const user =JSON.parse(window.localStorage.getItem('user'))
         if (user.admin === "admin") {
             setIsAdmin(true)
-            
+
         }
 // console.log(user);
     }, [])

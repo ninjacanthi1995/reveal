@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
-import { useParams, Link } from "react-router-dom";
+import "../App.less";
+import { useParams } from "react-router-dom";
 
 export default function ScreenDiplomaValidated() {
+  console.log('in validated');
   const { id_student, id_diploma } = useParams();
   const [msg, setMsg] = useState("");
 
@@ -12,7 +13,7 @@ export default function ScreenDiplomaValidated() {
     )
       .then((res) => res.json())
       .then((data) => setMsg(data.msg));
-  }, []);
+  }, [id_student, id_diploma]);
 
   return (
     <div>

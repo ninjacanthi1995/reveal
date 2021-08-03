@@ -48,6 +48,7 @@ export default function MyCollaboratorsScreen() {
         dataSource={collaborators}
         renderItem={(collaborator, index) => (
           <List.Item
+            // eslint-disable-next-line
             actions={[<a onClick={() => showModal(index)}>éditer</a>, <a onClick={() => handleDelete(index)}>supprimer</a>]}
           >
             <span>Prénom: {collaborator.firstname}</span>
@@ -69,19 +70,3 @@ export default function MyCollaboratorsScreen() {
     </div>
   );
 }
-
-const styles = {
-  content: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  input: {
-    width: "100%",
-  },
-  listItem: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-};
