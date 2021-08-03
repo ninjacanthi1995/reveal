@@ -11,10 +11,6 @@ let transporter = nodemailer.createTransport({
   }
 })
 
-
-
-
-
 router.post("/confirmation", function (req, res) {
   const students = req.body;     // un tableau de user
   
@@ -43,6 +39,30 @@ router.post("/confirmation", function (req, res) {
     return res.json({success: false, message: 'one or more errors occured: ', errors})
   }
   res.json({success: true});
+});
+
+
+router.post("/demande-inscription", function (req, res) {
+  const newUser = req.body.values;
+  const errors = []
+  let mailOptions = {
+    from: `Reveal <${newUser.email}>`,
+    to: "dorian.gentine@mail.novancia.fr", // MAIL A CHANGER
+    subject: 'Bonjour Fred, vous avez une nouvelle demande sur Reveal.com',
+    html: '<body>Hello World</body>',
+  }
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      errors.push(err);
+      console.log('email failed');
+    } else {
+      console.log('email success');
+    }
+  })
+
+  if (errors.length !== 0) res.json({result: false, error: "Votre demande n'a pas pu être envoyé, vous pouvez nous contacter à cette adresse: A_REMPLIR"})
+  res.json({result: true, message: "Votre demande a bien été envoyée, nous revenons vers vous au plus vite !"});
 });
 
 
