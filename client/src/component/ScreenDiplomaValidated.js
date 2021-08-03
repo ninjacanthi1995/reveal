@@ -3,6 +3,7 @@ import "../App.css";
 import { useParams, Link } from "react-router-dom";
 
 export default function ScreenDiplomaValidated() {
+  console.log('in validated');
   const { id_student, id_diploma } = useParams();
   const [msg, setMsg] = useState("");
 
