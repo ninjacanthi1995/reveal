@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { List, Button, Input } from "antd";
 
-const user = {
-  _id: { $oid: "60ffda648dac09e6d540eb27" },
-  email: "toto@harvard.com",
-  password: "1234",
-  admin: "",
-  school_id: "60fff6d28dac09ffff40eb28",
-  firstname: "toto",
-};
+const user = JSON.parse(window.localStorage.getItem("user"));
 
 export default function MyAccountScreen() {
   const [edit, setEdit] = useState(false);
   const [firstname, setFirstname] = useState(user.firstname);
   const [email, setEmail] = useState(user.email);
   const [password, setPassword] = useState(user.password);
+  const [schoolName, setSchoolName] = useState('');
+
+  useEffect(() => {
+    fetch(`/get-school/?school_id=${user.school_id}`)
+      .then((res) => res.json())
+      .then((data) => setSchoolName(data.school.name));
+  }, []);
 
   const onValidate = () => {
     setEdit(false);
-    fetch("/users/edit-my-account/60ffda648dac09e6d540eb27", {
+    fetch(`/users/edit-user/${user._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `firstname=${firstname}&email=${email}&password=${password}`,
@@ -65,7 +65,7 @@ export default function MyAccountScreen() {
           )}
         </List.Item>
         <List.Item style={styles.listItem}>
-          School ID: {user.school_id}
+          School name: {schoolName}
         </List.Item>
         {edit ? (
           <Button onClick={onValidate}>Validate</Button>

@@ -15,7 +15,6 @@ const templateSchema = new mongoose.Schema({
   static_fields: [{type: mongoose.Schema.Types.Mixed}]
 })
 
-
 const schoolSchema = new mongoose.Schema({
   name: String,
   user_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
