@@ -21,8 +21,9 @@ import NewUserRequest from './component/NewUserRequest';
 import SettingsScreen from './component/SettingsScreen';
 import TemplateManagement from './component/TemplateManagement';
 import DashBoard from './component/DashBoard'
-import DashBoardAdmin from './component/DashBoardAdmin'
-
+import DashBoardAdmin from './component/DashBoardAdmin';
+import ScreenDiplomaValidated from './component/ScreenDiplomaValidated';
+import ScreenDiplomaError from './component/ScreenDiplomaError';
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
@@ -43,6 +44,8 @@ function App() {
           <Route path="/creer-mon-template" component={TemplateCreator} />
           <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
           <Route exact path="/settings/:tab" component={SettingsScreen} />
+          <Route exact path="/diploma-validated/:id_student/:id_diploma" component={ScreenDiplomaValidated} />
+          <Route exact path="/diploma-error/:id_student/:id_diploma" component={ScreenDiplomaError} />
           <Route component={NotFoundPAge} />
         </Switch>
       </Router>

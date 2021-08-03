@@ -7,6 +7,7 @@ import BackgroundImage from './BackgroundImage'
 
 const Displayer = () => {
   const templateElements = useSelector(state => state.templateElements)
+
   const elementList = templateElements.map((element, index) => {
     if(element.type === "text" || element.type === "dynamic"){
       return <Text 
@@ -14,7 +15,7 @@ const Displayer = () => {
         element={element.element}
         type={element.type} 
         index={index} />
-    }else if(element.type === "image"){
+    }else if(element.type === "image" || element.type === "qrCode"){
       return <Image 
         key={index}
         element={element.element}

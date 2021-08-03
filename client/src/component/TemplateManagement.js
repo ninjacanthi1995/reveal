@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import Navbar from './Navbar';
-import { Table, Space, Button, message } from 'antd';
+import { Table, Space, Button, message, Typography } from 'antd';
 import { Link } from 'react-router-dom';
+
+const { Paragraph } = Typography;
 
 export default function TemplateManagement() {
   const [templates, setTemplates] = useState([]);
@@ -48,6 +50,9 @@ export default function TemplateManagement() {
         <>
           <Space size="middle">
             <Link to={`/creer-mon-template/${record.template_name}`}>Edit</Link>
+            <Paragraph style={{...styles.p, color: "#0F6157"}} copyable={{ text: `${window.location.origin}/creer-mon-template/${record.template_name}` }}>
+              Copy
+            </Paragraph>
             <p style={styles.p} onClick={() => deleteTemplate(record)}>Delete</p>
           </Space>
         </>
