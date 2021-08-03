@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { List, Button, Input } from "antd";
+import { List, Button, Input, message } from "antd";
 
 const user = JSON.parse(window.localStorage.getItem("user"));
 
@@ -13,7 +13,13 @@ export default function MyAccountScreen() {
   useEffect(() => {
     fetch(`/get-school/?school_id=${user.school_id}`)
       .then((res) => res.json())
-      .then((data) => setSchoolName(data.school.name));
+      .then((data) => {
+        if(data.result){
+          setSchoolName(data.school.name)
+        }else{
+          message.error(data.msg)
+        }
+      });
   }, []);
 
   const onValidate = () => {
