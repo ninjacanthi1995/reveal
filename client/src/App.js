@@ -21,7 +21,6 @@ import NewUserRequest from './component/NewUserRequest';
 import SettingsScreen from './component/SettingsScreen';
 import TemplateManagement from './component/TemplateManagement';
 import DashBoard from './component/DashBoard'
-import DashBoardAdmin from './component/DashBoardAdmin';
 import ScreenDiplomaValidated from './component/ScreenDiplomaValidated';
 import ScreenDiplomaError from './component/ScreenDiplomaError';
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
@@ -33,8 +32,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={ScreenHome} />
           <Route exact path="/dashboard" component={DashBoard} />
-          <Route exact path="/dashboard-admin" component={DashBoardAdmin} />
-          <Route exact path="/dashboard-admin/:tab" component={DashBoardAdmin} />
+          <Route exact path="/dashboard/:tab" component={DashBoard} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/template-management" component={TemplateManagement} />
           <Route exact path="/import" component={ImportStudentScreen} />

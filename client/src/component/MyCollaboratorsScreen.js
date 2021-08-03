@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input, Modal, Button, Table, Space, Row } from "antd";
 
-const user = JSON.parse(window.localStorage.getItem("user"));
 const schoolId = window.localStorage.getItem("school_id");
 
 export default function MyCollaboratorsScreen() {
@@ -92,7 +91,9 @@ export default function MyCollaboratorsScreen() {
         <Space size="middle">
           {record.role !== "gérant" && (
             <Row style={{ gap: "16px" }}>
+              {/* eslint-disable-next-line */}
               <a onClick={() => showModal(record.key)}>Editer</a>
+              {/* eslint-disable-next-line */}
               <a onClick={() => handleDelete(record.key)}>Supprimer</a>
             </Row>
           )}

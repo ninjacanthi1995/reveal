@@ -102,7 +102,6 @@ const ImportStudentScreen = () => {
 
   // Set the student and send it to the DB
   const onFinish = async values => {
-    console.log('Success:', values["Date de naissance"]);
     const dataStudent = {
       email: values.email,
       firstname: values["Prénom"],
@@ -145,10 +144,10 @@ const ImportStudentScreen = () => {
             >Télécharger</Button>
         </Upload>
       </div>
-      <Divider style={styles.divider}/>
+      <Divider style={styles.divider}>Ou</Divider>
       <Row>
         <Col span={12} offset={6}>
-          <Title level={4} style={{textAlign: 'center'}}>Ou ajoutez un élève manuellement:</Title>
+          <Title level={4} style={{textAlign: 'center'}}>Ajoutez un élève manuellement:</Title>
           <Select style={{width: "100%"}} loading={batchList.length === 0} placeholder="Choisissez votre batch" onChange={handleChange}>
             {batchList.length !== 0 && batchList.map((batch, i) => {
               return <Option key={i} value={JSON.stringify(batch)}>{`${batch.curriculum} - ${batch.year}`}</Option>

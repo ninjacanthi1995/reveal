@@ -1,49 +1,63 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Navbar from './Navbar';
-
-import{ Link , useParams, useHistory} from 'react-router-dom';
+import{ Link , useParams} from 'react-router-dom';
 import '../App.less';
+import { Row, Col, Divider, List, Typography, Button, message } from "antd";
+import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
-
-
-import { Row, Col, Divider, List } from "antd";
 import SchoolCustomerList from './SchoolCustomerList';
-import SchoolCustomerListAdd from './SchoolCustomerList';
 
+const { Title } = Typography;
 
 export default function DashBoardAdmin() {
+  const { tab } = useParams();
 
-    const { tab } = useParams();
-  let history = useHistory();
+  const [schools, setSchools] = useState([]);
+  useEffect(() => {
+    const getSchools = async () => {
+      const request = await fetch('/schools/all')
+      const response = await request.json()
+      if(response.result){
+        setSchools(response.schools)
+      }else{
+        message.error(response.error)
+      }
+    }
+    getSchools()
+  }, [])
 
-  const disconnect = () => {
-    window.localStorage.removeItem('admin')
-    history.push("/");
-  }
-
-    return (
-
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+  return (
+    <>
       <Navbar></Navbar>
-      <h1> ADMIN DASHBOARD</h1>
-      <Row style={{ flexGrow: 2 }}>
-        <Col span={6} style={{ height: "100%", marginLeft: "2%" }}>
-          <List>
-          <List.Item><Link to="/dashboard-admin/school-list">Liste des établissements</Link></List.Item>
-            <List.Item><Link to="/dashboard-admin/add-school">Ajouter un établissement</Link></List.Item>
-            <List.Item><Link to="/dashboard-admin/add-school-admin">Ajouter un administrateur école</Link></List.Item>
+      <h1>ADMIN DASHBOARD</h1>
+      <Divider />
+      <Row style={{height: "calc(100vh - 214px)", padding: "0 30px"}}>
+        <Col span={6}>
+          <div style={{display: "flex", justifyContent: "space-between", alignItems: 'center'}}>
+            <Title style={{marginBottom: 0}} level={4}>Liste des établissements</Title>
+            <Button type="primary" shape="circle" icon={<PlusOutlined />} />
+          </div>
+          <List style={{marginTop: 30}}>
+            {schools.length > 0 && schools.map((school, i) => {
+              return (
+                <List.Item key={i}>
+                  <Link to={`/dashboard/${school.name}`}>{school.name}</Link>
+                  <div>
+                    <Button type="primary" size='small' shape="circle" style={{marginRight: 10}} icon={<EditOutlined />} />
+                    <Button type="primary" danger size='small' shape="circle" icon={<DeleteOutlined />} />
+                  </div>
+                </List.Item>
+              )
+            })}
           </List>
-          <div style={{position: "absolute", bottom: 20, color: "red", cursor: "pointer"}} onClick={disconnect}>Déconnexion</div>
         </Col>
-        <Divider type="vertical" style={{ height: "100%" }} />
-        
-        <Col span={17} style={{ height: "100%" }}>
-       
-          {tab === 'school-list' && <SchoolCustomerList />}
-          {tab === 'add-school' && < SchoolCustomerList/>}
-          {tab === 'add-school-admin' && < SchoolCustomerList/>}
+        <Divider type="vertical" style={{height: "100%"}} />
+        <Col span={17}>
+          {tab ? <SchoolCustomerList tab={tab} /> :
+            <Title style={{textAlign: "center", color: "lightgray"}} level={3}>Cliquez sur une des écoles</Title>
+          }
         </Col>
       </Row>
-    </div>
+    </>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, List } from "antd";
 
-const user = JSON.parse(window.localStorage.getItem("user"));
 const schoolId = window.localStorage.getItem("school_id");
 
 export default function MySchoolScreen() {
