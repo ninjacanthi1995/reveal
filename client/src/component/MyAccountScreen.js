@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { List, Button, Input, message } from "antd";
+import { List, Button, Input } from "antd";
 
 const user = JSON.parse(window.localStorage.getItem("user"));
 const schoolId = window.localStorage.getItem("school_id");
