@@ -33,7 +33,7 @@ function ScreenHome() {
         const body = await data.json()
         if (body.result === true) {
             setUserExists(true)
-            window.localStorage.setItem('user', JSON.stringify(body.user))
+            window.localStorage.setItem('user', JSON.stringify({firstname: body.user.firstname, _id: body.user._id, role: body.user.role}))
             window.localStorage.setItem('school_id', body.user.school_id)
         } else {
             setErrorsSignin(body.error)
