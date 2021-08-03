@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import '../App.css';
+import '../App.less';
 import { Row, Col, Form, Input, Button, message } from 'antd';
 import { Link, useHistory } from 'react-router-dom';
 

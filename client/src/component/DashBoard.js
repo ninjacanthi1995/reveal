@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import { Switch } from 'antd';
 import { Link } from 'react-router-dom';
-import '../App.css';
+import '../App.less';
 
 
 
