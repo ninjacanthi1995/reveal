@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const SchoolModel = require("../models/schools");
+var mongoose = require("mongoose");
 
 //fred : ajout du require users  dans une const nommee UserModel pour call la db
 const UserModel = require("../models/users");
@@ -77,7 +78,13 @@ router.put("/edit-user/:userId", async (req, res) => {
   if (!searchUser) {
     res.json({ result: false, msg: "User not found" });
   } else {
-    await UserModel.findByIdAndUpdate(req.params.userId, req.body);
+    if (typeof req.body.school_id === "String") {
+      await UserModel.findByIdAndUpdate(req.params.userId, {
+        school_id: mongoose.mongo.ObjectId(req.body.school_id),
+      });
+    } else {
+      await UserModel.findByIdAndUpdate(req.params.userId, req.body);
+    }
     res.json({ result: true, msg: "User updated" });
   }
 });
@@ -87,6 +94,20 @@ router.get("/get-collaborators", async (req, res) => {
     school_id: req.query.school_id,
   });
   res.json({ result: true, collaborators: searchCollaborators });
+});
+
+router.get("/get-user", async (req, res) => {
+  let searchUser;
+  if (req.query.userId) {
+    searchUser = await UserModel.findById(req.query.userId);
+  } else {
+    searchUser = await UserModel.findOne(req.query);
+  }
+  if (!searchUser) {
+    res.json({ result: false, msg: "User non existant" });
+  } else {
+    res.json({ result: true, user: searchUser });
+  }
 });
 
 module.exports = router;

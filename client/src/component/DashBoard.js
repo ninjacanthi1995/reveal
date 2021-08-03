@@ -1,17 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
 import { Switch } from 'antd';
 import { Link } from 'react-router-dom';
-import '../App.css';
+import '../App.less';
 
-
+import DashBoardAdmin from './DashBoardAdmin';
 
 export default function DashBoard() {
+    const [IsAdmin, setIsAdmin] = useState(false)
+    useEffect(() => {
+        const user =JSON.parse(window.localStorage.getItem('user'))
+        if (user.role === "admin") {
+          setIsAdmin(true)
+        }
+    }, [])
 
     function onChange(checked) {
-        console.log(`switch to ${checked}`);
+      console.log(`switch to ${checked}`);
     }
-
+    
+    if (IsAdmin){
+      return <DashBoardAdmin />
+    }
     return (
         <>
             <Navbar />

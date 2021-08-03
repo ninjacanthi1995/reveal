@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
+import "../App.less";
 import { useParams } from "react-router-dom";
 
 export default function ScreenDiplomaError() {
@@ -10,7 +10,7 @@ export default function ScreenDiplomaError() {
     fetch(`/emails/error-diploma/?id_student=${id_student}&id_diploma=${id_diploma}`)
       .then((res) => res.json())
       .then((data) => setMsg(data.msg));
-  }, []);
+  }, [id_student, id_diploma]);
 
   return (
     <div>

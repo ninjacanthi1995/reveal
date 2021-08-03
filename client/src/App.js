@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.less';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
@@ -32,6 +32,7 @@ function App() {
         <Switch>
           <Route exact path="/" component={ScreenHome} />
           <Route exact path="/dashboard" component={DashBoard} />
+          <Route exact path="/dashboard/:tab" component={DashBoard} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
           <Route exact path="/template-management" component={TemplateManagement} />
           <Route exact path="/import" component={ImportStudentScreen} />

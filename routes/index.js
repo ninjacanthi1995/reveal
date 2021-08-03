@@ -6,6 +6,7 @@ const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const fetch = require("node-fetch");
+var QRCode = require("qrcode");
 
 const pdfWidth = 841.89;
 const pdfHeight = 595.28;
@@ -13,9 +14,7 @@ const pdfHeight = 595.28;
 async function downloadImg(url, path) {
   const response = await fetch(url);
   const buffer = await response.buffer();
-  fs.writeFileSync(path, buffer, () =>
-    console.log("finished downloading!")
-  );
+  fs.writeFileSync(path, buffer, () => console.log("finished downloading!"));
 }
 
 /* GET home page. */
@@ -96,6 +95,22 @@ router.get("/create-pdf", async (req, res) => {
       }
     );
 
+    // let qrCodeUrl;
+    // QRCode.toDataURL(
+    //   `http://localhost:3001/diploma-student/${req.query.studentId}/${req.query.batchId}`,
+    //   function (err, url) {
+    //     console.log(url);
+    //     qrCodeUrl = url;
+    //   }
+    // );
+
+    // const qrcodeField = searchTemplate.qrcode_field;
+    // if (!fs.existsSync("./client/public/qrcode.png"))
+    //   await downloadImg(
+    //     qrCodeUrl,
+    //     "./client/public/qrcode.png"
+    //   );
+
     doc.fontSize(searchTemplate.firstname_field.style.fontSize);
     doc
       .fillColor(searchTemplate.firstname_field.style.color)
@@ -163,7 +178,10 @@ router.get("/create-pdf", async (req, res) => {
 
     for (let i = 0; i < imgFields.length; i++) {
       if (!fs.existsSync(`./client/public/image${i}.png`))
-        await downloadImg(imgFields[i].imagePreview, `./client/public/image${i}.png`);
+        await downloadImg(
+          imgFields[i].imagePreview,
+          `./client/public/image${i}.png`
+        );
     }
 
     imgFields.forEach((field, i) => {
@@ -188,7 +206,7 @@ router.get("/create-pdf", async (req, res) => {
     fs.unlinkSync("./client/public/backgroundImage.jpg");
     imgFields.forEach((field, i) => {
       if (fs.existsSync(`./client/public/image${i}.png`))
-        fs.unlinkSync(`./client/public/image${i}.png`)
+        fs.unlinkSync(`./client/public/image${i}.png`);
     });
 
     res.json({ result: true });
@@ -223,7 +241,6 @@ router.get("/batch", async (req, res) => {
   }
   return res.json({ success: true, batches: school_batches });
 });
-
 
 router.post("/post-csv-import", async (req, res) => {
   ///// 1 - save diploma in the student document
@@ -308,9 +325,9 @@ router.get("/get-school", async (req, res) => {
   if (!searchSchool) {
     res.json({ result: false, msg: "Ecole non existante" })
   } else {
-    res.json({ result: true, school: searchSchool })
+    res.json({ result: true, school: searchSchool });
   }
-})
+});
 
 router.post("/update-student", async (req, res) => {
   const {studentId, firstname, lastname, birth_date, email, diplomaId, status} = req.body;
