@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Navbar from './Navbar';
-import { Table, Button } from 'antd';
+import { Table, Button, message } from 'antd';
 
 import { statusFilters } from '../helpers/status';
 import Colors from '../helpers/colors';
@@ -74,22 +74,24 @@ const DiplomaListScreen = () => {
   
   
   useEffect(() => {
-    //const schoolId = '6101084673a5f1dcafefa064';
     const schoolId = window.localStorage.getItem('school_id');
-    //setSchoolId(schoolId);
 
     const fetchBatches = async () => {
       const rawData = await fetch(`/batch?school_id=${schoolId}`);
       const response = await rawData.json();
       
-      let batchYears = response.batches.map(batch => batch.year);
-      batchYears = [...new Set(batchYears)];      //[...new Set(array)] sert à retirer les year en doublon
-      batchYears = batchYears.sort();
-      const yearOpt = batchYears.map((year, i) => {
-        return <Option key={i} value={year}>{year}</Option>
-      })
-      setOptionsYear(yearOpt);
-    };
+      if(response.success){
+        let batchYears = response.batches.map(batch => batch.year);
+        batchYears = [...new Set(batchYears)];      //[...new Set(array)] sert à retirer les year en doublon
+        batchYears = batchYears.sort();
+        const yearOpt = batchYears.map((year, i) => {
+          return <Option key={i} value={year}>{year}</Option>
+        })
+        setOptionsYear(yearOpt);
+      }else{
+        message.error(response.message)
+      }
+    }
     fetchBatches();
   }, []);
   //console.log('batches: ', batchList);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../App.css';
+import '../App.less';
 import { Input, Button } from 'antd';
 import { Redirect, Link } from 'react-router-dom';
 import { MailOutlined, LockOutlined } from '@ant-design/icons';

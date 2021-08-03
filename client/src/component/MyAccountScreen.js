@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { List, Button, Input } from "antd";
+import { List, Button, Input, message } from "antd";
 
 const user = JSON.parse(window.localStorage.getItem("user"));
 const schoolId = window.localStorage.getItem("school_id");
 
 export default function MyAccountScreen() {
   const [edit, setEdit] = useState(false);
-  const [firstname, setFirstname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [schoolName, setSchoolName] = useState('');
+  const [firstname, setFirstname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [schoolName, setSchoolName] = useState("");
 
   useEffect(() => {
     fetch(`/get-school/?school_id=${schoolId}`)
       .then((res) => res.json())
       .then((data) => setSchoolName(data.school.name));
     fetch(`/users/get-user/?userId=${user._id}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setFirstname(data.user.firstname);
         setEmail(data.user.email);
         setPassword(data.user.password);
-      })
+      });
   }, []);
 
   const onValidate = () => {
@@ -72,9 +72,7 @@ export default function MyAccountScreen() {
             password
           )}
         </List.Item>
-        <List.Item style={styles.listItem}>
-          School name: {schoolName}
-        </List.Item>
+        <List.Item style={styles.listItem}>School name: {schoolName}</List.Item>
         {edit ? (
           <Button onClick={onValidate}>Validate</Button>
         ) : (
