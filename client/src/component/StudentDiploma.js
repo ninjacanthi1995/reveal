@@ -10,23 +10,25 @@ export default function StudentDiploma() {
   const { studentId, batchId } = useParams();
 
   useEffect(() => {
-    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
+    createPdf();
   }, [studentId, batchId]);
 
-  const handleDownload = async () => {
-    await fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
-      async (res) => {
-        window.open(
-          `/diploma_student${studentId}_batch${batchId}.pdf`,
-          "_blank"
-        );
-        fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
-      }
-    );
+  const createPdf = () => {
+    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
+  };
+
+  const deletePdf = () => {
+    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
+  };
+
+  const handleDownload = () => {
+    createPdf();
+    setTimeout(window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank"), 1000);
+    setTimeout(deletePdf, 2000);
   };
 
   function onDocumentLoadSuccess() {
-    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
+    setTimeout(deletePdf, 2000);
   }
 
   return (
