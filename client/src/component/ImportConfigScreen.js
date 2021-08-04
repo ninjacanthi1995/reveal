@@ -105,10 +105,6 @@ const ImportConfigScreen = () => {
       if (!dataStudent.email || !dataStudent.firstname || !dataStudent.lastname || !dataStudent.birth_date) {
         dataStudent.diplomas[0].status = status.missing_data;
       }
-      // ou si la mention est attendu par le template mais qu'elle n'est pas définie
-      if (Object.keys(fieldHumanNames).includes('mention_field') & !dataStudent.diplomas[0].mention) {
-        dataStudent.diplomas[0].status = status.missing_data;
-      }
 
       const resultRaw = await fetch('/post-csv-import', {
         method: 'POST',
