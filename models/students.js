@@ -8,9 +8,9 @@ const diplomSchema = new mongoose.Schema({
 })
 
 const studentSchema = new mongoose.Schema({
-  email: {type: String, unique: true, required: true},
-  firstname: {type: String, required: true},
-  lastname: {type: String, required: true},
+  email: {type: String, unique: true},
+  firstname: {type: String},
+  lastname: {type: String},
   birth_date: {type: String},
   diplomas: [diplomSchema]
 });
