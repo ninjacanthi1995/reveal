@@ -2,6 +2,7 @@ const status = {
   not_mailed: 'non contacté',
   not_confirmed: 'non confirmé',
   confirmed: 'confirmé',
+  need_correction: 'à corriger',
   missing_data: 'données incomplètes'
 };
 
