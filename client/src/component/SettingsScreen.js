@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col, Divider, List } from "antd";
 import Navbar from "./Navbar";
 import MyAccountScreen from "./MyAccountScreen";
@@ -7,10 +7,14 @@ import MyCollaboratorsScreen from "./MyCollaboratorsScreen";
 import { Link, useParams, useHistory } from "react-router-dom"
 import MySchoolScreen from "./MySchoolScreen";
 
-const user = JSON.parse(window.localStorage.getItem('user'));
-
 export default function SettingsScreen() {
+  let user = JSON.parse(window.localStorage.getItem('user'));
   const { tab } = useParams();
+
+  useEffect(() => {
+    user = JSON.parse(window.localStorage.getItem('user'));
+  }, [])
+
   let history = useHistory();
 
   const disconnect = () => {

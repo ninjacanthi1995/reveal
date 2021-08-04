@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { List, Button, Input } from "antd";
 
-const user = JSON.parse(window.localStorage.getItem("user"));
-const schoolId = window.localStorage.getItem("school_id");
-
 export default function MyAccountScreen() {
+  const user = JSON.parse(window.localStorage.getItem("user"));
+  const schoolId = window.localStorage.getItem("school_id");
   const [edit, setEdit] = useState(false);
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
