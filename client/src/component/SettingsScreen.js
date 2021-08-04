@@ -30,7 +30,7 @@ export default function SettingsScreen() {
           <List>
             <List.Item><Link to="/settings/account">Mon compte</Link></List.Item>
             {user.role === 'gérant' && <List.Item><Link to="/settings/collaborators">Mes collaborateurs</Link></List.Item>}
-            {!user.role === 'admin' && <List.Item><Link to="/settings/etablissement">Mon établissement</Link></List.Item>}
+            {user.role !== 'admin' && <List.Item><Link to="/settings/etablissement">Mon établissement</Link></List.Item>}
           </List>
           <div style={{position: "absolute", bottom: 20, color: "red", cursor: "pointer"}} onClick={disconnect}>Déconnexion</div>
         </Col>
