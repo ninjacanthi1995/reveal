@@ -114,6 +114,28 @@ router.get("/get-user", async (req, res) => {
   }
 });
 
+router.post("/create-collaborator", async (req, res) => {
+  const searchCollaborator = await UserModel.findOne(req.body);
+  if (searchCollaborator) {
+    return res.json({ result: false, msg: "User déjà existe" });
+  }
+  const newCollaborator = new UserModel({
+    ...req.body,
+    school_id: mongoose.mongo.ObjectId(req.body.school_id),
+    role: "collaborateur",
+  });
+  await newCollaborator.save();
+  res.json({ result: true, msg: "User créée" });
+});
+
+router.delete("/delete-collaborator/:userId", async (req, res) => {
+  const searchCollaborator = await UserModel.findById(req.params.userId);
+  if (!searchCollaborator)
+    return res.json({ result: false, msg: "Collaborator non existe" });
+  await UserModel.findByIdAndDelete(req.params.userId);
+  res.json({ result: true, msg: "Collaborateur supprimé" });
+});
+
 router.post('/edit/:user_id', async (req, res) => {
   const updatedUser = await UserModel.updateOne(
     { _id: req.params.user_id },
