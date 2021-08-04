@@ -6,6 +6,8 @@ import Navbar from './Navbar';
 import { Redirect } from 'react-router-dom';
 
 import { status } from '../helpers/status';
+import Colors from '../helpers/colors';
+
 
 import { Select, Typography, Button } from 'antd';
 const { Option } = Select;
@@ -61,7 +63,7 @@ const ImportConfigScreen = () => {
     const selected = batchList.filter(bach => bach._id === batchId)[0];
     setSelectedBatch(selected);
     //console.log('SELECTED: ',selected);
-    const rawData = await fetch(`/template?school_id=${schoolId}&template_name=${selected.templateName}`);
+    const rawData = await fetch(`/templates/get/${schoolId}/${selected.templateName}`);
     const data = await rawData.json();
     const templateFromDB = data.template;
     //console.log('templateFromDB: ', templateFromDB);
@@ -95,9 +97,18 @@ const ImportConfigScreen = () => {
           url_SmartContract: null,
           mention: student[fieldToIndexMapping.mention_field],
           id_batch: selectedBatch._id,
-          status: status.not_confirmed
+          status: status.not_mailed
         }]
-      } 
+      }
+
+      // le status est incomplet s'il manque des infos sur le student
+      if (!dataStudent.email || !dataStudent.firstname || !dataStudent.lastname || !dataStudent.birth_date) {
+        dataStudent.diplomas[0].status = status.missing_data;
+      }
+      // ou si la mention est attendu par le template mais qu'elle n'est pas définie
+      if (Object.keys(fieldHumanNames).includes('mention_field') & !dataStudent.diplomas[0].mention) {
+        dataStudent.diplomas[0].status = status.missing_data;
+      }
 
       const resultRaw = await fetch('/post-csv-import', {
         method: 'POST',
@@ -143,10 +154,10 @@ const ImportConfigScreen = () => {
         return <Option key={j} value={header}>{header}</Option>
       })
       return <div key={i}>
-              <Title level={4}>Correspondance csv pour {fieldHumanNames[field]}:</Title>
+              <Title level={5} style={styles.title} >Correspondance csv pour {fieldHumanNames[field]}:</Title>
               <Select
                 showSearch
-                style={{ width: 400 }}
+                style={styles.select}
                 placeholder={`correspondance dans le fichier CSV pour ${fieldHumanNames[field]}`}
                 onChange={(header) => onSelectChange(field, header)}
               >
@@ -158,36 +169,64 @@ const ImportConfigScreen = () => {
   
 
   return (
-    <div>
+    <>
       {
         redirection && <Redirect to='/diploma-list' />
       }
       <Navbar></Navbar>
-      <Title>Choisissez un batch:</Title>
-      <Select
-        showSearch
-        style={{ width: 250 }}
-        placeholder="Sélectionner un batch"
-        onChange={onBatchChange}
-      >
-        {batchesOptions}
-      </Select>
+      <div style={styles.container}>
+        <Title
+          level={4}
+          style={styles.title}
+        >Renseignez les correspondances des champs du template avec les colonnes du fichier .CSV:</Title>
+        <Select
+          showSearch
+          style={{ width: 250 , fontWeight: 800}}
+          placeholder="Sélectionner un batch"
+          onChange={onBatchChange}
+        >
+          {batchesOptions}
+        </Select>
 
-      {FieldSelect}
+        {FieldSelect}
+        <br/>
+        <Button
+          shape='round'
+          size='large'
+          disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
+          onClick={onValidButton}
+          style={styles.button}
+        >Valider</Button>
+      </div>
 
-      <Button
-        type="primary"
-        disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
-        onClick={onValidButton}
-      >Valider</Button>
-
-    </div>
+    </>
 
 
   )
 }
 
-// DISABLED LE BUTTON VALIDER QUAND AUCUN BATCH SELECTIONNER
+const styles = {
+  title: {
+    marginTop: 20,
+    color: Colors.violet
+  },
+  button: {
+    backgroundColor: Colors.green,
+    border: Colors.green,
+    color: "white",
+    marginTop: 20
+  },
+  container: {
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  select: {
+    width: 450
+  }
+}
+
+// REVOIR L AJOUT ID STUDENT DANS LE BATCH
+// REVOIR LE SELECT BATCH - un batch nouvellement créé n'apparait pas dans les options.
 // PRESENTATION SOUS FORME DE TABLEAU PLUS CLAIRE??
 
 export default ImportConfigScreen;

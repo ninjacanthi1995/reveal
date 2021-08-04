@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Rnd } from 'react-rnd';
 import { useDispatch } from 'react-redux';
 import { Menu, Dropdown } from 'antd';
-import { DeleteOutlined, DragOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 
 
 const Text = ({element, type, index}) => {
@@ -39,15 +39,13 @@ const Text = ({element, type, index}) => {
       margin: "auto"
     },
     dragIcon:{
-      display: visible ? "block" : "none",
       position: 'absolute',
-      backgroundColor: "white",
-      padding: 5,
-      borderRadius: 20,
+      backgroundColor: "transparent",
       cursor: "all-scroll",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)"
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%"
     }
   }
 
@@ -58,12 +56,19 @@ const Text = ({element, type, index}) => {
       </Menu.Item>
     </Menu>
   );
+  const qrcode_menu = (
+    <Menu style={styles.menu}>
+      <Menu.Item key="info">
+        Cet élément ne peut être supprimé
+      </Menu.Item>
+    </Menu>
+  );
 
   return (
     <Rnd
       bounds="parent"
       lockAspectRatio={true}
-      size={size}
+      size={{width: size.width+2, height: size.height+2}}
       dragHandleClassName='dragIcon'
       position={position}
       onDragStop={(e, newPosition) => {
@@ -76,14 +81,14 @@ const Text = ({element, type, index}) => {
       style={styles.rnd}
     >
       <Dropdown 
-        overlay={menu} 
+        overlay={type === "image" ? menu : qrcode_menu} 
         placement="topCenter" 
         trigger={['click']}
         onVisibleChange={handleVisibleChange}
         visible={visible}
       >
         <div style={{position: "relative"}}>
-          <DragOutlined className="dragIcon" style={styles.dragIcon} />
+          <div className="dragIcon" style={styles.dragIcon}></div>
           <img src={imagePreview} height={size.height} alt="" />
         </div>
       </Dropdown>

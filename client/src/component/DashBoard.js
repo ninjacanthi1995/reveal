@@ -1,22 +1,31 @@
-import React from 'react';
-import Navbar from '../src/component/Navbar';
-import { Switch, Checkbox, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import Navbar from './Navbar';
+import { Switch } from 'antd';
 import { Link } from 'react-router-dom';
-import './App.css';
+import '../App.less';
 
-
+import DashBoardAdmin from './DashBoardAdmin';
 
 export default function DashBoard() {
+    const [IsAdmin, setIsAdmin] = useState(false)
+    useEffect(() => {
+        const user =JSON.parse(window.localStorage.getItem('user'))
+        if (user.role === "admin") {
+          setIsAdmin(true)
+        }
+    }, [])
 
     function onChange(checked) {
-        console.log(`switch to ${checked}`);
+      console.log(`switch to ${checked}`);
     }
-
+    
+    if (IsAdmin){
+      return <DashBoardAdmin />
+    }
     return (
         <>
             <Navbar />
             <div>
-
                 <div className="dashboard-page" style={{ backgroundImage: "url('/dashboard2.png')", opacity: "75%" }}>
                     <div>
                         <h1 className="dashboard-h1" >Dashboard</h1>
@@ -25,7 +34,6 @@ export default function DashBoard() {
                                 <Link to="/creer-mon-template" style={{ marginLeft: 200, fontWeight: "bold", fontSize: '1.2em' }}>1/ Créer votre premier diplôme</Link>
                                 <Switch defaultChecked onChange={onChange} style={{ marginRight: 200 }} />
                             </div>
-
                             <div className="dashboard" style={{ marginTop: 40 }}>
                                 <Link to="/create-batch" style={{ marginLeft: 200, fontWeight: "bold", fontSize: '1.2em' }}>2/ Créer votre premier batch</Link>
                                 <Switch defaultChecked onChange={onChange} style={{ marginRight: 200 }} />

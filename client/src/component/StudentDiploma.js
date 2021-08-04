@@ -9,19 +9,28 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function StudentDiploma() {
   const { studentId, batchId } = useParams();
 
-  useEffect(() => {
+  const createPdf = () => {
     fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
-  }, []);
+  };
+  
+  useEffect(() => {
+    createPdf();
+    // eslint-disable-next-line
+  }, [studentId, batchId]);
 
-  const handleDownload = () => {
-    fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`).then(
-      window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank")
-    );
+
+  const deletePdf = () => {
     fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
   };
 
+  const handleDownload = () => {
+    createPdf();
+    setTimeout(window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank"), 1000);
+    setTimeout(deletePdf, 2000);
+  };
+
   function onDocumentLoadSuccess() {
-    fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
+    setTimeout(deletePdf, 2000);
   }
 
   return (

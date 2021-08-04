@@ -1,3 +1,5 @@
+import oldToNewPx from "../helpers/pxToPerCentConverter"
+
 const templateReducer = (templateElements = [], action) => {
   if (action.type === 'addElements'){
     let element = {}
@@ -46,6 +48,15 @@ const templateReducer = (templateElements = [], action) => {
           bgSize: "cover"
         }
       }
+    }else if(action.elementType === "qrCode"){
+      element = {
+        size: {width: 100, height: 100},
+        position: {
+          x:20, 
+          y: action.displayer.offsetHeight - 120
+        },
+        imagePreview: "/qrcode_placeholder.svg",
+      }
     }
     
     // Remplace le background si un BG est présent
@@ -77,6 +88,58 @@ const templateReducer = (templateElements = [], action) => {
     const newList = [...templateElements]
     newList.splice(action.index, 1)
     return newList
+  }else if(action.type === 'clearTemplate'){
+    return []
+  }else if(action.type === 'loadTemplate'){
+    const template = []
+    const adaptElement = (element, value, title) => {
+      const adaptDimensions = () => {
+        templateElement.element.position = {
+          x: oldToNewPx(templateElement.element.position.x, action.payload.template_dimensions, "width"),
+          y: oldToNewPx(templateElement.element.position.y, action.payload.template_dimensions, "height")
+        }
+        templateElement.element.size = {
+          width: oldToNewPx(templateElement.element.size.width, action.payload.template_dimensions, "width"),
+          height: oldToNewPx(templateElement.element.size.height, action.payload.template_dimensions, "height")
+        }
+        if(templateElement.element.style && templateElement.element.style.fontSize){
+          templateElement.element.style.fontSize = Math.floor(oldToNewPx(templateElement.element.style.fontSize, action.payload.template_dimensions, "width"))
+          templateElement.element.style.height = templateElement.element.style.fontSize*2
+        }
+        delete templateElement.element.type
+      }
+
+      let templateElement
+      if(element){
+        if(value === "background_image_field" || value === "qrcode_field" || !value){
+          templateElement = {type: element.type}
+          templateElement.element = {...element}
+          adaptDimensions()
+        }else if(element){
+          templateElement = {type: "dynamic"}
+          templateElement.element = {...element}
+          templateElement.element.dynamicValue = value
+          templateElement.element.value = `{{${title}}}`
+          adaptDimensions()
+        }
+        template.push(templateElement)
+      }
+    }
+    for (let i = 0; i < action.payload.static_fields.length; i++) {
+      const element = action.payload.static_fields[i];
+      adaptElement(element)
+    }
+    adaptElement(action.payload.background_image_field, "background_image_field")
+    adaptElement(action.payload.qrcode_field, "qrcode_field")
+
+    adaptElement(action.payload.birth_date_field, "birth_date", "Date de naissance")
+    adaptElement(action.payload.curriculum_field, "curriculum", "Cursus")
+    adaptElement(action.payload.firstname_field, "firstname", "Prénom")
+    adaptElement(action.payload.lastname_field, "lastname", "Nom")
+    adaptElement(action.payload.mention_field, "mention", "Mention")
+    adaptElement(action.payload.promo_field, "promo", "Promo")
+    adaptElement(action.payload.year_field, "year", "Année")
+    return template
   } else {
     return templateElements;
   }

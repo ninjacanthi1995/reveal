@@ -10,6 +10,8 @@ import {
 } from '@ant-design/icons';
 import colors from '../../helpers/colors';
 
+// INSERER REACT COLOR
+
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -30,7 +32,7 @@ const Text = ({element, type, index}) => {
 
   const fontSizeOptions = []
   for (let i = 12; i <= 50; i+=2) {
-    fontSizeOptions.push(<Option value={i}>{i}</Option>)
+    fontSizeOptions.push(<Option key={i} value={i}>{i}</Option>)
   }
   
   const [visible, setVisible] = useState(false);

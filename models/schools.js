@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const templateSchema = new mongoose.Schema({
-  template_name: {type: String, unique: true, required: true},
+  template_name: {type: String, unique: true, sparse: true, required: true},
+  template_dimensions: {type: mongoose.Schema.Types.Mixed},
+  qrcode_field: {type: mongoose.Schema.Types.Mixed, required: true},
   firstname_field: {type: mongoose.Schema.Types.Mixed, required: true},
   lastname_field: {type: mongoose.Schema.Types.Mixed, required: true},
   birth_date_field: {type: mongoose.Schema.Types.Mixed},
@@ -13,11 +15,9 @@ const templateSchema = new mongoose.Schema({
   static_fields: [{type: mongoose.Schema.Types.Mixed}]
 })
 
-
 const schoolSchema = new mongoose.Schema({
   name: String,
-  client_id: [String],
-  id_students: [String],
+  user_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users' }],
   templates: [templateSchema]
 });
 

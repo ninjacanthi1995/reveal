@@ -1,26 +1,32 @@
-import React, { useState } from "react";
-import { List, Typography, Divider, Button, Input } from "antd";
+import React, { useEffect, useState } from "react";
+import { List, Button, Input } from "antd";
 
-const user = {
-  _id: { $oid: "60ffda648dac09e6d540eb27" },
-  email: "toto@harvard.com",
-  password: "1234",
-  admin: "",
-  school_id: "60fff6d28dac09ffff40eb28",
-  firstname: "toto",
-};
-
-const data = [];
+const user = JSON.parse(window.localStorage.getItem("user"));
+const schoolId = window.localStorage.getItem("school_id");
 
 export default function MyAccountScreen() {
   const [edit, setEdit] = useState(false);
-  const [firstname, setFirstname] = useState(user.firstname);
-  const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState(user.password);
+  const [firstname, setFirstname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [schoolName, setSchoolName] = useState("");
+
+  useEffect(() => {
+    fetch(`/get-school/?school_id=${schoolId}`)
+      .then((res) => res.json())
+      .then((data) => setSchoolName(data.school.name));
+    fetch(`/users/get-user/?userId=${user._id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setFirstname(data.user.firstname);
+        setEmail(data.user.email);
+        setPassword(data.user.password);
+      });
+  }, []);
 
   const onValidate = () => {
     setEdit(false);
-    fetch("/users/edit-my-account/60ffda648dac09e6d540eb27", {
+    fetch(`/users/edit-user/${user._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `firstname=${firstname}&email=${email}&password=${password}`,
@@ -66,9 +72,7 @@ export default function MyAccountScreen() {
             password
           )}
         </List.Item>
-        <List.Item style={styles.listItem}>
-          School ID: {user.school_id}
-        </List.Item>
+        <List.Item style={styles.listItem}>School name: {schoolName}</List.Item>
         {edit ? (
           <Button onClick={onValidate}>Validate</Button>
         ) : (
