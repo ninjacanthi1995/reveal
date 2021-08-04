@@ -3,16 +3,16 @@ import { Row, Col, Divider, List } from "antd";
 import Navbar from "./Navbar";
 import MyAccountScreen from "./MyAccountScreen";
 import MyCollaboratorsScreen from "./MyCollaboratorsScreen";
-// import { Layout } from "antd";
 import { Link, useParams, useHistory } from "react-router-dom"
 import MySchoolScreen from "./MySchoolScreen";
 
 export default function SettingsScreen() {
-  let user = JSON.parse(window.localStorage.getItem('user'));
   const { tab } = useParams();
 
+  const [user, setUser] = useState({});
   useEffect(() => {
-    user = JSON.parse(window.localStorage.getItem('user'));
+    const localStorageUser = JSON.parse(window.localStorage.getItem('user'));
+    if(localStorageUser) setUser(localStorageUser)
   }, [])
 
   let history = useHistory();
@@ -36,9 +36,9 @@ export default function SettingsScreen() {
         </Col>
         <Divider type="vertical" style={{ height: "100%" }} />
         <Col span={18} style={{ height: "100%" }}>
-          {tab === 'account' && <MyAccountScreen />}
+          {tab === 'account' && <MyAccountScreen user={user} />}
           {tab === 'collaborators' && <MyCollaboratorsScreen />}
-          {tab === 'etablissement' && <MySchoolScreen />}
+          {tab === 'etablissement' && <MySchoolScreen user={user} />}
         </Col>
       </Row>
     </div>
