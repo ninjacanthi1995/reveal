@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Modal, Button, Table, Space, Row } from "antd";
+import { Input, Modal, Button, Table, Space, Row, Form } from "antd";
 
 const schoolId = window.localStorage.getItem("school_id");
 
@@ -12,6 +12,7 @@ export default function MyCollaboratorsScreen() {
   const [inputEditEmail, setInputEditEmail] = useState("");
   const [inputAddFirstname, setInputAddFirstname] = useState("");
   const [inputAddEmail, setInputAddEmail] = useState("");
+  const [inputPassword, setInputPassword] = useState("");
   const [msg, setMsg] = useState("");
 
   useEffect(() => getCollaborators(), []);
@@ -39,33 +40,34 @@ export default function MyCollaboratorsScreen() {
   };
 
   const handleOkAdd = () => {
-    fetch(
-      `/users/get-user/?firstname=${inputAddFirstname}&email=${inputAddEmail}`
-    )
+    fetch("/users/create-collaborator", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `firstname=${inputAddFirstname}&email=${inputAddEmail}&password=${inputPassword}&school_id=${schoolId}`,
+    })
       .then((res) => res.json())
       .then((data) => {
-        if (!data.result) {
-          setMsg(data.msg);
-        } else {
-          fetch(`/users/edit-user/${data.user._id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `school_id=${schoolId}`,
-          }).then(() => getCollaborators());
+        if (!data.result) setMsg(data.msg);
+        else {
           setInputAddFirstname("");
           setInputAddEmail("");
+          setInputPassword("");
           setMsg("");
+          getCollaborators();
         }
       });
     setIsAddModalVisible(false);
   };
 
   const handleDelete = (index) => {
-    fetch(`/users/edit-user/${collaborators[index]._id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `school_id=${"000000000000000000000000"}`,
-    }).then(() => getCollaborators());
+    fetch(`/users/delete-collaborator/${collaborators[index]._id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.result) setMsg(data.msg);
+        else getCollaborators();
+      });
   };
 
   const columns = [
@@ -153,6 +155,12 @@ export default function MyCollaboratorsScreen() {
         <Input
           value={inputAddEmail}
           onChange={(e) => setInputAddEmail(e.target.value)}
+        />
+        Password
+        <Input.Password
+          placeholder="Password"
+          value={inputPassword}
+          onChange={(e) => setInputPassword(e.target.value)}
         />
       </Modal>
     </div>
