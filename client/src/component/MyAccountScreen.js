@@ -72,7 +72,8 @@ export default function MyAccountScreen() {
             password
           )}
         </List.Item>
-        <List.Item style={styles.listItem}>School name: {schoolName}</List.Item>
+        
+        {!user.role === "admin" && <List.Item style={styles.listItem}>School name: {schoolName}</List.Item>}
         {edit ? (
           <Button onClick={onValidate}>Validate</Button>
         ) : (
