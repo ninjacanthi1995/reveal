@@ -96,8 +96,8 @@ router.get("/create-pdf", async (req, res) => {
     searchTemplate.qrcode_field.position.x * ratio,
     searchTemplate.qrcode_field.position.y * ratio,
     {
-      width: Number(qrWidth.slice(0, qrWidth.length - 2)) * ratio,
-      height: Number(qrHeight.slice(0, qrHeight.length - 2)) * ratio,
+      width: parseFloat(qrWidth) * ratio,
+      height: parseFloat(qrHeight) * ratio,
     }
   );
 

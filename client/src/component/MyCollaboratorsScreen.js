@@ -14,7 +14,10 @@ export default function MyCollaboratorsScreen() {
   const [inputPassword, setInputPassword] = useState("");
   const [msg, setMsg] = useState("");
 
-  useEffect(() => getCollaborators(), []);
+  useEffect(() => 
+    getCollaborators()
+    // eslint-disable-next-line
+  , []);
 
   const getCollaborators = () => {
     fetch(`/users/get-collaborators/?school_id=${schoolId}`)
