@@ -52,7 +52,6 @@ router.post("/sign-up", async (req, res) => {
 });
 
 router.post("/sign-in", async (req, res) => {
-  console.log(`req.body`, req.body);
   var result = false;
   var user = null;
   var error = [];
