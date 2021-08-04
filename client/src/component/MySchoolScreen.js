@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Table, List } from "antd";
 
-const schoolId = window.localStorage.getItem("school_id");
-
 export default function MySchoolScreen() {
+  const schoolId = window.localStorage.getItem("school_id");
   const [collaborators, setCollaborators] = useState([]);
   const [schoolName, setSchoolName] = useState("");
 
