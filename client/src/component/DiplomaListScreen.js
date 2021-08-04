@@ -22,9 +22,6 @@ const DiplomaListScreen = () => {
   const [dataRefresher, setDataRefresher] = useState(0);  // utile pour rafraichir les status après l'envoi des emails
   //const [schoolId, setSchoolId] = useState('');
   const [data, setData] = useState([]);
-
-  // const [missingData, setMissingData] = useState(false);
-
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
   const [selectedDiplomas, setSelectedDiplomas] = useState([]);
@@ -154,8 +151,8 @@ const DiplomaListScreen = () => {
         return {
           props: {
             style: { 
-              color: text === status.missing_data ? "#FF0000" : Colors.violet,
-              fontWeight: text === status.missing_data ? 800 : 400
+              color: [status.missing_data, status.need_correction].includes(text) ? "#FF0000" : Colors.violet,
+              fontWeight: [status.missing_data, status.need_correction].includes(text) ? 800 : 400
             }
           },
           children: <span>{text}</span>

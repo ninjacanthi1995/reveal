@@ -35,14 +35,6 @@ router.post("/create-batch", async (req, res) => {
   if (savedBatch) res.json({ result: true, msg: "Batch cree" });
 });
 
-var lorem = "Lorem ipsum";
-
-router.get("/create-pdf", async (req, res) => {
-  var iframe;
-  makePDF(PDFDocument, blobStream, lorem, iframe);
-  res.json({ result: true, src: iframe.src })
-});
-
 // router.get("/create-pdf", async (req, res) => {
 //   const searchStudent = await studentModel.findById(req.query.studentId);
 //   const searchBatch = await BatchModel.findById(req.query.batchId);
@@ -425,6 +417,7 @@ router.post("/update-student", async (req, res) => {
     email,
     diplomaId,
     status,
+    mention
   } = req.body;
 
   const student = await studentModel.findById(studentId);
@@ -453,6 +446,12 @@ router.get("/get-student", async (req, res) => {
   const searchStudent = await studentModel.findById(req.query.studentId);
   if (!searchStudent) return res.json({ result: false, msg: "Etudiant non existant" });
   res.json({ result: true, student: searchStudent });
+})
+
+router.get("/get-batch", async (req, res) => {
+  const searchBatch = await BatchModel.findById(req.query.batchId);
+  if (!searchBatch) return res.json({ result: false, msg: "Batch non existant" });
+  res.json({ result: true, batch: searchBatch });
 })
 
 module.exports = router;

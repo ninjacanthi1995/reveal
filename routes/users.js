@@ -52,7 +52,6 @@ router.post("/sign-up", async (req, res) => {
 });
 
 router.post("/sign-in", async (req, res) => {
-  console.log(`req.body`, req.body);
   var result = false;
   var user = null;
   var error = [];
@@ -117,15 +116,20 @@ router.get("/get-user", async (req, res) => {
 router.post("/create-collaborator", async (req, res) => {
   const searchCollaborator = await UserModel.findOne(req.body);
   if (searchCollaborator) {
-    return res.json({ result: false, msg: "User déjà existe" });
+    return res.json({ result: false, msg: "Vous avez déjà ce collaborateur" });
   }
   const newCollaborator = new UserModel({
     ...req.body,
     school_id: mongoose.mongo.ObjectId(req.body.school_id),
     role: "collaborateur",
   });
-  await newCollaborator.save();
-  res.json({ result: true, msg: "User créée" });
+  const savedCollaborator = await newCollaborator.save();
+  if(savedCollaborator._id){
+    const school = await SchoolModel.findById(req.body.school_id)
+    school.user_id.push(savedCollaborator._id)
+    const schoolSaved = await school.save()
+    if(schoolSaved) res.json({ result: true, msg: "User créé" });
+  }
 });
 
 router.delete("/delete-collaborator/:userId", async (req, res) => {
