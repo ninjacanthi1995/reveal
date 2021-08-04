@@ -151,8 +151,8 @@ const DiplomaListScreen = () => {
         return {
           props: {
             style: { 
-              color: text === status.missing_data ? "#FF0000" : Colors.violet,
-              fontWeight: text === status.missing_data ? 800 : 400
+              color: [status.missing_data, status.need_correction].includes(text) ? "#FF0000" : Colors.violet,
+              fontWeight: [status.missing_data, status.need_correction].includes(text) ? 800 : 400
             }
           },
           children: <span>{text}</span>

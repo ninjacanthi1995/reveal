@@ -407,6 +407,7 @@ router.post("/update-student", async (req, res) => {
     email,
     diplomaId,
     status,
+    mention
   } = req.body;
 
   const student = await studentModel.findById(studentId);

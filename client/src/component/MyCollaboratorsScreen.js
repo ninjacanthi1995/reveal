@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Input, Modal, Button, Table, Space, Row } from "antd";
 
-const schoolId = window.localStorage.getItem("school_id");
-
 export default function MyCollaboratorsScreen() {
+  const schoolId = window.localStorage.getItem("school_id");
   const [collaborators, setCollaborators] = useState([]);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
