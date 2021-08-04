@@ -10,6 +10,8 @@ import {
 } from '@ant-design/icons';
 import colors from '../../helpers/colors';
 
+// INSERER REACT COLOR
+
 const { TextArea } = Input;
 const { Option } = Select;
 
