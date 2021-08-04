@@ -9,13 +9,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function StudentDiploma() {
   const { studentId, batchId } = useParams();
 
-  useEffect(() => {
-    createPdf();
-  }, [studentId, batchId]);
-
   const createPdf = () => {
     fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`);
   };
+  
+  useEffect(() => {
+    createPdf();
+    // eslint-disable-next-line
+  }, [studentId, batchId]);
+
 
   const deletePdf = () => {
     fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);

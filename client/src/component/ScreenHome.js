@@ -14,8 +14,8 @@ function ScreenHome() {
     const [signInPassword, setSignInPassword] = useState('')
 
     useEffect(() => {
-        const school_id = window.localStorage.getItem('school_id')
-        if (school_id) {
+        const user = window.localStorage.getItem('user')
+        if (user) {
             setUserExists(true)
         }
     }, [])

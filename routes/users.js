@@ -12,7 +12,6 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/sign-up", async (req, res) => {
-  console.log(`req.body`, req.body);
   const user = { ...req.body };
   if (
     user.firstname === "" &&
@@ -34,9 +33,14 @@ router.post("/sign-up", async (req, res) => {
     } else {
       const newUser = new UserModel({ ...user });
       newUser.school_id = school.id;
-      const userSaved = newUser.save();
+      const userSaved = await newUser.save();
       if (userSaved) {
-        res.json({ result: true, message: "Utilisateur créé" });
+        school.user_id.push(userSaved._id)
+        const schoolSaved = await school.save()
+        if(schoolSaved) {
+          const users = await UserModel.find({ school_id: schoolSaved._id })
+          res.json({ result: true, users, message: `${userSaved.firstname} a bien été créé` });
+        }
       } else {
         res.json({
           result: false,
@@ -131,5 +135,41 @@ router.delete("/delete-collaborator/:userId", async (req, res) => {
   await UserModel.findByIdAndDelete(req.params.userId);
   res.json({ result: true, msg: "Collaborateur supprimé" });
 });
+
+router.post('/edit/:user_id', async (req, res) => {
+  const updatedUser = await UserModel.updateOne(
+    { _id: req.params.user_id },
+    { 
+      firstname: req.body.firstname,
+      email: req.body.email,
+      password: req.body.password,
+      role: req.body.role,
+    }
+  );
+  if(updatedUser.n === 0) return res.json({result: false, error: "Un problème est survenu" })
+  
+  const user = await UserModel.findById(req.params.user_id)
+  const users = await UserModel.find({ school_id: user.school_id })
+  res.json({result: true, users, message: `${user.firstname} a bien été mis à jour`})
+})
+
+router.delete('/delete/:user_id', async (req, res) => {
+  const userToDelete = await UserModel.findById(req.params.user_id)
+  const school = await SchoolModel.findById(userToDelete.school_id)
+  const idIndex = school.user_id.findIndex(e => e === userToDelete._id)
+
+  const deletedUser = await UserModel.deleteOne({ _id: req.params.user_id })
+  if(deletedUser.n !== 0){
+    school.user_id.splice(idIndex, 1)
+    const schoolSaved = await school.save()
+    console.log(`schoolSaved`, schoolSaved)
+    const users = await UserModel.find({ school_id: schoolSaved._id })
+    res.json({result: true, users, message: `${userToDelete.firstname} a été supprimé`})
+  }else{
+    res.json({result: false, error: "Un problème est survenu" })
+  }
+
+
+})
 
 module.exports = router;

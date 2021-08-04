@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const templateSchema = new mongoose.Schema({
-  template_name: {type: String, unique: true, required: true},
+  template_name: {type: String, unique: true, sparse: true, required: true},
   template_dimensions: {type: mongoose.Schema.Types.Mixed},
   qrcode_field: {type: mongoose.Schema.Types.Mixed, required: true},
   firstname_field: {type: mongoose.Schema.Types.Mixed, required: true},

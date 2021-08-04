@@ -303,7 +303,7 @@ router.get("/batch", async (req, res) => {
   const school_batches = await BatchModel.find({
     schoolId: req.query.school_id,
   });
-  if (school_batches.length === 0) {
+  if (school_batches.length === 0 || !school_batches) {
     return res.json({
       success: false,
       message: "no template or no school for this school id",
@@ -372,7 +372,6 @@ router.post("/post-csv-import", async (req, res) => {
   //console.log(`student ${studentSaved.lastname} saved in Batch`)
   res.json({ success: true });
 
-  // AJOUTER AUSSI LE STUDENT ID DANS LA TABLE DE SA SCHOOL ????
 });
 
 router.get("/batches-populated", async (req, res) => {
@@ -409,6 +408,7 @@ router.post("/update-student", async (req, res) => {
     diplomaId,
     status,
   } = req.body;
+
   const student = await studentModel.findById(studentId);
 
   student.firstname = firstname;
@@ -419,6 +419,7 @@ router.post("/update-student", async (req, res) => {
     (diploma) => diploma._id == diplomaId
   );
   student.diplomas[diplomaIndex].status = status;
+  student.diplomas[diplomaIndex].mention = mention;
   const updated = await student.save();
 
   if (!updated._id) {
