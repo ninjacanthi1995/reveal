@@ -23,6 +23,7 @@ import TemplateManagement from './component/TemplateManagement';
 import DashBoard from './component/DashBoard'
 import ScreenDiplomaValidated from './component/ScreenDiplomaValidated';
 import ScreenDiplomaError from './component/ScreenDiplomaError';
+import testPDF from './component/testPDF'
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={ScreenHome} />
+          <Route exact path="/testPDF" component={testPDF} />
           <Route exact path="/dashboard" component={DashBoard} />
           <Route exact path="/dashboard/:tab" component={DashBoard} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
