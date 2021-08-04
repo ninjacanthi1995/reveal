@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Modal, Button, Table, Space, Row, Form } from "antd";
+import { Input, Modal, Button, Table, Space, Row } from "antd";
 
 const schoolId = window.localStorage.getItem("school_id");
 
