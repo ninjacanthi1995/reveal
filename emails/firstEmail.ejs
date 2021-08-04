@@ -21,10 +21,22 @@
 
     <style type="text/css" media="screen">
         /* Linked Styles */
-        body { padding:0 !important; margin:0 !important; display:block !important; background:#f8f8f8; -webkit-text-size-adjust:none }
+        body { padding:0 !important; margin:0 !important; margin-left:10px !important; display:block !important; background:#9EADBA; -webkit-text-size-adjust:none }
         a { color:#999999; text-decoration:none }
-        p { padding:0 !important; margin:0 !important }
+        p { padding:0 !important; margin:0 !important; margin-bottom:10px !important }
 
+        .button {
+          background-color: #48ca48;
+          border: none;
+          border-radius: 10px;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin-top: 10px;
+        }
         /* Mobile styles */
         @media only screen and (max-device-width: 480px), only screen and (max-width: 480px) {
             div[class='mobile-br-5'] { height: 5px !important; }
@@ -61,6 +73,7 @@
 
             td[class='content-spacing'] { width: 20px !important; }
         }
+
     </style>
 </head>
 <body class="body" style="padding:0 !important; margin:0 !important; display:block !important; background:#f8f8f8; -webkit-text-size-adjust:none">
@@ -92,8 +105,8 @@
           </tr>
         </table>
 
-        <a href=<%= validLink %>><button>TOUTES mes données sont exactes</button></a>
-        <a href=<%= errorLink %>><button>Mes données sont eronnées.</button></a>
+        <a href=<%= validLink %>><button class='button'>TOUTES mes données sont exactes</button></a>
+        <a href=<%= errorLink %>><button class='button' style="background-color: #e23415;">Mes données sont eronnées.</button></a>
 </body>
 </html>
 
