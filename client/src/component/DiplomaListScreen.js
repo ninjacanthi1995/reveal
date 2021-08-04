@@ -22,7 +22,9 @@ const DiplomaListScreen = () => {
   const [dataRefresher, setDataRefresher] = useState(0);  // utile pour rafraichir les status après l'envoi des emails
   //const [schoolId, setSchoolId] = useState('');
   const [data, setData] = useState([]);
+
   // const [missingData, setMissingData] = useState(false);
+
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
   const [selectedDiplomas, setSelectedDiplomas] = useState([]);
@@ -33,12 +35,30 @@ const DiplomaListScreen = () => {
   const [displayAlert, setDisplayAlert] = useState('none');
 
 
+  const lookForMissingDataStatus = (data) => {
+    data.forEach(diploma => {
+      if (diploma.status === status.missing_data) {
+        setDisplayAlert('inline');
+        return;
+      }
+    });
+    setDisplayAlert('none');
+  }
+
+
   // Modal helpers:
   const handleOk = async () => {
+    // check if no needed fields is empty
+    if (!editedRow.firstname || !editedRow.lastname || !editedRow.email || !editedRow.birth_date){
+      message.warning("A l'exception de 'Mention', aucun champ ne peut être vide");
+      return;
+    }
+
     setConfirmLoading(true);
     // data preparation
     const tempData = [...data];
     const tempRow = {...editedRow};
+    //console.log('tempRow: ', tempRow);
     tempRow.status = status.not_mailed;
     const editedIndex = tempData.findIndex(row => row.key === editedRow.key);
     tempData[editedIndex] = tempRow;
@@ -61,6 +81,7 @@ const DiplomaListScreen = () => {
     setData(tempData);
     message.success("Les informations de l'étudiant ont été modifié.");
 
+    lookForMissingDataStatus(tempData);
     setVisible(false);
     setConfirmLoading(false);
   };
@@ -89,6 +110,7 @@ const DiplomaListScreen = () => {
       sorter:{multiple: 4},
       filters: filtersCurriculum,
       onFilter: (value, record) => record.curriculum.includes(value),
+      width: 200
     },
     {
       title: 'Promo',
@@ -97,7 +119,8 @@ const DiplomaListScreen = () => {
       sorter:{multiple: 3},
       filters: filtersPromo,
       onFilter: (value, record) => record.promo.includes(value),
-      
+      width: 100,
+      editable: true
     },
     {
       title: 'Nom',
@@ -106,11 +129,13 @@ const DiplomaListScreen = () => {
       sorter: {
         compare: (a, b) => a.lastname.localeCompare(b.lastname),
         multiple: 2
-      }
+      },
+      width: 150
     },
     {
       title: 'Prénom',
       dataIndex: 'firstname',
+      width: 150
     },
     {
       title: 'Email',
@@ -118,13 +143,25 @@ const DiplomaListScreen = () => {
       sorter: {
         compare: (a, b) => a.email.localeCompare(b.email),
         multiple: 1
-      },
+      }
     },
     {
       title: 'Status',
       dataIndex: 'status',
       filters: statusFilters,
-      onFilter: (value, record) => record.status===value
+      onFilter: (value, record) => record.status===value,
+      render(text, record) {
+        return {
+          props: {
+            style: { 
+              color: text === status.missing_data ? "#FF0000" : Colors.violet,
+              fontWeight: text === status.missing_data ? 800 : 400
+            }
+          },
+          children: <span>{text}</span>
+        };
+      },
+      width: 150
     }
   ];
   
@@ -188,7 +225,8 @@ const DiplomaListScreen = () => {
                 status: diploma.status,
                 birth_date: student.birth_date,  // not diplayed in table but will be used in email.
                 studentId: student._id,
-                diplomaId: diploma._id
+                diplomaId: diploma._id,
+                mention: diploma.mention? diploma.mention : ''
               }
               tempData.push(row);
               if (diploma.status === status.missing_data) {
@@ -262,7 +300,7 @@ const DiplomaListScreen = () => {
         pagination={false}
         onChange={onChange} 
         rowSelection={{...rowSelection}}
-        scroll={{y: 600}}               // A AFFINER - le plus grand possible
+        scroll={{y: 450}}
         style={{marginLeft: 5, marginRight: 5}}
         onRow={(record, rowIndex) => {
         return{
@@ -312,6 +350,7 @@ const DiplomaListScreen = () => {
             <td>
               <Input 
                 value={editedRow.birth_date}
+                placeholder="format JJ/MM/AAAA"
                 onChange={e => {
                   const tempRow = {...editedRow}
                   tempRow.birth_date = e.target.value;
@@ -335,6 +374,21 @@ const DiplomaListScreen = () => {
               />
             </td>
           </tr>
+          <tr>
+            <td>Mention: </td>
+            <td>
+              <Input 
+                style={styles.modalInput}
+                value={editedRow.mention}
+                onChange={e => {
+                  const tempRow = {...editedRow}
+                  tempRow.mention = e.target.value;
+                  //console.log('onchange', tempRow)
+                  setEditedRow(tempRow);
+                }}
+              />
+            </td>
+          </tr>
         </table>
       </Modal>
     </>
@@ -349,10 +403,10 @@ const styles = {
     color: "white"
   },
   selectBatchAndMailButton: {
-    marginTop: 10,
-    margin: 10,
+    padding: 10,
+    paddingBottom: 0,
     display: 'flex',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   modalInput: {
     width: 400
@@ -374,6 +428,4 @@ const styles = {
 
 export default DiplomaListScreen;
 
-
-// REGLER LE FILTRAGE DU STATUS ET LA SELECTION DES ROW
-// FINIR L ALERTE POUR LES STATUS 'DONNEES MANQUANTES'
+// AJUSTER LES WIDTH DES COLONES OU LES RENDRE AJUSTABLE

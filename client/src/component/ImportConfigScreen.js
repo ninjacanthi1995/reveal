@@ -101,13 +101,12 @@ const ImportConfigScreen = () => {
         }]
       }
 
-      //// REVOIR LA MECANIQUE DE DU STATUS INCOMPLET
       // le status est incomplet s'il manque des infos sur le student
-      if (!dataStudent.email || !dataStudent.firstname || !dataStudent.lastname || !dataStudent.email) {
+      if (!dataStudent.email || !dataStudent.firstname || !dataStudent.lastname || !dataStudent.birth_date) {
         dataStudent.diplomas[0].status = status.missing_data;
       }
       // ou si la mention est attendu par le template mais qu'elle n'est pas définie
-      if (Object.keys(fieldHumanNames).includes('mention') & !dataStudent.diplomas[0].mention) {
+      if (Object.keys(fieldHumanNames).includes('mention_field') & !dataStudent.diplomas[0].mention) {
         dataStudent.diplomas[0].status = status.missing_data;
       }
 
