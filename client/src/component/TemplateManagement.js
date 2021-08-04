@@ -16,7 +16,13 @@ export default function TemplateManagement() {
       const request = await fetch(`/templates/get-templates/${school_id}`)
       const response = await request.json()
       if(response.result){
-        setTemplates(response.templateList)
+        const templateList = response.templateList.map((template, i) => {
+          return {
+            key: i,
+            ...template
+          }
+        })
+        setTemplates(templateList)
         setLoading(false)
       }else{
         message.error(response.error)

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { List, Button, Input } from "antd";
 
-export default function MyAccountScreen() {
-  const user = JSON.parse(window.localStorage.getItem("user"));
-  const schoolId = window.localStorage.getItem("school_id");
+export default function MyAccountScreen({user}) {
   const [edit, setEdit] = useState(false);
   const [firstname, setFirstname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [schoolName, setSchoolName] = useState("");
-
+  
   useEffect(() => {
+    const schoolId = window.localStorage.getItem("school_id");
     fetch(`/get-school/?school_id=${schoolId}`)
       .then((res) => res.json())
       .then((data) => setSchoolName(data.school.name));
@@ -21,7 +20,7 @@ export default function MyAccountScreen() {
         setEmail(data.user.email);
         setPassword(data.user.password);
       });
-  }, []);
+  }, [user]);
 
   const onValidate = () => {
     setEdit(false);

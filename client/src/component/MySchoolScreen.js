@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Table, List } from "antd";
 
 export default function MySchoolScreen() {
-  const schoolId = window.localStorage.getItem("school_id");
   const [collaborators, setCollaborators] = useState([]);
   const [schoolName, setSchoolName] = useState("");
-
+  
   useEffect(() => {
+    const schoolId = window.localStorage.getItem("school_id");
     fetch(`/get-school/?school_id=${schoolId}`)
       .then((res) => res.json())
       .then((data) => setSchoolName(data.school.name));
