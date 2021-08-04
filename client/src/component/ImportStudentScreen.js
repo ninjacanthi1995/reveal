@@ -184,7 +184,7 @@ const ImportStudentScreen = () => {
               })}
               <Form.Item wrapperCol={{ offset: 5, span: 19 }}>
                 <Button type="primary" htmlType="submit">
-                  Submit
+                  Ajouter
                 </Button>
               </Form.Item>
             </Form>

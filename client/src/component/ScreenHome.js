@@ -56,7 +56,7 @@ function ScreenHome() {
                     <Input onChange={(e) => setSignInEmail(e.target.value)} className="Login-input" placeholder="votre adresse email" prefix={<MailOutlined style={{ fontSize: 20, color: 'grey' }} />} />
                     <Input.Password onChange={(e) => setSignInPassword(e.target.value)} className="Login-input" placeholder="password" prefix={<LockOutlined style={{ fontSize: 20, color: 'grey' }} />} />
                     {listErrorsSignin.map((error, i) => {
-                        return (<p>{error}</p>)
+                        return (<p style={{color: "white"}}>{error}</p>)
                     })}
                     <Button className='Button-connect' onClick={() => handleSubmitSignin()} style={{ width: '90px' }} type="primary">Login</Button>
                 </div>
