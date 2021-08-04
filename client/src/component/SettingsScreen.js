@@ -3,7 +3,6 @@ import { Row, Col, Divider, List } from "antd";
 import Navbar from "./Navbar";
 import MyAccountScreen from "./MyAccountScreen";
 import MyCollaboratorsScreen from "./MyCollaboratorsScreen";
-// import { Layout } from "antd";
 import { Link, useParams, useHistory } from "react-router-dom"
 import MySchoolScreen from "./MySchoolScreen";
 
