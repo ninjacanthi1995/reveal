@@ -5,17 +5,8 @@ const schoolModel = require("../models/schools");
 const studentModel = require("../models/students");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
-const fetch = require("node-fetch");
 var QRCode = require("qrcode");
-
-const pdfWidth = 841.89;
-const pdfHeight = 595.28;
-
-async function downloadImg(url, path) {
-  const response = await fetch(url);
-  const buffer = await response.buffer();
-  fs.writeFileSync(path, buffer, () => console.log("finished downloading!"));
-}
+const downloadImg = require("../client/src/helpers/downloadImg");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -30,205 +21,283 @@ router.post("/create-batch", async (req, res) => {
     schoolId: req.body.school_id,
   });
   if (searchBatch) {
-    res.json({ result: false, msg: "Batch deja existant" });
-  } else {
-    const newBatch = new BatchModel({
-      year: req.body.year,
-      curriculum: req.body.curriculum,
-      promo: req.body.promo,
-      schoolId: req.body.school_id,
-      studentsId: [],
-      templateName: req.body.templateName,
-    });
-    const savedBatch = await newBatch.save();
-    if (savedBatch) res.json({ result: true, msg: "Batch cree" });
+    return res.json({ result: false, msg: "Batch deja existant" });
   }
+  const newBatch = new BatchModel({
+    year: req.body.year,
+    curriculum: req.body.curriculum,
+    promo: req.body.promo,
+    schoolId: req.body.school_id,
+    studentsId: [],
+    templateName: req.body.templateName,
+  });
+  const savedBatch = await newBatch.save();
+  if (savedBatch) res.json({ result: true, msg: "Batch cree" });
 });
 
 router.get("/create-pdf", async (req, res) => {
   const searchStudent = await studentModel.findById(req.query.studentId);
   const searchBatch = await BatchModel.findById(req.query.batchId);
-  if (!searchStudent || !searchBatch) {
-    res.json({ result: false, msg: "Student or batch not found" });
-  } else if (
-    fs.existsSync(
-      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
+  if (!searchStudent || !searchBatch)
+    return res.json({ result: false, msg: "Student or batch not found" });
+
+  const pdfPath = `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`;
+  if (fs.existsSync(pdfPath))
+    return res.json({ result: false, msg: "File existe" });
+
+  const searchSchool = await schoolModel.findById(searchBatch.schoolId);
+  const searchTemplate = searchSchool.templates.find(
+    (template) => template.template_name === searchBatch.templateName
+  );
+  const searchDiploma = searchStudent.diplomas.find(
+    (diploma) => diploma.id_batch.toString() === req.query.batchId
+  );
+
+  const doc = new PDFDocument({ size: "A4", layout: "landscape" });
+  doc.pipe(fs.createWriteStream(pdfPath));
+
+  const pdfWidth = 841.89;
+  const pdfHeight = 595.28;
+  const ratio = pdfWidth / searchTemplate.template_dimensions.width;
+
+  const qrcodePath = "./client/public/qrcode.png";
+  QRCode.toDataURL(
+    `${process.env.DOMAIN_NAME}/diploma-student/${req.query.studentId}/${req.query.batchId}`,
+    async function (err, url) {
+      var base64Data = url.replace(/^data:image\/png;base64,/, "");
+      if (!fs.existsSync(qrcodePath))
+        fs.writeFileSync(qrcodePath, base64Data, "base64", function (err) {
+          console.log(err);
+        });
+    }
+  );
+
+  const bgImgField = searchTemplate.background_image_field;
+  const bgImgPath = "./client/public/backgroundImage.jpg";
+  if (!fs.existsSync(bgImgPath))
+    await downloadImg(bgImgField.imagePreview, bgImgPath);
+
+  const bgW = bgImgField.size.width;
+  const bgH = bgImgField.size.height;
+  doc.image(
+    bgImgPath,
+    bgImgField.position.x * ratio,
+    bgImgField.position.y * ratio,
+    {
+      width: (Number(bgW.slice(0, bgW.length - 1)) * pdfWidth) / 100,
+      height: (Number(bgH.slice(0, bgH.length - 1)) * pdfHeight) / 100,
+    }
+  );
+
+  const qrWidth = searchTemplate.qrcode_field.size.width;
+  const qrHeight = searchTemplate.qrcode_field.size.height;
+  doc.image(
+    qrcodePath,
+    searchTemplate.qrcode_field.position.x * ratio,
+    searchTemplate.qrcode_field.position.y * ratio,
+    {
+      width: Number(qrWidth.slice(0, qrWidth.length - 2)) * ratio,
+      height: Number(qrHeight.slice(0, qrHeight.length - 2)) * ratio,
+    }
+  );
+
+  const firstnameField = searchTemplate.firstname_field;
+  doc.fontSize(firstnameField.style.fontSize);
+  doc
+    .font(
+      `Courier${
+        firstnameField.style.bold || firstnameField.style.italic ? "-" : ""
+      }${firstnameField.style.bold ? "Bold" : ""}${
+        firstnameField.style.italic ? "Oblique" : ""
+      }`
     )
-  ) {
-    res.json({ result: false, msg: "File existe" });
-  } else {
-    const searchSchool = await schoolModel.findById(searchBatch.schoolId);
-    const searchTemplate = searchSchool.templates.find(
-      (template) => template.template_name === searchBatch.templateName
-    );
-    const doc = new PDFDocument({ size: "A4", layout: "landscape" });
-    doc.pipe(
-      fs.createWriteStream(
-        `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
-      )
-    );
-
-    const bgImgField = searchTemplate.background_image_field;
-    if (!fs.existsSync("./client/public/backgroundImage.jpg"))
-      await downloadImg(
-        bgImgField.imagePreview,
-        "./client/public/backgroundImage.jpg"
-      );
-
-    doc.image(
-      "./client/public/backgroundImage.jpg",
-      bgImgField.position.x,
-      bgImgField.position.y,
+    .fillColor(firstnameField.style.color)
+    .text(
+      searchStudent.firstname,
+      firstnameField.position.x * ratio,
+      firstnameField.position.y * ratio,
       {
-        width:
-          (Number(
-            bgImgField.size.width.slice(0, bgImgField.size.width.length - 1)
-          ) *
-            pdfWidth) /
-          100,
-        height:
-          (Number(
-            bgImgField.size.height.slice(0, bgImgField.size.height.length - 1)
-          ) *
-            pdfHeight) /
-          100,
+        underline: firstnameField.style.underline,
       }
     );
 
-    // let qrCodeUrl;
-    // QRCode.toDataURL(
-    //   `http://localhost:3001/diploma-student/${req.query.studentId}/${req.query.batchId}`,
-    //   function (err, url) {
-    //     console.log(url);
-    //     qrCodeUrl = url;
-    //   }
-    // );
-
-    // const qrcodeField = searchTemplate.qrcode_field;
-    // if (!fs.existsSync("./client/public/qrcode.png"))
-    //   await downloadImg(
-    //     qrCodeUrl,
-    //     "./client/public/qrcode.png"
-    //   );
-
-    doc.fontSize(searchTemplate.firstname_field.style.fontSize);
-    doc
-      .fillColor(searchTemplate.firstname_field.style.color)
-      .text(
-        searchStudent.firstname,
-        searchTemplate.firstname_field.position.x,
-        searchTemplate.firstname_field.position.y
-      );
-    doc.fontSize(searchTemplate.lastname_field.style.fontSize);
-    doc
-      .fillColor(searchTemplate.lastname_field.style.color)
-      .text(
-        searchStudent.lastname,
-        searchTemplate.lastname_field.position.x,
-        searchTemplate.lastname_field.position.y
-      );
-    doc
-      .fillColor(searchTemplate.birth_date_field.style.color)
-      .text(
-        searchStudent.birth_date,
-        searchTemplate.birth_date_field.position.x,
-        searchTemplate.birth_date_field.position.y
-      );
-    doc
-      .fillColor(searchTemplate.curriculum_field.style.color)
-      .text(
-        searchBatch.curriculum,
-        searchTemplate.curriculum_field.position.x,
-        searchTemplate.curriculum_field.position.y
-      );
-    doc
-      .fillColor(searchTemplate.promo_field.style.color)
-      .text(
-        searchBatch.promo,
-        searchTemplate.promo_field.position.x,
-        searchTemplate.promo_field.position.y
-      );
-    doc
-      .fillColor(searchTemplate.year_field.style.color)
-      .text(
-        searchBatch.year,
-        searchTemplate.year_field.position.x,
-        searchTemplate.year_field.position.y
-      );
-    doc
-      .fillColor(searchTemplate.mention_field.style.color)
-      .text(
-        searchBatch.mention,
-        searchTemplate.mention_field.position.x,
-        searchTemplate.mention_field.position.y
-      );
-    
-
-    const textFields = await searchTemplate.static_fields.filter(
-      (field) => field.type === "text"
-    );
-    const imgFields = await searchTemplate.static_fields.filter(
-      (field) => field.type === "image"
+  const lastnameField = searchTemplate.lastname_field;
+  doc.fontSize(lastnameField.style.fontSize);
+  doc
+    .font(
+      `Courier${
+        lastnameField.style.bold || lastnameField.style.italic ? "-" : ""
+      }${lastnameField.style.bold ? "Bold" : ""}${
+        lastnameField.style.italic ? "Oblique" : ""
+      }`
+    )
+    .fillColor(lastnameField.style.color)
+    .text(
+      searchStudent.lastname,
+      lastnameField.position.x * ratio,
+      lastnameField.position.y * ratio,
+      {
+        underline: lastnameField.style.underline,
+      }
     );
 
-    textFields.forEach((field) =>
-      doc
-        .fillColor(field.style.color)
-        .text(field.value, field.position.x, field.position.y)
+  const birthdayField = searchTemplate.birth_date_field;
+  doc
+    .font(
+      `Courier${
+        birthdayField.style.bold || birthdayField.style.italic ? "-" : ""
+      }${birthdayField.style.bold ? "Bold" : ""}${
+        birthdayField.style.italic ? "Oblique" : ""
+      }`
+    )
+    .fillColor(birthdayField.style.color)
+    .text(
+      searchStudent.birth_date,
+      birthdayField.position.x * ratio,
+      birthdayField.position.y * ratio,
+      {
+        underline: birthdayField.style.underline,
+      }
     );
 
-    for (let i = 0; i < imgFields.length; i++) {
-      if (!fs.existsSync(`./client/public/image${i}.png`))
-        await downloadImg(
-          imgFields[i].imagePreview,
-          `./client/public/image${i}.png`
-        );
-    }
+  const curriculumField = searchTemplate.curriculum_field;
+  doc
+    .font(
+      `Courier${
+        curriculumField.style.bold || curriculumField.style.italic ? "-" : ""
+      }${curriculumField.style.bold ? "Bold" : ""}${
+        curriculumField.style.italic ? "Oblique" : ""
+      }`
+    )
+    .fillColor(curriculumField.style.color)
+    .text(
+      searchBatch.curriculum,
+      curriculumField.position.x * ratio,
+      curriculumField.position.y * ratio,
+      {
+        underline: curriculumField.style.underline,
+      }
+    );
 
-    imgFields.forEach((field, i) => {
-      if (fs.existsSync(`./client/public/image${i}.png`))
-        doc.image(
-          `./client/public/image${i}.png`,
-          field.position.x,
-          field.position.y,
-          {
-            width:
-              Number(field.size.width.slice(0, field.size.width.length - 2)) *
-              0.75,
-            height:
-              Number(field.size.height.slice(0, field.size.width.length - 2)) *
-              0.75,
-          }
-        );
-    });
+  const promoField = searchTemplate.promo_field;
+  doc
+    .font(
+      `Courier${promoField.style.bold || promoField.style.italic ? "-" : ""}${
+        promoField.style.bold ? "Bold" : ""
+      }${promoField.style.italic ? "Oblique" : ""}`
+    )
+    .fillColor(promoField.style.color)
+    .text(
+      searchBatch.promo,
+      promoField.position.x * ratio,
+      promoField.position.y * ratio,
+      {
+        underline: promoField.style.underline,
+      }
+    );
 
-    doc.end();
+  const yearField = searchTemplate.year_field;
+  doc
+    .font(
+      `Courier${yearField.style.bold || yearField.style.italic ? "-" : ""}${
+        yearField.style.bold ? "Bold" : ""
+      }${yearField.style.italic ? "Oblique" : ""}`
+    )
+    .fillColor(yearField.style.color)
+    .text(
+      searchBatch.year,
+      yearField.position.x * ratio,
+      yearField.position.y * ratio,
+      {
+        underline: yearField.style.underline,
+      }
+    );
 
-    fs.unlinkSync("./client/public/backgroundImage.jpg");
-    imgFields.forEach((field, i) => {
-      if (fs.existsSync(`./client/public/image${i}.png`))
-        fs.unlinkSync(`./client/public/image${i}.png`);
-    });
+  const mentionField = searchTemplate.mention_field;
+  doc
+    .font(
+      `Courier${
+        mentionField.style.bold || mentionField.style.italic ? "-" : ""
+      }${mentionField.style.bold ? "Bold" : ""}${
+        mentionField.style.italic ? "Oblique" : ""
+      }`
+    )
+    .fillColor(mentionField.style.color)
+    .text(
+      searchDiploma.mention,
+      mentionField.position.x * ratio,
+      mentionField.position.y * ratio,
+      {
+        underline: mentionField.style.underline,
+      }
+    );
 
-    res.json({ result: true });
+  const textFields = await searchTemplate.static_fields.filter(
+    (field) => field.type === "text"
+  );
+  const imgFields = await searchTemplate.static_fields.filter(
+    (field) => field.type === "image"
+  );
+
+  textFields.forEach((field) =>
+    doc
+      .font(
+        `Courier${field.style.bold || field.style.italic ? "-" : ""}${
+          field.style.bold ? "Bold" : ""
+        }${field.style.italic ? "Oblique" : ""}`
+      )
+      .fillColor(field.style.color)
+      .text(field.value, field.position.x * ratio, field.position.y * ratio, {
+        underline: field.style.underline,
+      })
+  );
+
+  for (let i = 0; i < imgFields.length; i++) {
+    if (!fs.existsSync(`./client/public/image${i}.png`))
+      await downloadImg(
+        imgFields[i].imagePreview,
+        `./client/public/image${i}.png`
+      );
   }
+
+  let fieldWidth;
+  let fieldHeight;
+  imgFields.forEach((field, i) => {
+    if (fs.existsSync(`./client/public/image${i}.png`)) {
+      fieldWidth = field.size.width;
+      fieldHeight = field.size.height;
+      doc.image(
+        `./client/public/image${i}.png`,
+        field.position.x,
+        field.position.y,
+        {
+          width: Number(fieldWidth.slice(0, fieldWidth.length - 2)) * ratio,
+          height: Number(fieldHeight.slice(0, fieldHeight.length - 2)) * ratio,
+        }
+      );
+    }
+  });
+
+  doc.end();
+
+  if (fs.existsSync(bgImgPath)) fs.unlinkSync(bgImgPath);
+  if (fs.existsSync(qrcodePath)) fs.unlinkSync(qrcodePath);
+  imgFields.forEach((field, i) => {
+    if (fs.existsSync(`./client/public/image${i}.png`))
+      fs.unlinkSync(`./client/public/image${i}.png`);
+  });
+
+  res.json({ result: true });
 });
 
 router.get("/delete-pdf", async (req, res) => {
-  if (
-    fs.existsSync(
-      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
-    )
-  ) {
-    fs.unlinkSync(
-      `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`
-    );
-    res.json({ result: true, msg: "File supprime" });
-  } else {
-    res.json({ result: false, msg: "File non existant" });
+  const path = `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`;
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path);
+    return res.json({ result: true, msg: "File supprime" });
   }
+  res.json({ result: false, msg: "File non existant" });
 });
-
 
 router.get("/batch", async (req, res) => {
   const school_batches = await BatchModel.find({
@@ -324,28 +393,41 @@ router.get("/batches-populated", async (req, res) => {
 router.get("/get-school", async (req, res) => {
   const searchSchool = await schoolModel.findById(req.query.school_id);
   if (!searchSchool) {
-    res.json({ result: false, msg: "Ecole non existante" })
+    res.json({ result: false, msg: "Ecole non existante" });
   } else {
     res.json({ result: true, school: searchSchool });
   }
 });
 
 router.post("/update-student", async (req, res) => {
-  const {studentId, firstname, lastname, birth_date, email, diplomaId, status} = req.body;
+  const {
+    studentId,
+    firstname,
+    lastname,
+    birth_date,
+    email,
+    diplomaId,
+    status,
+  } = req.body;
   const student = await studentModel.findById(studentId);
 
   student.firstname = firstname;
   student.lastname = lastname;
   student.email = email;
   student.birth_date = birth_date;
-  const diplomaIndex = student.diplomas.findIndex(diploma => diploma._id == diplomaId);  
+  const diplomaIndex = student.diplomas.findIndex(
+    (diploma) => diploma._id == diplomaId
+  );
   student.diplomas[diplomaIndex].status = status;
   const updated = await student.save();
 
   if (!updated._id) {
-    return res.json({result: false, message: 'student informations not updated.'})
+    return res.json({
+      result: false,
+      message: "student informations not updated.",
+    });
   }
-  res.json({result: true});
-})
+  res.json({ result: true });
+});
 
 module.exports = router;
