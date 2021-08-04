@@ -99,7 +99,17 @@ const ImportConfigScreen = () => {
           id_batch: selectedBatch._id,
           status: status.not_mailed
         }]
-      } 
+      }
+
+      //// REVOIR LA MECANIQUE DE DU STATUS INCOMPLET
+      // le status est incomplet s'il manque des infos sur le student
+      if (!dataStudent.email || !dataStudent.firstname || !dataStudent.lastname || !dataStudent.email) {
+        dataStudent.diplomas[0].status = status.missing_data;
+      }
+      // ou si la mention est attendu par le template mais qu'elle n'est pas définie
+      if (Object.keys(fieldHumanNames).includes('mention') & !dataStudent.diplomas[0].mention) {
+        dataStudent.diplomas[0].status = status.missing_data;
+      }
 
       const resultRaw = await fetch('/post-csv-import', {
         method: 'POST',
@@ -145,10 +155,10 @@ const ImportConfigScreen = () => {
         return <Option key={j} value={header}>{header}</Option>
       })
       return <div key={i}>
-              <Title level={4}>Correspondance csv pour {fieldHumanNames[field]}:</Title>
+              <Title level={5} style={styles.title} >Correspondance csv pour {fieldHumanNames[field]}:</Title>
               <Select
                 showSearch
-                style={{ width: 400 }}
+                style={styles.select}
                 placeholder={`correspondance dans le fichier CSV pour ${fieldHumanNames[field]}`}
                 onChange={(header) => onSelectChange(field, header)}
               >
@@ -160,42 +170,59 @@ const ImportConfigScreen = () => {
   
 
   return (
-    <div>
+    <>
       {
         redirection && <Redirect to='/diploma-list' />
       }
       <Navbar></Navbar>
-      <Title>Choisissez un batch:</Title>
-      <Select
-        showSearch
-        style={{ width: 250 }}
-        placeholder="Sélectionner un batch"
-        onChange={onBatchChange}
-      >
-        {batchesOptions}
-      </Select>
+      <div style={styles.container}>
+        <Title
+          level={4}
+          style={styles.title}
+        >Renseignez les correspondances des champs du template avec les colonnes du fichier .CSV:</Title>
+        <Select
+          showSearch
+          style={{ width: 250 , fontWeight: 800}}
+          placeholder="Sélectionner un batch"
+          onChange={onBatchChange}
+        >
+          {batchesOptions}
+        </Select>
 
-      {FieldSelect}
+        {FieldSelect}
+        <br/>
+        <Button
+          shape='round'
+          size='large'
+          disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
+          onClick={onValidButton}
+          style={styles.button}
+        >Valider</Button>
+      </div>
 
-      <Button
-        shape='round'
-        size='large'
-        disabled={selectedBatch === '' || Object.keys(matchings).length !== Object.keys(fieldHumanNames).length}
-        onClick={onValidButton}
-        style={styles.button}
-      >Valider</Button>
-
-    </div>
+    </>
 
 
   )
 }
 
 const styles = {
+  title: {
+    marginTop: 20,
+    color: Colors.violet
+  },
   button: {
     backgroundColor: Colors.green,
     border: Colors.green,
-    color: "white"
+    color: "white",
+    marginTop: 20
+  },
+  container: {
+    marginLeft: 30,
+    marginRight: 30,
+  },
+  select: {
+    width: 450
   }
 }
 

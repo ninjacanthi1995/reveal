@@ -160,7 +160,7 @@ router.get("/error-diploma", async (req, res) => {
   searchStudent.diplomas[searchDiplomaIndex].status = "à corriger";
   await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
   res.json({ result: true, msg: "Veuillez contacter votre secrétariat" });
-})
+});
 
 router.post("/demande-inscription", function (req, res) {
   const newUser = req.body.values;

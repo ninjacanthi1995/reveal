@@ -30,6 +30,7 @@ const DiplomaListScreen = () => {
   const [visible, setVisible] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [editedRow, setEditedRow] = useState({});
+  const [displayAlert, setDisplayAlert] = useState('none');
 
 
   // Modal helpers:
@@ -190,6 +191,9 @@ const DiplomaListScreen = () => {
                 diplomaId: diploma._id
               }
               tempData.push(row);
+              if (diploma.status === status.missing_data) {
+                setDisplayAlert('inline');
+              }
             }
           })
         })
@@ -214,12 +218,6 @@ const DiplomaListScreen = () => {
       //console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       setSelectedDiplomas(selectedRows);
     },
-    /* onSelect: (record, selected, selectedRows) => {
-      console.log('ON_SELECT: ', record, selected, selectedRows);
-    },
-    onSelectAll: (selected, selectedRows, changeRows) => {
-      console.log('ON_SELECT_ALL: ', selected, selectedRows, changeRows);
-    }, */
   };
   
   return (
@@ -254,10 +252,10 @@ const DiplomaListScreen = () => {
           }}
         >Envoyer les mails</Button>
       </div>
-      <p style={styles.p} >
-        - Editez un étudiant en double cliquant dessus -
-        <span style={styles.alert}>Attention, il y des status 'données incomplètes'</span>
-      </p>
+      <div style={styles.infoAndAlert}>
+        <span style={styles.info} > - Editez un étudiant en double cliquant dessus - </span>
+        <span style={{...styles.alert, display:displayAlert}}>Attention, il y des status 'données incomplètes'</span>
+      </div>
       <Table 
         columns={columns} 
         dataSource={data}
@@ -359,12 +357,18 @@ const styles = {
   modalInput: {
     width: 400
   },
-  p:{
+  infoAndAlert:{
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'column'
+  },
+  info:{
     color: Colors.gray,
-    textAlign: 'center'
+    alignSelf: 'center'
   },
   alert:{
-    color: 'red'
+    color: 'red',
+    alignSelf: 'flex-end'
   }
 }
 

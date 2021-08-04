@@ -133,7 +133,8 @@ const ImportStudentScreen = () => {
       <Navbar />
       <div style={styles.importCSV}>
         <Title
-          style={{color: Colors.violet}}
+          level={4}
+          style={styles.h4}
         >Téléchargez votre fichier .CSV:</Title>
         <Upload {...props} >
             <Button 
@@ -147,7 +148,7 @@ const ImportStudentScreen = () => {
       <Divider style={styles.divider}>Ou</Divider>
       <Row>
         <Col span={12} offset={6}>
-          <Title level={4} style={{textAlign: 'center'}}>Ajoutez un élève manuellement:</Title>
+          <Title level={4} style={{...styles.h4, textAlign: 'center'}}>Ajoutez un élève manuellement:</Title>
           <Select style={{width: "100%"}} loading={batchList.length === 0} placeholder="Choisissez votre batch" onChange={handleChange}>
             {batchList.length !== 0 && batchList.map((batch, i) => {
               return <Option key={i} value={JSON.stringify(batch)}>{`${batch.curriculum} - ${batch.year}`}</Option>
@@ -201,17 +202,23 @@ const styles = {
     backgroundColor: Colors.green,
     border: Colors.green,
     color: "white",
-    width: 350,
-    height: 100,
-    fontSize: 30
+    width: 180,
+    height: 50,
+    fontSize: 18
   },
   importCSV: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 30
   },
   divider:{
     borderColor: `${Colors.gray}`,
+  },
+  h4: {
+    color: Colors.violet,
+    
   }
 }
 
