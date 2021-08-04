@@ -148,11 +148,13 @@ export default function MyCollaboratorsScreen() {
         <Input
           value={inputAddFirstname}
           onChange={(e) => setInputAddFirstname(e.target.value)}
+          required
         />
         Email
         <Input
           value={inputAddEmail}
           onChange={(e) => setInputAddEmail(e.target.value)}
+          required
         />
       </Modal>
     </div>

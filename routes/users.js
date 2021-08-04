@@ -110,4 +110,8 @@ router.get("/get-user", async (req, res) => {
   }
 });
 
+router.post("/create-collaborator", async (req, res) => {
+  
+})
+
 module.exports = router;
