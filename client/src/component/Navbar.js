@@ -20,8 +20,10 @@ export default function Navbar() {
       <div style={styles.navbar}>
         <Link to="/"><img src="/reveal.png" style={styles.logo} alt="Reveal" /></Link>
         <div style={{display:"flex"}}>
+
           {!isAdmin && <Link to="/template-management" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des templates</Link>}
           {!isAdmin && <Link to="/diploma-list" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des diplômés</Link>}
+
           <Link to="/settings/account" style={styles.link}><img src="/settings.svg" alt="list-icon"/> Settings</Link>
         </div>
       </div>
