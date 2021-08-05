@@ -31,6 +31,164 @@ router.post("/create-batch", async (req, res) => {
   if (savedBatch) res.json({ result: true, msg: "Batch cree" });
 });
 
+router.get("/delete-pdf", async (req, res) => {
+  const path = `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`;
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path);
+    return res.json({ result: true, msg: "File supprime" });
+  }
+  res.json({ result: false, msg: "File non existant" });
+});
+
+router.get("/batch", async (req, res) => {
+  const school_batches = await BatchModel.find({
+    schoolId: req.query.school_id,
+  });
+  if (school_batches.length === 0 || !school_batches) {
+    return res.json({
+      success: false,
+      message: "no template or no school for this school id",
+    });
+  }
+  return res.json({ success: true, batches: school_batches });
+});
+
+router.post("/post-csv-import", async (req, res) => {
+  ///// 1 - save diploma in the student document
+  const dataStudent = req.body;
+  //console.log('DATA: ', dataStudent);
+  const batchId = dataStudent.diplomas[0].id_batch;
+  let student = await studentModel.findOne({
+    email: dataStudent.email,
+  });
+  // Check if diploma is already registered in the student data.
+  if (student) {
+    const diplomaIsAlreadyRegistered =
+      student.diplomas.filter((diploma) => diploma.id_batch == batchId).length >
+      0;
+    if (diplomaIsAlreadyRegistered) {
+      return res.json({
+        success: true,
+        message: `this diploma was already registered to the student ${student.lastname}`,
+      });
+    }
+    student.diplomas.push(dataStudent.diplomas[0]);
+  }
+  //console.log('STUDENT 1: ', student);
+  if (!student) {
+    student = new studentModel({ ...dataStudent });
+  }
+  //console.log('STUDENT 2: ', student);
+  const studentSaved = await student.save();
+
+  if (!studentSaved._id) {
+    return res.json({
+      success: false,
+      message: `data of student with email ${dataStudent.email} are not saved.`,
+    });
+  }
+
+  ///// 2 - add student._id in the batch document
+  let batch = await BatchModel.findOne({
+    _id: dataStudent.diplomas[0].id_batch,
+  });
+  if (!batch) {
+    return res.json({
+      success: false,
+      message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
+    });
+  }
+  //console.log('BATCH: ', batch);
+  if (!batch.studentsId.includes(studentSaved._id)) {
+    batch.studentsId.push(studentSaved._id);
+  }
+  const batchSaved = await batch.save();
+
+  if (!batchSaved._id) {
+    return res.json({
+      success: false,
+      message: `Enabled to save student id (${studentSaved._id}) in the document of batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
+    });
+  }
+  //console.log(`student ${studentSaved.lastname} saved in Batch`)
+  res.json({ success: true });
+});
+
+router.get("/batches-populated", async (req, res) => {
+  const batchesOfYearWithStudents = await BatchModel.find({
+    schoolId: req.query.schoolId,
+    year: req.query.year,
+  }).populate("studentsId");
+
+  if (!batchesOfYearWithStudents) {
+    return res.json({
+      success: false,
+      message: "no batches match the given schoolId and year",
+    });
+  }
+  return res.json({ success: true, batchesOfYearWithStudents });
+});
+
+router.get("/get-school", async (req, res) => {
+  const searchSchool = await schoolModel.findById(req.query.school_id);
+  if (!searchSchool) {
+    res.json({ result: false, msg: "Ecole non existante" });
+  } else {
+    res.json({ result: true, school: searchSchool });
+  }
+});
+
+router.post("/update-student", async (req, res) => {
+  const {
+    studentId,
+    firstname,
+    lastname,
+    birth_date,
+    email,
+    diplomaId,
+    status,
+    mention
+  } = req.body;
+
+  const student = await studentModel.findById(studentId);
+
+  student.firstname = firstname;
+  student.lastname = lastname;
+  student.email = email;
+  student.birth_date = birth_date;
+  const diplomaIndex = student.diplomas.findIndex(
+    (diploma) => diploma._id == diplomaId
+  );
+  student.diplomas[diplomaIndex].status = status;
+  student.diplomas[diplomaIndex].mention = mention;
+  const updated = await student.save();
+
+  if (!updated._id) {
+    return res.json({
+      result: false,
+      message: "student informations not updated.",
+    });
+  }
+  res.json({ result: true });
+});
+
+router.get("/get-student", async (req, res) => {
+  const name = req.query.student_name.split('-')
+  const searchStudent = await studentModel.findOne({firstname: name[0], lastname: name[1]})
+  if (!searchStudent) return res.json({ result: false, msg: "Etudiant non existant" });
+  res.json({ result: true, student: searchStudent });
+})
+
+router.get("/get-batch", async (req, res) => {
+  const batch = req.query.batch_curriculum_year.split('-')
+  const searchBatch = await BatchModel.findOne({curriculum: batch[0], year: batch[1]});
+  if (!searchBatch) return res.json({ result: false, msg: "Batch non existant" });
+  res.json({ result: true, batch: searchBatch });
+})
+
+module.exports = router;
+
+
 // router.get("/create-pdf", async (req, res) => {
 //   const searchStudent = await studentModel.findById(req.query.studentId);
 //   const searchBatch = await BatchModel.findById(req.query.batchId);
@@ -296,158 +454,3 @@ router.post("/create-batch", async (req, res) => {
 
 //   res.json({ result: true });
 // });
-
-router.get("/delete-pdf", async (req, res) => {
-  const path = `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`;
-  if (fs.existsSync(path)) {
-    fs.unlinkSync(path);
-    return res.json({ result: true, msg: "File supprime" });
-  }
-  res.json({ result: false, msg: "File non existant" });
-});
-
-router.get("/batch", async (req, res) => {
-  const school_batches = await BatchModel.find({
-    schoolId: req.query.school_id,
-  });
-  if (school_batches.length === 0 || !school_batches) {
-    return res.json({
-      success: false,
-      message: "no template or no school for this school id",
-    });
-  }
-  return res.json({ success: true, batches: school_batches });
-});
-
-router.post("/post-csv-import", async (req, res) => {
-  ///// 1 - save diploma in the student document
-  const dataStudent = req.body;
-  //console.log('DATA: ', dataStudent);
-  const batchId = dataStudent.diplomas[0].id_batch;
-  let student = await studentModel.findOne({
-    email: dataStudent.email,
-  });
-  // Check if diploma is already registered in the student data.
-  if (student) {
-    const diplomaIsAlreadyRegistered =
-      student.diplomas.filter((diploma) => diploma.id_batch == batchId).length >
-      0;
-    if (diplomaIsAlreadyRegistered) {
-      return res.json({
-        success: true,
-        message: `this diploma was already registered to the student ${student.lastname}`,
-      });
-    }
-    student.diplomas.push(dataStudent.diplomas[0]);
-  }
-  //console.log('STUDENT 1: ', student);
-  if (!student) {
-    student = new studentModel({ ...dataStudent });
-  }
-  //console.log('STUDENT 2: ', student);
-  const studentSaved = await student.save();
-
-  if (!studentSaved._id) {
-    return res.json({
-      success: false,
-      message: `data of student with email ${dataStudent.email} are not saved.`,
-    });
-  }
-
-  ///// 2 - add student._id in the batch document
-  let batch = await BatchModel.findOne({
-    _id: dataStudent.diplomas[0].id_batch,
-  });
-  if (!batch) {
-    return res.json({
-      success: false,
-      message: `Impossible to find the batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
-    });
-  }
-  //console.log('BATCH: ', batch);
-  if (!batch.studentsId.includes(studentSaved._id)) {
-    batch.studentsId.push(studentSaved._id);
-  }
-  const batchSaved = await batch.save();
-
-  if (!batchSaved._id) {
-    return res.json({
-      success: false,
-      message: `Enabled to save student id (${studentSaved._id}) in the document of batch with id: ${dataStudent.diplom_student[0].id_batch}.`,
-    });
-  }
-  //console.log(`student ${studentSaved.lastname} saved in Batch`)
-  res.json({ success: true });
-});
-
-router.get("/batches-populated", async (req, res) => {
-  const batchesOfYearWithStudents = await BatchModel.find({
-    schoolId: req.query.schoolId,
-    year: req.query.year,
-  }).populate("studentsId");
-
-  if (!batchesOfYearWithStudents) {
-    return res.json({
-      success: false,
-      message: "no batches match the given schoolId and year",
-    });
-  }
-  return res.json({ success: true, batchesOfYearWithStudents });
-});
-
-router.get("/get-school", async (req, res) => {
-  const searchSchool = await schoolModel.findById(req.query.school_id);
-  if (!searchSchool) {
-    res.json({ result: false, msg: "Ecole non existante" });
-  } else {
-    res.json({ result: true, school: searchSchool });
-  }
-});
-
-router.post("/update-student", async (req, res) => {
-  const {
-    studentId,
-    firstname,
-    lastname,
-    birth_date,
-    email,
-    diplomaId,
-    status,
-    mention
-  } = req.body;
-
-  const student = await studentModel.findById(studentId);
-
-  student.firstname = firstname;
-  student.lastname = lastname;
-  student.email = email;
-  student.birth_date = birth_date;
-  const diplomaIndex = student.diplomas.findIndex(
-    (diploma) => diploma._id == diplomaId
-  );
-  student.diplomas[diplomaIndex].status = status;
-  student.diplomas[diplomaIndex].mention = mention;
-  const updated = await student.save();
-
-  if (!updated._id) {
-    return res.json({
-      result: false,
-      message: "student informations not updated.",
-    });
-  }
-  res.json({ result: true });
-});
-
-router.get("/get-student", async (req, res) => {
-  const searchStudent = await studentModel.findById(req.query.studentId);
-  if (!searchStudent) return res.json({ result: false, msg: "Etudiant non existant" });
-  res.json({ result: true, student: searchStudent });
-})
-
-router.get("/get-batch", async (req, res) => {
-  const searchBatch = await BatchModel.findById(req.query.batchId);
-  if (!searchBatch) return res.json({ result: false, msg: "Batch non existant" });
-  res.json({ result: true, batch: searchBatch });
-})
-
-module.exports = router;
