@@ -45,8 +45,6 @@ export default function StudentDiploma() {
         const requestStudent = await fetch(`/get-student/?student_name=${student_name}`)
         const responseStudent = await handleRequest(requestStudent)
         setStudent(responseStudent.student)
-        console.log(`responseBatch`, responseBatch)
-        console.log(`responseStudent`, responseStudent)
         setDiploma(
           responseStudent.student.diplomas.find(
             diploma => diploma.id_batch === responseBatch.batch._id
@@ -120,7 +118,7 @@ const MyDoc = (props) => {
         {renderText('promo')}
         {renderText('year')}
         {renderText('mention')}
-        
+
         <Image
           src={{uri: props.background_image_field.imagePreview, method: "GET"}}
           style={{
