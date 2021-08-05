@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const fs = require("fs");
 const ejs = require("ejs");
 const studentModel = require('../models/students');
+const smartContractGenerator = require('../helpers/smartContractGenerator');
 
 
 let transporter = nodemailer.createTransport({
@@ -111,7 +112,8 @@ router.get("/validate-diploma", async (req, res) => {
   }
 
   searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
-  const smartContractUrl = "abc";
+  const smartContractUrl = await smartContractGenerator(searchStudent._id, searchStudent.diplomas[searchDiplomaIndex]._id);
+  console.log('SMART URL: ', smartContractUrl);
   searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = smartContractUrl;
   await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
 
