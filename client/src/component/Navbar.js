@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {useHistory, Link} from 'react-router-dom';
+import { DashboardOutlined, LayoutOutlined, WalletOutlined, SettingOutlined } from '@ant-design/icons';
 
 import colors from '../helpers/colors'
 
@@ -20,11 +21,11 @@ export default function Navbar() {
       <div style={styles.navbar}>
         <Link to="/"><img src="/reveal.png" style={styles.logo} alt="Reveal" /></Link>
         <div style={{display:"flex"}}>
-          {isAdmin && <Link to="/dashboard" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Dashboard</Link>}
-          {!isAdmin && <Link to="/template-management" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des templates</Link>}
-          {!isAdmin && <Link to="/diploma-list" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des diplômes</Link>}
+          {isAdmin && <Link to="/dashboard" style={styles.link}><DashboardOutlined style={{marginRight: 5}} />Dashboard</Link>}
+          {!isAdmin && <Link to="/template-management" style={styles.link}><LayoutOutlined style={{marginRight: 5}} />Liste des templates</Link>}
+          {!isAdmin && <Link to="/diploma-list" style={styles.link}><WalletOutlined style={{marginRight: 5}} />Liste des diplômes</Link>}
 
-          <Link to="/settings/account" style={styles.link}><img src="/settings.svg" alt="list-icon"/> Settings</Link>
+          <Link to="/settings/account" style={styles.link}><SettingOutlined style={{marginRight: 5}} />Settings</Link>
         </div>
       </div>
       <div style={styles.navbarPadding}></div>
