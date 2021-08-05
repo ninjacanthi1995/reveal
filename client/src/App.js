@@ -23,7 +23,6 @@ import TemplateManagement from './component/TemplateManagement';
 import DashBoard from './component/DashBoard'
 import ScreenDiplomaValidated from './component/ScreenDiplomaValidated';
 import ScreenDiplomaError from './component/ScreenDiplomaError';
-import testPDF from './component/testPDF'
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
@@ -32,7 +31,6 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={ScreenHome} />
-          <Route exact path="/testPDF" component={testPDF} />
           <Route exact path="/dashboard" component={DashBoard} />
           <Route exact path="/dashboard/:tab" component={DashBoard} />
           <Route exact path="/new-user-request" component={NewUserRequest} />
@@ -43,7 +41,7 @@ function App() {
           <Route exact path="/create-batch" component={CreateBatch} />
           <Route path="/creer-mon-template/:template_name_params" component={TemplateCreator} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
-          <Route exact path="/diploma-student/:studentId/:batchId" component={StudentDiploma} />
+          <Route exact path="/diplome/:batch_curriculum_year/:student_name" component={StudentDiploma} />
           <Route exact path="/settings/:tab" component={SettingsScreen} />
           <Route exact path="/diploma-validated/:id_student/:id_diploma" component={ScreenDiplomaValidated} />
           <Route exact path="/diploma-error/:id_student/:id_diploma" component={ScreenDiplomaError} />

@@ -11,7 +11,6 @@ var usersRouter = require('./routes/users');
 var templatesRouter = require('./routes/templates');
 var emailsRouter = require('./routes/emails');
 var schoolsRouter = require('./routes/schools');
-var diplomesRouter = require('./routes/diplomes');
 
 
 var app = express();
@@ -29,7 +28,6 @@ app.use('/users', usersRouter);
 app.use('/templates', templatesRouter);
 app.use('/emails', emailsRouter);
 app.use('/schools', schoolsRouter);
-app.use('/diplomes', diplomesRouter);
 
 app.get("*", (req, res) => {
   let url = path.join(__dirname, 'client/build', 'index.html');
