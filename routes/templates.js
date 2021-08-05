@@ -17,7 +17,8 @@ const createTemplate = async (body, school) => {
       path,
       { public_id: `${school.name}/templates/${template.template_name}/${name}` }
     );
-    return resultCloudinary.url
+    console.log(`resultCloudinary`, resultCloudinary)
+    return resultCloudinary.secure_url
   }
 
   template.background_image_field.imagePreview = await saveImgInCloudinary(template.background_image_field.imagePreview, "background")
