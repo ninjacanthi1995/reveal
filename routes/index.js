@@ -8,10 +8,6 @@ const fs = require("fs");
 var QRCode = require("qrcode");
 const downloadImg = require("../client/src/helpers/downloadImg");
 
-/* GET home page. */
-router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express" });
-});
 
 router.post("/create-batch", async (req, res) => {
   const searchBatch = await BatchModel.findOne({
