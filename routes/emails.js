@@ -117,7 +117,7 @@ router.get("/validate-diploma", async (req, res) => {
 
   // envoi email avec les liens vers le diplome pdf et le smartContract
 
-  const batchId = searchStudent.diplomas[searchDiplomaIndex].id_batch;
+  const batch = searchStudent.diplomas[searchDiplomaIndex];
 
   const options = {
     to: searchStudent.email,
@@ -127,7 +127,7 @@ router.get("/validate-diploma", async (req, res) => {
   const matchings = {
     firstname: searchStudent.firstname,
     lastname: searchStudent.lastname,
-    pdfLink: `${process.env.DOMAIN_NAME}/diploma-student/${searchStudent._id}/${batchId}`,
+    pdfLink: `${process.env.DOMAIN_NAME}/diplome/${batch.curriculum}-${batch.year}/${searchStudent.firstname}-${searchStudent.lastname}`,
     smartContractUrl: smartContractUrl
   }
 
