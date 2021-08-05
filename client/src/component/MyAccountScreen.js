@@ -10,16 +10,20 @@ export default function MyAccountScreen({user}) {
   
   useEffect(() => {
     const schoolId = window.localStorage.getItem("school_id");
-    fetch(`/get-school/?school_id=${schoolId}`)
+    if(schoolId){
+      fetch(`/get-school/?school_id=${schoolId}`)
       .then((res) => res.json())
       .then((data) => setSchoolName(data.school.name));
-    fetch(`/users/get-user/?userId=${user._id}`)
+    }
+    if(user._id){
+      fetch(`/users/get-user/?userId=${user._id}`)
       .then((res) => res.json())
       .then((data) => {
         setFirstname(data.user.firstname);
         setEmail(data.user.email);
         //setPassword(data.user.password);
       });
+    }
   }, [user]);
 
   const onValidate = async () => {
