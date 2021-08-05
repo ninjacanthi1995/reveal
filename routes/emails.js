@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const fs = require("fs");
 const ejs = require("ejs");
 const studentModel = require('../models/students');
+const smartContractGenerator = require('../helpers/smartContractGenerator');
 const BatchModel = require("../models/batches");
 
 
@@ -97,7 +98,6 @@ router.post("/confirmation", async (req, res) => {
 
 
 router.get("/validate-diploma", async (req, res) => {
-  console.log('salut')
   const searchStudent = await studentModel.findById(req.query.id_student);
   if (!searchStudent) {
     return res.json({ result: false, msg: "L'étudiant n'existe pas" });
@@ -113,7 +113,7 @@ router.get("/validate-diploma", async (req, res) => {
   }
 
   searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
-  const smartContractUrl = "abc";
+  const smartContractUrl = await smartContractGenerator(searchStudent._id, searchStudent.diplomas[searchDiplomaIndex]._id);
   searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = smartContractUrl;
   await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
 
@@ -126,9 +126,9 @@ router.get("/validate-diploma", async (req, res) => {
     subject: 'Votre diplôme certifié est disponible!',
   }
 
-  console.log(`batchId`, batchId)
+  //console.log(`batchId`, batchId)
   const batch = await BatchModel.findById(batchId)
-  console.log(`batch`, batch)
+  //console.log(`batch`, batch)
   const matchings = {
     firstname: searchStudent.firstname,
     lastname: searchStudent.lastname,
