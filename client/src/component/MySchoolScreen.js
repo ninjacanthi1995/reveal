@@ -36,7 +36,7 @@ export default function MySchoolScreen() {
   return (
     <div style={{ marginRight: "2%", marginLeft: "2%" }}>
       <List>
-        <List.Item>School name: {schoolName}</List.Item>
+        <List.Item>Nom de l'école: {schoolName}</List.Item>
         <List.Item>Mes collaborateurs: </List.Item>
       </List>
       <Table
