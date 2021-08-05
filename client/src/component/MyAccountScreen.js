@@ -40,7 +40,7 @@ export default function MyAccountScreen({user}) {
     <div>
       <List style={{ marginRight: "2%", marginLeft: "2%" }}>
         <List.Item style={styles.listItem}>
-          Firstname:{" "}
+          Prénom:{" "}
           {edit ? (
             <Input
               placeholder={firstname}
