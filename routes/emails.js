@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const fs = require("fs");
 const ejs = require("ejs");
 const studentModel = require('../models/students');
+const BatchModel = require("../models/batches");
 
 
 let transporter = nodemailer.createTransport({
@@ -96,6 +97,7 @@ router.post("/confirmation", async (req, res) => {
 
 
 router.get("/validate-diploma", async (req, res) => {
+  console.log('salut')
   const searchStudent = await studentModel.findById(req.query.id_student);
   if (!searchStudent) {
     return res.json({ result: false, msg: "L'étudiant n'existe pas" });
@@ -117,17 +119,20 @@ router.get("/validate-diploma", async (req, res) => {
 
   // envoi email avec les liens vers le diplome pdf et le smartContract
 
-  const batch = searchStudent.diplomas[searchDiplomaIndex];
+  const batchId = searchStudent.diplomas[searchDiplomaIndex].id_batch;
 
   const options = {
     to: searchStudent.email,
     subject: 'Votre diplôme certifié est disponible!',
   }
 
+  console.log(`batchId`, batchId)
+  const batch = await BatchModel.findById(batchId)
+  console.log(`batch`, batch)
   const matchings = {
     firstname: searchStudent.firstname,
     lastname: searchStudent.lastname,
-    pdfLink: `${process.env.DOMAIN_NAME}/diplome/${batch.curriculum}-${batch.year}/${searchStudent.firstname}-${searchStudent.lastname}`,
+    pdfLink: `${process.env.DOMAIN_NAME}/diplome/${batch.curriculum.replace('/', '%2F')}-${batch.year}/${searchStudent.firstname}-${searchStudent.lastname}`,
     smartContractUrl: smartContractUrl
   }
 

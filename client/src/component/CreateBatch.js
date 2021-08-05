@@ -13,7 +13,7 @@ export default function CreateBatch() {
   const [year, setYear] = useState(null);
   const [curriculum, setCurriculum] = useState("");
   const [promo, setPromo] = useState(null);
-  const [templateName, setTemplateName] = useState("");
+  const [templateName, setTemplateName] = useState("Choisissez un template");
   const [school_id, setSchool_id] = useState("");
   const [templateList, setTemplateList] = useState([]);
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function CreateBatch() {
           <Form.Item>
             <InputNumber
               style={styles.input}
-              placeholder="Year"
+              placeholder="Année"
               value={year}
               onChange={(value) => setYear(value)}
               defaultValue={year}
@@ -91,8 +91,6 @@ export default function CreateBatch() {
             <Input.Group compact>
               <Select
                 style={styles.input}
-                placeholder="Select a template"
-                defaultValue="Select a template"
                 value={templateName}
                 onSelect={(value) => setTemplateName(value)}
               >
@@ -110,7 +108,7 @@ export default function CreateBatch() {
               style={styles.input}
               onClick={onFinish}
             >
-              Submit
+              Valider
             </Button>
           </Form.Item>
         </Form>

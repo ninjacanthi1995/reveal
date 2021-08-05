@@ -86,6 +86,7 @@ const MyDoc = (props) => {
     (field) => field.type === "image"
   );
   const renderText = (entry) => {
+    if(!props[`${entry}_field`]) return null
     return (
       <Text
         style={{
