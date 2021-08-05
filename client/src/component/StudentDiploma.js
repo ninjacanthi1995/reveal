@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
 import {
   PDFDownloadLink,
   Page,
   Text,
-  View,
   Document,
   StyleSheet,
   Image,
@@ -14,6 +11,7 @@ import {
 import { pdfjs } from "react-pdf";
 import { useParams } from "react-router-dom";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+var QRCode = require("qrcode");
 
 export default function StudentDiploma() {
   const { studentId, batchId } = useParams();
@@ -21,6 +19,7 @@ export default function StudentDiploma() {
   const [batch, setBatch] = useState({});
   const [template, setTemplate] = useState({});
   const [diploma, setDiploma] = useState({});
+  const [qrUrl, setQrUrl] = useState("");
 
   useEffect(() => {
     fetch(`/get-student/?studentId=${studentId}`)
@@ -44,57 +43,28 @@ export default function StudentDiploma() {
             `/templates/get/${data.batch.schoolId}/${data.batch.templateName}`
           )
             .then((res) => res.json())
-            .then((data) => {
-              data.result && setTemplate(data.template);
-            });
+            .then((data) => data.result && setTemplate(data.template));
         }
       });
-  }, []);
-
-  // const createPdf = () => {
-  //   fetch(`/create-pdf/?studentId=${studentId}&batchId=${batchId}`)
-  //     .then((res) => res.json())
-  //     .then((data) => setSrc(data.src));
-  // };
-
-  // useEffect(() => {
-  //   createPdf();
-  //   // eslint-disable-next-line
-  // }, [studentId, batchId]);
-
-  // const deletePdf = () => {
-  //   fetch(`/delete-pdf/?studentId=${studentId}&batchId=${batchId}`);
-  // };
-
-  // const handleDownload = () => {
-  //   createPdf();
-  //   setTimeout(
-  //     window.open(`/diploma_student${studentId}_batch${batchId}.pdf`, "_blank"),
-  //     1000
-  //   );
-  //   setTimeout(deletePdf, 2000);
-  // };
-
-  function onDocumentLoadSuccess() {
-    console.log("ok");
-  }
+    QRCode.toDataURL(
+      `${process.env.DOMAIN_NAME}/diploma-student/${studentId}/${batchId}`,
+      function (err, url) {
+        setQrUrl(url);
+        console.log(url);
+      }
+    );
+  }, [batchId, studentId]);
 
   return (
     <div style={styles.container}>
-      {/* <Button
-        onClick={handleDownload}
-        icon={<DownloadOutlined />}
-        style={styles.button}
-      >
-        Download
-      </Button> */}
       <PDFDownloadLink
         document={
           <MyDoc
-            {...template}
             {...student}
             {...batch}
+            {...template}
             mention={diploma.mention}
+            url={qrUrl}
           />
         }
       >
@@ -102,16 +72,18 @@ export default function StudentDiploma() {
           loading ? "Loading document..." : "Download now!"
         }
       </PDFDownloadLink>
-      <MyDoc {...template} {...student} {...batch} mention={diploma.mention} />
+      <MyDoc
+        {...template}
+        {...student}
+        {...batch}
+        mention={diploma.mention}
+        url={qrUrl}
+      />
     </div>
   );
 }
 
-const MyDoc = (props) => {
-  const widthA4 = 595.28;
-  const heightA4 = 841.89;
-  // const ratioX = widthA4 / (props.template_dimensions ? props.template_dimensions.width : widthA4);
-  // const ratioY = heightA4 / (props.template_dimensions ? props.template_dimensions.height : heightA4);
+function MyDoc(props) {
   if (!props.template_dimensions) {
     return (
       <Document>
@@ -119,6 +91,12 @@ const MyDoc = (props) => {
       </Document>
     );
   }
+  const textFields = props.static_fields.filter(
+    (field) => field.type === "text"
+  );
+  const imgFields = props.static_fields.filter(
+    (field) => field.type === "image"
+  );
   return (
     <Document>
       <Page
@@ -253,22 +231,82 @@ const MyDoc = (props) => {
         </Text>
 
         <Image
-          src={{uri: props.background_image_field.imagePreview, method: "GET"}}
+          src={{
+            uri: props.background_image_field.imagePreview,
+            method: "GET",
+          }}
           style={{
             marginLeft: props.background_image_field.position.x,
             marginTop: props.background_image_field.position.y,
             zIndex: -1,
-            width: parseFloat(props.background_image_field.size.width) * props.template_dimensions.width / 100,
-            height: parseFloat(props.background_image_field.size.height) * props.template_dimensions.height / 100,
+            width:
+              (parseFloat(props.background_image_field.size.width) *
+                props.template_dimensions.width) /
+              100,
+            height:
+              (parseFloat(props.background_image_field.size.height) *
+                props.template_dimensions.height) /
+              100,
             position: "absolute",
             backgroundImage: `url(${props.background_image_field.imagePreview})`,
-            backgroundSize: "cover"
+            backgroundSize: "cover",
           }}
-        />        
+        />
+
+        <Image
+          src={{
+            uri: props.url,
+            method: "GET",
+          }}
+          style={{
+            marginLeft: props.qrcode_field.position.x,
+            marginTop: props.qrcode_field.position.y,
+            width: parseFloat(props.qrcode_field.size.width),
+            height: parseFloat(props.qrcode_field.size.height),
+            position: "absolute",
+            backgroundImage: `url(${props.url})`,
+            backgroundSize: "cover",
+          }}
+        />
+
+        {textFields.map((field) => (
+          <Text
+            style={{
+              marginLeft: field.position.x,
+              marginTop: field.position.y,
+              position: "absolute",
+              color: field.style.color,
+              fontWeight: field.style.bold ? "bold" : "normal",
+              fontStyle: field.style.italic ? "italic" : "normal",
+              textDecoration: field.style.underline ? "underline" : "none",
+              fontSize: field.style.fontSize,
+            }}
+          >
+            {field.value}
+          </Text>
+        ))}
+
+        {imgFields.map((field) => (
+          <Image
+            src={{
+              uri: field.imagePreview,
+              method: "GET",
+            }}
+            style={{
+              marginLeft: field.position.x,
+              marginTop: field.position.y,
+              width: parseFloat(field.size.width),
+              height: parseFloat(field.size.height),
+              position: "absolute",
+              backgroundImage: `url(${field.imagePreview})`,
+              backgroundSize: "cover",
+            }}
+          />
+        ))}
       </Page>
     </Document>
   );
-};
+}
 
 const styles = StyleSheet.create({
   page: {
