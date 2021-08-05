@@ -113,7 +113,7 @@ router.get("/validate-diploma", async (req, res) => {
   }
 
   searchStudent.diplomas[searchDiplomaIndex].status = "confirmé";
-  const smartContractUrl = await smartContractGenerator(searchStudent._id, searchStudent.diplomas[searchDiplomaIndex]._id);
+  const smartContractUrl = await smartContractGenerator(searchStudent.diplomas[searchDiplomaIndex]._id.toString());
   searchStudent.diplomas[searchDiplomaIndex].url_SmartContract = smartContractUrl;
   await studentModel.findByIdAndUpdate(req.query.id_student, {diplomas: [...searchStudent.diplomas]});
 
@@ -128,11 +128,14 @@ router.get("/validate-diploma", async (req, res) => {
 
   //console.log(`batchId`, batchId)
   const batch = await BatchModel.findById(batchId)
-  //console.log(`batch`, batch)
+  console.log(`batch type: `, typeof batch.curriculum)
+  const part1 = batch.curriculum.replace('/', '%2F').replace('/', '%2F').replace('/', '%2F').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20');
+  const part2 = searchStudent.firstname.replace(' ', '%20').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20');
+  const part3 = searchStudent.lastname.replace(' ', '%20').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20').replace(' ', '%20');
   const matchings = {
     firstname: searchStudent.firstname,
     lastname: searchStudent.lastname,
-    pdfLink: `${process.env.DOMAIN_NAME}/diplome/${batch.curriculum.replace('/', '%2F')}-${batch.year}/${searchStudent.firstname}-${searchStudent.lastname}`,
+    pdfLink: `${process.env.DOMAIN_NAME}/diplome/${part1}-${batch.year}/${part2}-${part3}`,
     smartContractUrl: smartContractUrl
   }
 
