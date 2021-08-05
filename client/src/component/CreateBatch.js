@@ -92,6 +92,7 @@ export default function CreateBatch() {
               <Select
                 style={styles.input}
                 placeholder="Select a template"
+                defaultValue="Select a template"
                 value={templateName}
                 onSelect={(value) => setTemplateName(value)}
               >
