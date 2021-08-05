@@ -17,7 +17,6 @@ const createTemplate = async (body, school) => {
       path,
       { public_id: `${school.name}/templates/${template.template_name}/${name}` }
     );
-    console.log(`resultCloudinary`, resultCloudinary)
     return resultCloudinary.secure_url
   }
 
