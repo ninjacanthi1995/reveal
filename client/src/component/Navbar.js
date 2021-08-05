@@ -22,7 +22,7 @@ export default function Navbar() {
         <div style={{display:"flex"}}>
           {isAdmin && <Link to="/dashboard" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Dashboard</Link>}
           {!isAdmin && <Link to="/template-management" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des templates</Link>}
-          {!isAdmin && <Link to="/diploma-list" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des diplômés</Link>}
+          {!isAdmin && <Link to="/diploma-list" style={styles.link}><img src="/list-solid.svg" alt="list-icon"/> Liste des diplômes</Link>}
 
           <Link to="/settings/account" style={styles.link}><img src="/settings.svg" alt="list-icon"/> Settings</Link>
         </div>

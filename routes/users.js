@@ -6,10 +6,8 @@ var mongoose = require("mongoose");
 //fred : ajout du require users  dans une const nommee UserModel pour call la db
 const UserModel = require("../models/users");
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
+const bcrypt = require('bcrypt');
+
 
 router.post("/sign-up", async (req, res) => {
   const user = { ...req.body };
@@ -17,42 +15,41 @@ router.post("/sign-up", async (req, res) => {
     user.firstname === "" &&
     user.email === "" &&
     user.password === "" &&
-    user.admin === "" &&
+    user.role === "" &&
     user.school_name === ""
   ) {
     res.json({ result: false, error: "Il nous manque des infos" });
   }
+  user.password = bcrypt.hashSync(user.password, 10);
 
   const school = await SchoolModel.findOne({ name: user.school_name });
   if (!school) {
-    res.json({ result: false, error: "Nous n'avons pas trouver votre école" });
-  } else {
-    const check = await UserModel.find({ email: user.email });
-    if (check.length !== 0) {
-      res.json({ result: false, error: "Cet email est déjà pris !" });
-    } else {
-      const newUser = new UserModel({ ...user });
-      newUser.school_id = school.id;
-      const userSaved = await newUser.save();
-      if (userSaved) {
-        school.user_id.push(userSaved._id)
-        const schoolSaved = await school.save()
-        if(schoolSaved) {
-          const users = await UserModel.find({ school_id: schoolSaved._id })
-          res.json({ result: true, users, message: `${userSaved.firstname} a bien été créé` });
-        }
-      } else {
-        res.json({
-          result: false,
-          error: "L'utilisateur n'a pas pus être créé",
-        });
-      }
-    }
+    return res.json({ result: false, error: "Nous n'avons pas trouver votre école" });
   }
+
+  const check = await UserModel.find({ email: user.email });
+  if (check.length !== 0) {
+    return res.json({ result: false, error: "Cet email est déjà pris !" });
+  }
+
+  const newUser = new UserModel({ ...user });
+  newUser.school_id = school.id;
+  const userSaved = await newUser.save();
+  if (!userSaved) {
+    return res.json({ result: false, error: "L'utilisateur n'a pas pus être créé" });
+  }
+
+  school.user_id.push(userSaved._id);
+  const schoolSaved = await school.save();
+  if(!schoolSaved) {
+    return res.json({ result: false, error: "L'utilisateur n'a pas été enregistré dans l'école" });
+  };
+
+  const users = await UserModel.find({school_id: schoolSaved._id});
+  res.json({ result: true, users, message: `${userSaved.firstname} a bien été créé` });
 });
 
 router.post("/sign-in", async (req, res) => {
-  console.log(`req.body`, req.body);
   var result = false;
   var user = null;
   var error = [];
@@ -62,15 +59,11 @@ router.post("/sign-in", async (req, res) => {
   }
 
   if (error.length == 0) {
-    user = await UserModel.findOne({
-      email: req.body.emailFromFront,
-      password: req.body.passwordFromFront,
-    });
-
-    if (user) {
-      result = true;
-    } else {
+    user = await UserModel.findOne({ email: req.body.emailFromFront });
+    if (!user || !bcrypt.compareSync(req.body.passwordFromFront, user.password)){
       error.push("email ou mot de passe incorrect ");
+    } else {
+      result = true;
     }
   }
 
@@ -80,17 +73,17 @@ router.post("/sign-in", async (req, res) => {
 router.put("/edit-user/:userId", async (req, res) => {
   const searchUser = await UserModel.findById(req.params.userId);
   if (!searchUser) {
-    res.json({ result: false, msg: "User not found" });
-  } else {
-    if (typeof req.body.school_id === "String") {
-      await UserModel.findByIdAndUpdate(req.params.userId, {
-        school_id: mongoose.mongo.ObjectId(req.body.school_id),
-      });
-    } else {
-      await UserModel.findByIdAndUpdate(req.params.userId, req.body);
-    }
-    res.json({ result: true, msg: "User updated" });
+    return res.json({ result: false, msg: "User not found" });
   }
+  /* if (typeof req.body.school_id === "String") {
+    await UserModel.findByIdAndUpdate(req.params.userId, {
+      school_id: mongoose.mongo.ObjectId(req.body.school_id),
+    });
+  } else { */
+    req.body.password = bcrypt.hashSync(req.body.password, 10);
+    await UserModel.findByIdAndUpdate(req.params.userId, req.body);
+  //}
+  res.json({ result: true, msg: "User updated" });
 });
 
 router.get("/get-collaborators", async (req, res) => {
@@ -119,6 +112,7 @@ router.post("/create-collaborator", async (req, res) => {
   if (searchCollaborator) {
     return res.json({ result: false, msg: "Vous avez déjà ce collaborateur" });
   }
+  req.body.password = bcrypt.hashSync(req.body.password, 10);
   const newCollaborator = new UserModel({
     ...req.body,
     school_id: mongoose.mongo.ObjectId(req.body.school_id),
@@ -147,7 +141,7 @@ router.post('/edit/:user_id', async (req, res) => {
     { 
       firstname: req.body.firstname,
       email: req.body.email,
-      password: req.body.password,
+      password: bcrypt.hashSync(req.body.password, 10),
       role: req.body.role,
     }
   );

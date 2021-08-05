@@ -20,7 +20,7 @@ const DiplomaListScreen = () => {
   const [optionsYear, setOptionsYear] = useState([]);
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [dataRefresher, setDataRefresher] = useState(0);  // utile pour rafraichir les status après l'envoi des emails
-  //const [schoolId, setSchoolId] = useState('');
+
   const [data, setData] = useState([]);
   const [filtersCurriculum, setFiltersCurriculum] = useState([]);
   const [filtersPromo, setFiltersPromo] = useState([]);
@@ -30,17 +30,6 @@ const DiplomaListScreen = () => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [editedRow, setEditedRow] = useState({});
   const [displayAlert, setDisplayAlert] = useState('none');
-
-
-  const lookForMissingDataStatus = (data) => {
-    data.forEach(diploma => {
-      if (diploma.status === status.missing_data) {
-        setDisplayAlert('inline');
-        return;
-      }
-    });
-    setDisplayAlert('none');
-  }
 
 
   // Modal helpers:
@@ -75,10 +64,10 @@ const DiplomaListScreen = () => {
     }
 
     // update data (will update Table)
-    setData(tempData);
+    //setData(tempData);
+    setDataRefresher(dataRefresher + 1);
     message.success("Les informations de l'étudiant ont été modifié.");
 
-    lookForMissingDataStatus(tempData);
     setVisible(false);
     setConfirmLoading(false);
   };
@@ -199,6 +188,9 @@ const DiplomaListScreen = () => {
       let curriculumList = [];
       let promoList = [];
       let tempData = [];
+
+      setDisplayAlert('none');
+
       batchesOfYearWithStudents.forEach((batch, i) => {
         curriculumList.push({
           text: batch.curriculum,
@@ -226,6 +218,7 @@ const DiplomaListScreen = () => {
                 mention: diploma.mention? diploma.mention : ''
               }
               tempData.push(row);
+
               if (diploma.status === status.missing_data) {
                 setDisplayAlert('inline');
               }
@@ -282,7 +275,6 @@ const DiplomaListScreen = () => {
             } else {
               message.success("Tous les emails ont été envoyé avec succés.")
             }
-
             setDataRefresher(dataRefresher + 1);
           }}
         >Envoyer les mails</Button>
@@ -316,76 +308,78 @@ const DiplomaListScreen = () => {
         maskClosable={false}
       >
         <table>
-          <tr>
-            <td>Nom: </td>
-            <td>
-              <Input 
-                value={editedRow.lastname}
-                onChange={e => {
-                  const tempRow = {...editedRow}
-                  tempRow.lastname = e.target.value;
-                  setEditedRow(tempRow);
-                }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Prénom: </td>
-            <td>
-              <Input 
-                value={editedRow.firstname}
-                onChange={e => {
-                  const tempRow = {...editedRow}
-                  tempRow.firstname = e.target.value;
-                  setEditedRow(tempRow);
-                }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Date de naissance: </td>
-            <td>
-              <Input 
-                value={editedRow.birth_date}
-                placeholder="format JJ/MM/AAAA"
-                onChange={e => {
-                  const tempRow = {...editedRow}
-                  tempRow.birth_date = e.target.value;
-                  setEditedRow(tempRow);
-                }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Email: </td>
-            <td>
-              <Input 
-                style={styles.modalInput}
-                value={editedRow.email}
-                onChange={e => {
-                  const tempRow = {...editedRow}
-                  tempRow.email = e.target.value;
-                  //console.log('onchange', tempRow)
-                  setEditedRow(tempRow);
-                }}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Mention: </td>
-            <td>
-              <Input 
-                style={styles.modalInput}
-                value={editedRow.mention}
-                onChange={e => {
-                  const tempRow = {...editedRow}
-                  tempRow.mention = e.target.value;
-                  //console.log('onchange', tempRow)
-                  setEditedRow(tempRow);
-                }}
-              />
-            </td>
-          </tr>
+          <tbody>
+            <tr>
+              <td>Nom: </td>
+              <td>
+                <Input 
+                  value={editedRow.lastname}
+                  onChange={e => {
+                    const tempRow = {...editedRow}
+                    tempRow.lastname = e.target.value;
+                    setEditedRow(tempRow);
+                  }}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Prénom: </td>
+              <td>
+                <Input 
+                  value={editedRow.firstname}
+                  onChange={e => {
+                    const tempRow = {...editedRow}
+                    tempRow.firstname = e.target.value;
+                    setEditedRow(tempRow);
+                  }}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Date de naissance: </td>
+              <td>
+                <Input 
+                  value={editedRow.birth_date}
+                  placeholder="format JJ/MM/AAAA"
+                  onChange={e => {
+                    const tempRow = {...editedRow}
+                    tempRow.birth_date = e.target.value;
+                    setEditedRow(tempRow);
+                  }}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Email: </td>
+              <td>
+                <Input 
+                  style={styles.modalInput}
+                  value={editedRow.email}
+                  onChange={e => {
+                    const tempRow = {...editedRow}
+                    tempRow.email = e.target.value;
+                    //console.log('onchange', tempRow)
+                    setEditedRow(tempRow);
+                  }}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Mention: </td>
+              <td>
+                <Input 
+                  style={styles.modalInput}
+                  value={editedRow.mention}
+                  onChange={e => {
+                    const tempRow = {...editedRow}
+                    tempRow.mention = e.target.value;
+                    //console.log('onchange', tempRow)
+                    setEditedRow(tempRow);
+                  }}
+                />
+              </td>
+            </tr>
+          </tbody>
         </table>
       </Modal>
     </>
@@ -426,3 +420,4 @@ const styles = {
 export default DiplomaListScreen;
 
 // AJUSTER LES WIDTH DES COLONES OU LES RENDRE AJUSTABLE
+
