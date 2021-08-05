@@ -46,11 +46,11 @@ export default function StudentDiploma() {
         );
         const responseStudent = await handleRequest(requestStudent);
         setStudent(responseStudent.student);
-        const diploma = responseStudent.student.diplomas.find(
+        const wantedDiploma = responseStudent.student.diplomas.find(
           (diploma) => diploma.id_batch === responseBatch.batch._id
         )
-        setDiploma( diploma );
-        QRCode.toDataURL(diploma._id, function (err, url) {
+        setDiploma( wantedDiploma );
+        QRCode.toDataURL(wantedDiploma.url_SmartContract, function (err, url) {
           setQrUrl(url);
         });
       }
