@@ -18,17 +18,18 @@ export default function MyAccountScreen({user}) {
       .then((data) => {
         setFirstname(data.user.firstname);
         setEmail(data.user.email);
-        setPassword(data.user.password);
+        //setPassword(data.user.password);
       });
   }, [user]);
 
-  const onValidate = () => {
+  const onValidate = async () => {
     setEdit(false);
-    fetch(`/users/edit-user/${user._id}`, {
+    await fetch(`/users/edit-user/${user._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: `firstname=${firstname}&email=${email}&password=${password}`,
     });
+    setPassword("");
   };
 
   return (
@@ -60,14 +61,12 @@ export default function MyAccountScreen({user}) {
         </List.Item>
         <List.Item style={styles.listItem}>
           Password:{" "}
-          {edit ? (
-            <Input
-              placeholder={password}
+          {edit && (
+            <Input.Password
+              placeholder='votre nouveau mot de passe'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-          ) : (
-            password
           )}
         </List.Item>
         
