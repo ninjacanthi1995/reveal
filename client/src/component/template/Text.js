@@ -10,8 +10,6 @@ import {
 } from '@ant-design/icons';
 import colors from '../../helpers/colors';
 
-// INSERER REACT COLOR
-
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -140,7 +138,8 @@ const Text = ({element, type, index}) => {
         onVisibleChange={handleVisibleChange}
         visible={visible}
       >
-        <TextArea 
+        {type === "text" ? 
+          <TextArea 
           className="dragIcon"
           placeholder="Enter your text" 
           autoSize
@@ -152,7 +151,16 @@ const Text = ({element, type, index}) => {
             const childHeight = parseInt(e.target.style.height, 10)
             if(type === "text") updateElement({ width: size.width, height: childHeight + 2 }, position, e.target.value, bold, italic, underline, color, fontSize) 
           }}
-        /> 
+          /> 
+        : 
+          <p
+            className="dragIcon"
+            id={`${type}${index}`}
+            style={textStyle}
+          >
+            {value}
+          </p> 
+        }    
       </Dropdown>
     </Rnd>
   );
