@@ -49,6 +49,25 @@ router.get("/batch", async (req, res) => {
   return res.json({ success: true, batches: school_batches });
 });
 
+router.delete("/delete-batch/:batchId", async (req, res) => {
+  const searchBatch = await BatchModel.findById(req.params.batchId);
+  if (!searchBatch) return res.json({ result: false, msg: "Batch not found" });
+  const schoolId = searchBatch.schoolId;
+  await BatchModel.findByIdAndDelete(req.params.batchId);
+  const batches = await BatchModel.find({ schoolId });
+  res.json({ result: true, msg: "Batch deleted", batches })
+});
+
+router.put("/edit-batch/:batchId", async (req, res) => {
+  console.log(req.body);
+  const searchBatch = await BatchModel.findById(req.params.batchId);
+  if (!searchBatch) return res.json({ result: false, msg: "Batch not found" });
+  const schoolId = searchBatch.schoolId;
+  await BatchModel.findByIdAndUpdate(req.params.batchId, req.body);
+  const batches = await BatchModel.find({ schoolId });
+  res.json({ result: true, msg: "Batch updated", batches });
+})
+
 router.post("/post-csv-import", async (req, res) => {
   ///// 1 - save diploma in the student document
   const dataStudent = req.body;

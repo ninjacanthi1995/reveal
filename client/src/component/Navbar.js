@@ -23,6 +23,7 @@ export default function Navbar() {
         <div style={{display:"flex"}}>
           {isAdmin && <Link to="/dashboard" style={styles.link}><DashboardOutlined style={{marginRight: 5}} />Dashboard</Link>}
           {!isAdmin && <Link to="/template-management" style={styles.link}><LayoutOutlined style={{marginRight: 5}} />Liste des templates</Link>}
+          {!isAdmin && <Link to="/batch-list" style={styles.link}><LayoutOutlined style={{marginRight: 5}} />Liste des batches</Link>}
           {!isAdmin && <Link to="/diploma-list" style={styles.link}><WalletOutlined style={{marginRight: 5}} />Liste des diplômes</Link>}
 
           <Link to="/settings/account" style={styles.link}><SettingOutlined style={{marginRight: 5}} />Settings</Link>
