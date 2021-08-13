@@ -23,6 +23,7 @@ import TemplateManagement from './component/TemplateManagement';
 import DashBoard from './component/DashBoard'
 import ScreenDiplomaValidated from './component/ScreenDiplomaValidated';
 import ScreenDiplomaError from './component/ScreenDiplomaError';
+import BatchListScreen from './component/BatchListScreen';
 const store = createStore(combineReducers({studentList, templateElements, requiredElements}));
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route exact path="/import-config" component={ImportConfigScreen} />
           <Route path="/diploma-list" component={DiplomaListScreen}  />
           <Route exact path="/create-batch" component={CreateBatch} />
+          <Route exact path="/batch-list" component={BatchListScreen} />
           <Route path="/creer-mon-template/:template_name_params" component={TemplateCreator} />
           <Route path="/creer-mon-template" component={TemplateCreator} />
           <Route exact path="/diplome/:batch_curriculum_year/:student_name" component={StudentDiploma} />
