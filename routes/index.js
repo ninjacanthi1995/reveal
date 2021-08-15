@@ -27,15 +27,6 @@ router.post("/create-batch", async (req, res) => {
   if (savedBatch) res.json({ result: true, msg: "Batch cree" });
 });
 
-router.get("/delete-pdf", async (req, res) => {
-  const path = `./client/public/diploma_student${req.query.studentId}_batch${req.query.batchId}.pdf`;
-  if (fs.existsSync(path)) {
-    fs.unlinkSync(path);
-    return res.json({ result: true, msg: "File supprime" });
-  }
-  res.json({ result: false, msg: "File non existant" });
-});
-
 router.get("/batch", async (req, res) => {
   const school_batches = await BatchModel.find({
     schoolId: req.query.school_id,
